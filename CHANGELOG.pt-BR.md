@@ -5,6 +5,14 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 ## [Não publicado]
 
 ### Adicionado
+- Monitoramento do resolver por view, incluindo contadores, tipos de query recursiva e descoberta ADB.
+- Métricas de cache do resolver para hits/misses, evictions, nós e memória do cache.
+- Métricas de memória do BIND a partir do endpoint nativo de memória.
+
+### Corrigido
+- A descoberta de estatísticas de socket agora utiliza `/json/v1/net`, conforme a semântica do statistics-channel do BIND.
+
+### Adicionado
 - Estrutura inicial do projeto e documentação bilíngue.
 - Arquitetura neutra para Zabbix Agent clássico e Zabbix Agent 2.
 - Coleta das estatísticas JSON do BIND pelo statistics-channel local.
