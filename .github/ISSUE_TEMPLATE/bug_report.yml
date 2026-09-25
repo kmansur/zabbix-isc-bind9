@@ -1,0 +1,68 @@
+name: Bug report / Relato de bug
+description: Report a template, documentation or compatibility problem. / Relate um problema de template, documentação ou compatibilidade.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Remove credentials, TSIG material and sensitive network information.
+        Obrigado por relatar o problema. Remova credenciais, material TSIG e informações sensíveis de rede.
+
+  - type: input
+    id: zabbix
+    attributes:
+      label: Zabbix version / Versão do Zabbix
+      placeholder: "7.0.x or 8.0.x"
+    validations:
+      required: true
+
+  - type: input
+    id: bind
+    attributes:
+      label: ISC BIND version / Versão do ISC BIND
+      placeholder: "9.18.x"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system / Sistema operacional
+      placeholder: "FreeBSD 14.x, Debian 13, etc."
+    validations:
+      required: true
+
+  - type: input
+    id: agent
+    attributes:
+      label: Zabbix agent variant and version / Variante e versão do agent
+      placeholder: "Zabbix Agent 7.0.x or Agent 2 7.0.x"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem description / Descrição do problema
+      description: What happened and what did you expect? / O que ocorreu e o que era esperado?
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized statistics sample / Amostra sanitizada das estatísticas
+      description: Include the affected endpoint/item and sanitized JSON when relevant. / Inclua endpoint/item afetado e JSON sanitizado quando relevante.
+      render: json
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Zabbix error or unsupported item / Erro do Zabbix ou item unsupported
+      render: text
+    validations:
+      required: false
