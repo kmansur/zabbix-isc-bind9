@@ -4,7 +4,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_version_markers():
-    assert (ROOT / "VERSION").read_text().strip() == "0.1.2"
+    assert (ROOT / "VERSION").read_text().strip() == "0.1.3"
     assert (ROOT / "STABLE_VERSION").read_text().strip() == "0.0.0"
 
 
