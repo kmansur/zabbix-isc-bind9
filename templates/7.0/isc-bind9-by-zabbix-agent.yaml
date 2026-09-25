@@ -135,6 +135,57 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
+
+        - uuid: 04698aed05a34db58380afe9e45b3b53
+          name: 'BIND: Memory in use'
+          type: DEPENDENT
+          key: bind.memory.inuse
+          delay: '0'
+          history: 30d
+          units: B
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.memory.InUse
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/mem","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: memory
+        - uuid: 3fdc07e53a9641f690d2e6fcfe23e198
+          name: 'BIND: Memory malloced'
+          type: DEPENDENT
+          key: bind.memory.malloced
+          delay: '0'
+          history: 30d
+          units: B
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.memory.Malloced
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/mem","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: memory
+        - uuid: a2d9d517819247d4b75369265b986254
+          name: 'BIND: Memory contexts'
+          type: DEPENDENT
+          key: bind.memory.contexts
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var contexts = d.memory && d.memory.contexts ? d.memory.contexts : [];
+                  return contexts.length;
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/mem","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: memory
         - uuid: 3df51309864147dc93c9ffe338cfb77d
           name: 'BIND: Version'
           type: DEPENDENT
@@ -607,12 +658,12 @@ zabbix_export:
                   parameters:
                     - 30m
               master_item:
-                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
               tags:
                 - tag: component
                   value: sockets
           master_item:
-            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
           preprocessing:
             - type: JAVASCRIPT
               parameters:
@@ -621,6 +672,347 @@ zabbix_export:
                   var counters = d.sockstats || {};
                   var out = Object.keys(counters).map(function (name) {
                       return {"{#BIND.COUNTER}": name};
+                  });
+                  return JSON.stringify({"data": out});
+
+        - uuid: 2c61e2343b2d4310bb8dc00565ec4a25
+          name: 'BIND: Resolver statistics discovery'
+          type: DEPENDENT
+          key: bind.resolver.stats.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 2bebe64c25914011a7c07f735b8c376a
+              name: 'BIND resolver [{#BIND.VIEW}] statistic: {#BIND.COUNTER} per second'
+              type: DEPENDENT
+              key: 'bind.resolver.stats[{#BIND.VIEW},{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.stats["{#BIND.COUNTER}"]'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var out = [];
+                  Object.keys(views).forEach(function (viewName) {
+                      var resolver = views[viewName].resolver || {};
+                      var stats = resolver.stats || {};
+                      Object.keys(stats).forEach(function (counter) {
+                          out.push({
+                              "{#BIND.VIEW}": viewName,
+                              "{#BIND.COUNTER}": counter
+                          });
+                      });
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: e40ca5cc37b04025940eb5cdc2da703c
+          name: 'BIND: Resolver query type discovery'
+          type: DEPENDENT
+          key: bind.resolver.qtypes.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 3860b069909f4d0faccb27d12640abfc
+              name: 'BIND resolver [{#BIND.VIEW}] query type: {#BIND.COUNTER} per second'
+              type: DEPENDENT
+              key: 'bind.resolver.qtypes[{#BIND.VIEW},{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.qtypes["{#BIND.COUNTER}"]'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var out = [];
+                  Object.keys(views).forEach(function (viewName) {
+                      var resolver = views[viewName].resolver || {};
+                      var qtypes = resolver.qtypes || {};
+                      Object.keys(qtypes).forEach(function (counter) {
+                          out.push({
+                              "{#BIND.VIEW}": viewName,
+                              "{#BIND.COUNTER}": counter
+                          });
+                      });
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: 4f8b1ed35c494e49a3cfe63ef72bcd96
+          name: 'BIND: Resolver ADB statistics discovery'
+          type: DEPENDENT
+          key: bind.resolver.adb.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: a0095b44738a47d6bd0930a21d6ebea6
+              name: 'BIND resolver [{#BIND.VIEW}] ADB statistic: {#BIND.COUNTER} per second'
+              type: DEPENDENT
+              key: 'bind.resolver.adb[{#BIND.VIEW},{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.adb["{#BIND.COUNTER}"]'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var out = [];
+                  Object.keys(views).forEach(function (viewName) {
+                      var resolver = views[viewName].resolver || {};
+                      var adb = resolver.adb || {};
+                      Object.keys(adb).forEach(function (counter) {
+                          out.push({
+                              "{#BIND.VIEW}": viewName,
+                              "{#BIND.COUNTER}": counter
+                          });
+                      });
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: 88ad3d0c6459482799fcbd352a78609f
+          name: 'BIND: Resolver cache discovery'
+          type: DEPENDENT
+          key: bind.resolver.cache.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: dc6f23c23dff4df99a81137edee0597b
+              name: 'BIND cache [{#BIND.VIEW}]: Hits per second'
+              type: DEPENDENT
+              key: 'bind.cache.hits[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheHits'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: 6869e7d625644129808feb96bfb349b3
+              name: 'BIND cache [{#BIND.VIEW}]: Misses per second'
+              type: DEPENDENT
+              key: 'bind.cache.misses[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheMisses'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: 1d69c57f671543699c0207e739a85ac9
+              name: 'BIND cache [{#BIND.VIEW}]: Query hits per second'
+              type: DEPENDENT
+              key: 'bind.cache.queryhits[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.QueryHits'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: 1d096cab8761404a811f1469e22edc5b
+              name: 'BIND cache [{#BIND.VIEW}]: Query misses per second'
+              type: DEPENDENT
+              key: 'bind.cache.querymisses[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.QueryMisses'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: 6799dc986e254e3085564273e8aa55e5
+              name: 'BIND cache [{#BIND.VIEW}]: LRU deletions per second'
+              type: DEPENDENT
+              key: 'bind.cache.deletelru[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.DeleteLRU'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: 175f32fb616447399339f12e86a2c804
+              name: 'BIND cache [{#BIND.VIEW}]: TTL deletions per second'
+              type: DEPENDENT
+              key: 'bind.cache.deletettl[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.DeleteTTL'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: 2655856022054d7f935f5ef9f91304e6
+              name: 'BIND cache [{#BIND.VIEW}]: Covering NSEC responses per second'
+              type: DEPENDENT
+              key: 'bind.cache.coveringnsec[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.CoveringNSEC'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: 889f1746660349108dbc2b165151f78f
+              name: 'BIND cache [{#BIND.VIEW}]: Nodes'
+              type: DEPENDENT
+              key: 'bind.cache.nodes[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheNodes'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: b1faacf6906f423982c086e9e53f437a
+              name: 'BIND cache [{#BIND.VIEW}]: NSEC nodes'
+              type: DEPENDENT
+              key: 'bind.cache.nsecnodes[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheNSECNodes'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: ee4960f9ce834ffb8cd02249d5c97362
+              name: 'BIND cache [{#BIND.VIEW}]: Tree memory in use'
+              type: DEPENDENT
+              key: 'bind.cache.tree.memory[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              units: B
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.TreeMemInUse'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: 17744b66d95b470b98cd0c921155f271
+              name: 'BIND cache [{#BIND.VIEW}]: Heap memory in use'
+              type: DEPENDENT
+              key: 'bind.cache.heap.memory[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              units: B
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.cachestats.HeapMemInUse'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var out = [];
+                  Object.keys(views).forEach(function (viewName) {
+                      var resolver = views[viewName].resolver || {};
+                      if (resolver.cachestats) {
+                          out.push({"{#BIND.VIEW}": viewName});
+                      }
                   });
                   return JSON.stringify({"data": out});
         - uuid: 212a9f620cce41baa16a0f6f11021966
