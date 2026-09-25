@@ -1,4 +1,4 @@
-# ISC BIND 9 by Zabbix Agent
+# ISC BIND by Zabbix agent
 
 [![CI](https://github.com/kmansur/zabbix-isc-bind9/actions/workflows/ci.yml/badge.svg)](https://github.com/kmansur/zabbix-isc-bind9/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kmansur/zabbix-isc-bind9/actions/workflows/security.yml/badge.svg)](https://github.com/kmansur/zabbix-isc-bind9/actions/workflows/security.yml)
@@ -6,9 +6,9 @@
 
 **English** | [Português (Brasil)](README.pt-BR.md)
 
-A security-focused Zabbix template for monitoring **ISC BIND 9** through the native BIND HTTP statistics channel. The design is compatible with both **Zabbix Agent** and **Zabbix Agent 2** and intentionally avoids Agent 2-only plugins, external scripts, sudo, `rndc`, `curl` and `jq`.
+A security-focused Zabbix template for monitoring **ISC BIND** through the native BIND HTTP statistics channel. The design is compatible with both **Zabbix Agent** and **Zabbix Agent 2** and intentionally avoids Agent 2-only plugins, external scripts, sudo, `rndc`, `curl` and `jq`.
 
-> **Development status:** version `0.1.3` is an initial engineering candidate and is not yet a production-stable release.
+> **Development status:** version `0.1.4` is an initial engineering candidate and is not yet a production-stable release.
 
 ## Design goals
 
@@ -60,8 +60,8 @@ No control operation is required by the template.
 | Zabbix Agent 2 6.0+ | Supported design target |
 | FreeBSD | Supported with classic Zabbix Agent |
 | Linux | Supported with Zabbix Agent or Agent 2 |
-| ISC BIND 9.20 | Primary supported validation target |
-| ISC BIND 9.18.50 | Legacy compatibility target (EOL upstream) |
+| ISC BIND.20 | Primary supported validation target |
+| ISC BIND.18.50 | Legacy compatibility target (EOL upstream) |
 | ISC BIND newer supported branches | Compatibility target |
 
 Older agents may work when they provide the required standard `web.page.get[]` key, but they are not part of the project's maintained test matrix.
@@ -98,7 +98,7 @@ python tools/validate_docs.py
 The project uses Semantic Versioning.
 
 ```text
-VERSION:        0.1.3
+VERSION:        0.1.4
 STABLE_VERSION: 0.0.0
 ```
 
