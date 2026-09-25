@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
-from pathlib import Path
 import sys
+from pathlib import Path
+
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,17 +15,23 @@ FORBIDDEN = ("system.run[", "type: SCRIPT", "type: SSH_AGENT", "type: TELNET")
 def load_template(version, path):
     if not path.is_file():
         raise AssertionError(f"missing template: {path}")
+
     text = path.read_text(encoding="utf-8")
     data = yaml.safe_load(text)
     export = data["zabbix_export"]
+
     assert export["version"] == version
     template = export["templates"][0]
     assert template["template"] == EXPECTED_NAME
     assert template["name"] == EXPECTED_NAME
     assert template["vendor"]["name"] == "Net Tech"
     assert template["vendor"]["version"] == "0.1-0"
+
     for token in FORBIDDEN:
-        assert token not in text, f"forbidden dependency/control path found: {token!r}"
+        assert token not in text, (
+            f"forbidden dependency/control path found: {token!r}"
+        )
+
     return template
 
 
@@ -42,9 +48,18 @@ def macro_names(template):
 
 
 def main():
-    loaded = {version: load_template(version, path) for version, path in TARGETS.items()}
-    assert item_keys(loaded["7.0"]) == item_keys(loaded["8.0"]), "7.0/8.0 item-key drift"
-    assert macro_names(loaded["7.0"]) == macro_names(loaded["8.0"]), "7.0/8.0 macro drift"
+    loaded = {
+        version: load_template(version, path)
+        for version, path in TARGETS.items()
+    }
+
+    assert item_keys(loaded["7.0"]) == item_keys(loaded["8.0"]), (
+        "7.0/8.0 item-key drift"
+    )
+    assert macro_names(loaded["7.0"]) == macro_names(loaded["8.0"]), (
+        "7.0/8.0 macro drift"
+    )
+
     print("Template validation passed for Zabbix 7.0 and 8.0.")
     return 0
 
