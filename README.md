@@ -60,7 +60,8 @@ No control operation is required by the template.
 | Zabbix Agent 2 6.0+ | Supported design target |
 | FreeBSD | Supported with classic Zabbix Agent |
 | Linux | Supported with Zabbix Agent or Agent 2 |
-| ISC BIND 9.18 | Primary validation target |
+| ISC BIND 9.20 | Primary supported validation target |
+| ISC BIND 9.18.50 | Legacy compatibility target (EOL upstream) |
 | ISC BIND newer supported branches | Compatibility target |
 
 Older agents may work when they provide the required standard `web.page.get[]` key, but they are not part of the project's maintained test matrix.
