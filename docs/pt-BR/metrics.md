@@ -30,3 +30,7 @@ Itens mestres JSON brutos possuem histórico curto e sem trends. Métricas numé
 ## Nível de estatísticas por zona
 
 Identidade da zona, serial e timers básicos não exigem contadores completos por zona. Os contadores DNSSEC por zona exigem `zone-statistics full` no BIND para as zonas relevantes. Quando esses blocos não existem, a descoberta DNSSEC fica vazia e o template comum não cria itens DNSSEC unsupported.
+
+## Monitoramento de transferências recebidas
+
+O BIND 9.20 expõe o endpoint JSON `/json/v1/xfrins`. O template comum consulta esse endpoint sem transformar hosts 9.18 em unsupported. Em versões sem o endpoint, `bind.xfrins.supported` retorna `0` e as métricas de transferência permanecem em zero. No BIND 9.20, o template coleta quantidade de transferências ativas/em fila, transferências deferred, bytes atuais e taxa agregada.
