@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 - Resolver cache metrics for hits/misses, evictions, cache nodes and cache memory.
 - BIND memory usage metrics from the native memory statistics endpoint.
 
+### Changed
+- Switched the default master items from active to passive Zabbix agent checks. This removes the ServerActive requirement and matches the common classic-agent deployment model while remaining compatible with Agent 2.
+
 ### Fixed
 - Corrected `{$BIND.STATS.HOST}` to use `127.0.0.1` instead of a full URL when `web.page.get[]` also supplies path and port parameters.
 - Socket statistics discovery now uses `/json/v1/net`, matching BIND statistics-channel semantics.
