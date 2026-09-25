@@ -12,7 +12,7 @@ A security-focused Zabbix template for monitoring **ISC BIND 9** through the nat
 
 ## Design goals
 
-- support Zabbix Agent and Zabbix Agent 2 with the same template;
+- support Zabbix Agent and Zabbix Agent 2 with the same template using passive checks by default;
 - keep the BIND statistics channel bound to loopback by default;
 - collect once and fan out through dependent items and low-level discovery;
 - avoid privileged commands and write/control operations;
