@@ -29,7 +29,7 @@ zabbix_export:
         Export target: Zabbix 8.0 compatibility candidate.
       vendor:
         name: Net Tech
-        version: 0.1-2
+        version: 0.1-3
       groups:
         - name: Templates/Applications
       items:
@@ -1268,6 +1268,11 @@ zabbix_export:
           type: DEPENDENT
           key: bind.zones.secondary.discovery
           delay: '0'
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#BIND.ZONE}'
+                value: '{$BIND.ZONE.SECONDARY.MATCHES}'
           item_prototypes:
             - uuid: bb55051275b6479582cb2c9e57a16742
               name: 'BIND zone [{#BIND.VIEW}] {#BIND.ZONE}: Time until expiry'
@@ -1484,6 +1489,9 @@ zabbix_export:
         - macro: '{$BIND.ZONE.EXPIRES.WARN}'
           value: 1h
           description: 'Warn when a secondary zone is less than this interval away from its SOA expiry deadline.'
+        - macro: '{$BIND.ZONE.SECONDARY.MATCHES}'
+          value: '^$'
+          description: 'Regex of secondary zone names for per-zone refresh/expiry discovery. Default matches no zones; use .* to enable all secondary zones.'
         - macro: '{$BIND.ZONE.DNSSEC.MATCHES}'
           value: '^$'
           description: 'Regex of zone names for per-zone DNSSEC counter discovery. Default matches no zones; use .* to enable all zones.'
