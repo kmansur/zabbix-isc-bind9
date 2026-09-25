@@ -10,16 +10,16 @@ A versão 0.1.0 separa a aquisição bruta dos endpoints das métricas cuja sem�
 - uptime do servidor e tempo desde a última configuração;
 - taxas de requests IPv4 e IPv6;
 - taxas de queries descartadas, SERVFAIL e recursão;
-- low-level discovery de `nsstats`, `qtypes`, `rcodes` e `sockstats`;
+- low-level discovery de `nsstats`, `qtypes` autoritativos, `rcodes` e `sockstats` de rede;
+- descoberta do resolver por view para estatísticas, tipos de query recursiva e contadores ADB;
+- métricas de cache do resolver por view: hits/misses, query hits/misses, remoções LRU/TTL, covering NSEC, nós e memória do cache;
+- memória em uso pelo BIND, memória malloced e quantidade de contextos de memória;
 - descoberta de zonas entre as views, incluindo tipo, serial SOA e idade de carregamento;
 - taxas agregadas UDP/TCP de requests e responses derivadas dos histogramas de tráfego do BIND.
 
-## Coletado bruto para implementação em etapas
+## Retenção dos endpoints brutos
 
-- `/json/v1/mem`;
-- `/json/v1/net`.
-
-Esses blocos são coletados sem triggers de produção até que os campos e a semântica estejam validados entre as branches suportadas do BIND.
+Os payloads `/json/v1/mem` e `/json/v1/net` continuam disponíveis como itens mestres de retenção curta. Campos comuns estáveis são convertidos em dependent items, enquanto campos específicos de versão não são promovidos sem evidência de compatibilidade.
 
 ## Modelo de retenção
 
