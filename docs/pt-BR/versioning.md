@@ -5,7 +5,7 @@
 O projeto utiliza Versionamento Semântico.
 
 ```text
-VERSION:        0.1.0
+VERSION:        0.1.1
 STABLE_VERSION: 0.0.0
 ```
 
