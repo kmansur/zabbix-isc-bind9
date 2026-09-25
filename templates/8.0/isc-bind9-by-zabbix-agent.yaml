@@ -1009,6 +1009,207 @@ zabbix_export:
                       }
                   });
                   return JSON.stringify({"data": out});
+        - uuid: bfd4ed4351144bfba8783071a037b3f8
+          name: 'BIND: Secondary zone timer discovery'
+          type: DEPENDENT
+          key: bind.zones.secondary.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: bb55051275b6479582cb2c9e57a16742
+              name: 'BIND zone [{#BIND.VIEW}] {#BIND.ZONE}: Time until expiry'
+              type: DEPENDENT
+              key: 'bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}]'
+              delay: '0'
+              history: 30d
+              units: s
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var d = JSON.parse(value);
+                      var view = "{#BIND.VIEW}";
+                      var name = "{#BIND.ZONE}";
+                      var now = Date.parse(d["current-time"]);
+                      var zones = d.views && d.views[view] ? d.views[view].zones : null;
+                      if (!zones || isNaN(now)) {
+                          throw "BIND zone timing data not available";
+                      }
+                      for (var i = 0; i < zones.length; i++) {
+                          if (zones[i].name === name && zones[i].expires) {
+                              var expires = Date.parse(zones[i].expires);
+                              if (isNaN(expires)) {
+                                  throw "invalid zone expiry timestamp";
+                              }
+                              return Math.floor((expires - now) / 1000);
+                          }
+                      }
+                      throw "zone expiry timestamp not available";
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: zones
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+                - tag: bind-zone
+                  value: '{#BIND.ZONE}'
+              trigger_prototypes:
+                - uuid: 5570c281b4a646b58e65a46d0b7f6444
+                  expression: 'last(/ISC BIND 9 by Zabbix Agent/bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}])<0'
+                  name: 'BIND: Secondary zone {#BIND.ZONE} has expired'
+                  priority: HIGH
+                  description: 'The secondary zone expiry timer is already in the past.'
+                  tags:
+                    - tag: scope
+                      value: availability
+                - uuid: ef14e21ced6b48169491a33cfa656c72
+                  expression: 'last(/ISC BIND 9 by Zabbix Agent/bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}])>=0 and last(/ISC BIND 9 by Zabbix Agent/bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}])<{$BIND.ZONE.EXPIRES.WARN}'
+                  name: 'BIND: Secondary zone {#BIND.ZONE} is approaching expiry'
+                  priority: WARNING
+                  description: 'The secondary zone is approaching its SOA expiry deadline.'
+                  tags:
+                    - tag: scope
+                      value: availability
+            - uuid: 73601bf5a63349d59239193477c01152
+              name: 'BIND zone [{#BIND.VIEW}] {#BIND.ZONE}: Time until refresh'
+              type: DEPENDENT
+              key: 'bind.zone.refresh.in[{#BIND.VIEW},{#BIND.ZONE}]'
+              delay: '0'
+              history: 30d
+              units: s
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var d = JSON.parse(value);
+                      var view = "{#BIND.VIEW}";
+                      var name = "{#BIND.ZONE}";
+                      var now = Date.parse(d["current-time"]);
+                      var zones = d.views && d.views[view] ? d.views[view].zones : null;
+                      if (!zones || isNaN(now)) {
+                          throw "BIND zone timing data not available";
+                      }
+                      for (var i = 0; i < zones.length; i++) {
+                          if (zones[i].name === name && zones[i].refresh) {
+                              var refresh = Date.parse(zones[i].refresh);
+                              if (isNaN(refresh)) {
+                                  throw "invalid zone refresh timestamp";
+                              }
+                              return Math.floor((refresh - now) / 1000);
+                          }
+                      }
+                      throw "zone refresh timestamp not available";
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: zones
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+                - tag: bind-zone
+                  value: '{#BIND.ZONE}'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var out = [];
+                  Object.keys(views).forEach(function (viewName) {
+                      var zones = views[viewName].zones || [];
+                      zones.forEach(function (zone) {
+                          if (zone && zone.name && zone.expires && zone.refresh) {
+                              out.push({
+                                  "{#BIND.VIEW}": viewName,
+                                  "{#BIND.ZONE}": zone.name,
+                                  "{#BIND.ZONE.TYPE}": zone.type || "secondary"
+                              });
+                          }
+                      });
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: 4ea75d86e363496586dc933dfb7204b3
+          name: 'BIND: Zone DNSSEC statistics discovery'
+          type: DEPENDENT
+          key: bind.zones.dnssec.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 81a4d946b9b24573b4537f2d06fef837
+              name: 'BIND zone [{#BIND.VIEW}] {#BIND.ZONE}: DNSSEC {#BIND.DNSSEC.TYPE} {#BIND.COUNTER} per second'
+              type: DEPENDENT
+              key: 'bind.zone.dnssec[{#BIND.VIEW},{#BIND.ZONE},{#BIND.DNSSEC.TYPE},{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var d = JSON.parse(value);
+                      var view = "{#BIND.VIEW}";
+                      var name = "{#BIND.ZONE}";
+                      var blockName = "{#BIND.DNSSEC.TYPE}";
+                      var counter = "{#BIND.COUNTER}";
+                      var zones = d.views && d.views[view] ? d.views[view].zones : null;
+                      if (!zones) {
+                          throw "BIND view not found";
+                      }
+                      for (var i = 0; i < zones.length; i++) {
+                          if (zones[i].name === name) {
+                              var block = zones[i][blockName];
+                              if (block && block[counter] !== undefined) {
+                                  return block[counter];
+                              }
+                          }
+                      }
+                      throw "DNSSEC zone counter not available";
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: dnssec
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+                - tag: bind-zone
+                  value: '{#BIND.ZONE}'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var out = [];
+                  var blocks = ["dnssec-sign", "dnssec-refresh"];
+                  Object.keys(views).forEach(function (viewName) {
+                      var zones = views[viewName].zones || [];
+                      zones.forEach(function (zone) {
+                          blocks.forEach(function (blockName) {
+                              var counters = zone ? zone[blockName] : null;
+                              if (!counters) {
+                                  return;
+                              }
+                              Object.keys(counters).forEach(function (counter) {
+                                  out.push({
+                                      "{#BIND.VIEW}": viewName,
+                                      "{#BIND.ZONE}": zone.name,
+                                      "{#BIND.DNSSEC.TYPE}": blockName,
+                                      "{#BIND.COUNTER}": counter
+                                  });
+                              });
+                          });
+                      });
+                  });
+                  return JSON.stringify({"data": out});
         - uuid: 212a9f620cce41baa16a0f6f11021966
           name: 'BIND: Zone discovery'
           type: DEPENDENT
@@ -1038,6 +1239,7 @@ zabbix_export:
                           }
                       }
                       throw "zone serial not available";
+                  error_handler: DISCARD_VALUE
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
               tags:
@@ -1068,10 +1270,11 @@ zabbix_export:
                       for (var i = 0; i < zones.length; i++) {
                           if (zones[i].name === name && zones[i].loaded) {
                               var loaded = Date.parse(zones[i].loaded);
-                              if (isNaN(loaded)) {
-                                  throw "invalid zone loaded timestamp";
+                              var now = Date.parse(d["current-time"]);
+                              if (isNaN(loaded) || isNaN(now)) {
+                                  throw "invalid zone timing data";
                               }
-                              return Math.max(0, Math.floor((Date.now() - loaded) / 1000));
+                              return Math.max(0, Math.floor((now - loaded) / 1000));
                           }
                       }
                       throw "zone loaded timestamp not available";
@@ -1118,6 +1321,9 @@ zabbix_export:
         - macro: '{$BIND.SERVFAIL.RATE.WARN}'
           value: '5'
           description: 'Average SERVFAIL rate above this value for 5 minutes raises a high-severity problem.'
+        - macro: '{$BIND.ZONE.EXPIRES.WARN}'
+          value: 1h
+          description: 'Warn when a secondary zone is less than this interval away from its SOA expiry deadline.'
         - macro: '{$BIND.STATS.HOST}'
           value: '127.0.0.1'
           description: 'Host portion used by web.page.get[]. Keep the statistics channel on loopback whenever possible.'
