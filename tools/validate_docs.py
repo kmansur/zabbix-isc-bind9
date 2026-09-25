@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-from pathlib import Path
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EN = ROOT / "docs" / "en"
@@ -10,7 +9,9 @@ PT = ROOT / "docs" / "pt-BR"
 def main():
     en_files = {p.name for p in EN.glob("*.md")}
     pt_files = {p.name for p in PT.glob("*.md")}
-    assert en_files == pt_files, f"documentation parity mismatch: EN={sorted(en_files)} PT={sorted(pt_files)}"
+    assert en_files == pt_files, (
+        f"documentation parity mismatch: EN={sorted(en_files)} PT={sorted(pt_files)}"
+    )
 
     pairs = [
         ("README.md", "README.pt-BR.md"),
