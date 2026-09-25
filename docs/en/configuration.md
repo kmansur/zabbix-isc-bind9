@@ -12,6 +12,20 @@
 | `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Dropped-query rate threshold |
 | `{$BIND.SERVFAIL.RATE.WARN}` | `5` | SERVFAIL rate threshold |
 | `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Warning window before a secondary zone expires |
+| `{$BIND.ZONE.SECONDARY.MATCHES}` | `^# Configuration
+
+[Português (Brasil)](../pt-BR/configuration.md)
+
+## Template macros
+
+| Macro | Default | Purpose |
+| --- | --- | --- |
+| `{$BIND.STATS.HOST}` | `127.0.0.1` | Local statistics host |
+| `{$BIND.STATS.PORT}` | `8053` | Statistics TCP port |
+| `{$BIND.STATS.NODATA}` | `10m` | No-data threshold |
+| `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Dropped-query rate threshold |
+| `{$BIND.SERVFAIL.RATE.WARN}` | `5` | SERVFAIL rate threshold |
+ | Regex selecting secondary zones for per-zone refresh/expiry monitoring; default disables discovery |
 | `{$BIND.ZONE.DNSSEC.MATCHES}` | `^# Configuration
 
 [Português (Brasil)](../pt-BR/configuration.md)
