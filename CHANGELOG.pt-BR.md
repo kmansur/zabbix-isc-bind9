@@ -16,6 +16,9 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Métricas de memória do BIND a partir do endpoint nativo de memória.
 
 ### Alterado
+- Removida a descoberta padrão de serial SOA e idade de carregamento para todas as zonas; o template base passa a usar contadores agregados de zonas totais/primárias/secundárias.
+- A descoberta DNSSEC por zona passa a ser opt-in via `{$BIND.ZONE.DNSSEC.MATCHES}` para controlar cardinalidade.
+- Contadores opcionais do BIND com valor zero passam a ser normalizados para zero em vez de ficarem unsupported.
 - Alterado o padrão dos itens mestres de active para passive Zabbix agent checks. Isso remove a dependência de ServerActive e corresponde ao modelo comum do Agent clássico, mantendo compatibilidade com Agent 2.
 
 ### Corrigido
@@ -30,6 +33,6 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Exports versionados para Zabbix 7.0 e 8.0.
 - Baseline de validação do repositório e CI.
 
-## [0.1.1] - 2026-09-25
+## [0.1.2] - 2026-09-25
 
 Candidata inicial de engenharia. Ainda não existe release promovida como estável para produção.
