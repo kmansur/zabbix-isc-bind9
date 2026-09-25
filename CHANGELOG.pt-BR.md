@@ -10,6 +10,7 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Métricas de memória do BIND a partir do endpoint nativo de memória.
 
 ### Corrigido
+- Corrigido `{$BIND.STATS.HOST}` para usar `127.0.0.1` em vez de URL completa quando `web.page.get[]` também fornece path e porta.
 - A descoberta de estatísticas de socket agora utiliza `/json/v1/net`, conforme a semântica do statistics-channel do BIND.
 
 ### Adicionado
