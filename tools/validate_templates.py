@@ -41,7 +41,9 @@ def load_template(version, path):
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
 
     items = template.get("items", [])
-    masters = [item for item in items if item.get("key", "").startswith("web.page.get[")]
+    masters = [
+        item for item in items if item.get("key", "").startswith("web.page.get[")
+    ]
     assert masters, "no web.page.get[] master items found"
 
     for item in items:
