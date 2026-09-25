@@ -30,6 +30,17 @@ def load_template(version, path):
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
 
+    masters = [
+        item
+        for item in template.get("items", [])
+        if item.get("key", "").startswith("web.page.get[")
+    ]
+    assert masters, "no web.page.get[] master items found"
+    for item in masters:
+        assert "type" not in item, (
+            f"passive agent master item must omit type: {item.get('key')}"
+        )
+
     return template
 
 
