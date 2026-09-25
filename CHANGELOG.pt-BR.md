@@ -5,6 +5,7 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 ## [Não publicado]
 
 ### Adicionado
+- Adicionado monitoramento compatível de transferências recebidas do BIND 9.20 via `/json/v1/xfrins`, com indicador de compatibilidade e sem itens unsupported no BIND 9.18.
 - Timers de refresh e expiração de zonas secundárias com prototypes de trigger.
 - Descoberta de contadores DNSSEC de assinatura/refresh somente para zonas que exportam essas estatísticas.
 - Monitoramento do resolver por view, incluindo contadores, tipos de query recursiva e descoberta ADB.
