@@ -11,7 +11,7 @@ ISC BIND 9
    v
 Zabbix Agent / Zabbix Agent 2
    |
-   | active web.page.get[] checks
+   | passive web.page.get[] checks
    v
 Raw master items
    |
