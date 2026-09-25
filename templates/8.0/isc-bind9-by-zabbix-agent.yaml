@@ -29,7 +29,7 @@ zabbix_export:
         Export target: Zabbix 8.0 compatibility candidate.
       vendor:
         name: Net Tech
-        version: 0.1-0
+        version: 0.1-1
       groups:
         - name: Templates/Applications
       items:
