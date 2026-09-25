@@ -28,9 +28,7 @@ def load_template(version, path):
     assert template["vendor"]["version"] == "0.1-0"
 
     for token in FORBIDDEN:
-        assert token not in text, (
-            f"forbidden dependency/control path found: {token!r}"
-        )
+        assert token not in text, f"forbidden dependency/control path found: {token!r}"
 
     return template
 
@@ -49,8 +47,7 @@ def macro_names(template):
 
 def main():
     loaded = {
-        version: load_template(version, path)
-        for version, path in TARGETS.items()
+        version: load_template(version, path) for version, path in TARGETS.items()
     }
 
     assert item_keys(loaded["7.0"]) == item_keys(loaded["8.0"]), (
