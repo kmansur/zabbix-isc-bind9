@@ -15,7 +15,7 @@ zabbix_export:
       description: |
         Security-focused monitoring of ISC BIND 9 through the native HTTP statistics channel.
 
-        Compatible with Zabbix Agent and Zabbix Agent 2. The template intentionally uses only
+        Compatible with Zabbix Agent and Zabbix Agent 2. The template intentionally uses standard passive agent checks and
         standard agent keys and does not require Agent 2 plugins, UserParameter, privileged
         commands, rndc, curl, jq, or external scripts.
 
@@ -35,7 +35,7 @@ zabbix_export:
       items:
         - uuid: fc1ced7cb7114269b89a8e99c52cffc9
           name: 'BIND: Statistics status raw'
-          type: ZABBIX_ACTIVE
+          type: ZABBIX
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
           delay: 30s
           history: 1h
@@ -57,7 +57,7 @@ zabbix_export:
               description: 'No data has been received from the local BIND statistics channel within the configured interval.'
         - uuid: 443e6db2e27443ea813feab8441acf62
           name: 'BIND: Server statistics raw'
-          type: ZABBIX_ACTIVE
+          type: ZABBIX
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
           delay: 30s
           history: 1h
@@ -73,7 +73,7 @@ zabbix_export:
               value: raw
         - uuid: 70a53c2f16934d3d8bf8fad2f90ce827
           name: 'BIND: Zone statistics raw'
-          type: ZABBIX_ACTIVE
+          type: ZABBIX
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
           delay: 5m
           history: 1h
@@ -89,7 +89,7 @@ zabbix_export:
               value: raw
         - uuid: 214c0cd671e24a45bf080beae40be0ea
           name: 'BIND: Memory statistics raw'
-          type: ZABBIX_ACTIVE
+          type: ZABBIX
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/mem","{$BIND.STATS.PORT}"]'
           delay: 1m
           history: 1h
@@ -105,7 +105,7 @@ zabbix_export:
               value: raw
         - uuid: 7bf26f3d319a4e9e841301d8847c5006
           name: 'BIND: Network statistics raw'
-          type: ZABBIX_ACTIVE
+          type: ZABBIX
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
           delay: 1m
           history: 1h
@@ -121,7 +121,7 @@ zabbix_export:
               value: raw
         - uuid: 3f658d65668d46479ff0e8bbbd4fec2c
           name: 'BIND: Traffic statistics raw'
-          type: ZABBIX_ACTIVE
+          type: ZABBIX
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/traffic","{$BIND.STATS.PORT}"]'
           delay: 1m
           history: 1h
