@@ -16,6 +16,9 @@ All notable changes to this project will be documented in this file.
 - BIND memory usage metrics from the native memory statistics endpoint.
 
 ### Changed
+- Removed default all-zone SOA serial and loaded-age discovery; the base template now uses aggregate total/primary/secondary zone counts.
+- Per-zone DNSSEC discovery is opt-in via `{$BIND.ZONE.DNSSEC.MATCHES}` to control cardinality.
+- Optional zero-valued BIND counters are normalized to zero instead of becoming unsupported.
 - Switched the default master items from active to passive Zabbix agent checks. This removes the ServerActive requirement and matches the common classic-agent deployment model while remaining compatible with Agent 2.
 
 ### Fixed
@@ -30,6 +33,6 @@ All notable changes to this project will be documented in this file.
 - Zabbix 7.0 and 8.0 versioned exports.
 - Repository validation and CI baseline.
 
-## [0.1.1] - 2026-09-25
+## [0.1.2] - 2026-09-25
 
 Initial engineering candidate. No production-stable release has been promoted yet.
