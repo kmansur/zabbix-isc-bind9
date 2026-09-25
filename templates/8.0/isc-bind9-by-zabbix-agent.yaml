@@ -1,0 +1,743 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2021 Zabbix
+# Copyright (c) 2026 Karim Mansur / Net Tech
+# Based in part on "bind9 by HTTP-JSON Agent 2 Active" by Gabriele Rossetti (KaleidoscopeIT).
+# See NOTICE.md for attribution and licensing details.
+zabbix_export:
+  version: '8.0'
+  template_groups:
+    - uuid: 09692d9c015440aab7aa667a9639ebc8
+      name: Templates/Applications
+  templates:
+    - uuid: e381e5bdc51445fd9bbe1b1e8ea1eb0d
+      template: 'ISC BIND 9 by Zabbix Agent'
+      name: 'ISC BIND 9 by Zabbix Agent'
+      description: |
+        Security-focused monitoring of ISC BIND 9 through the native HTTP statistics channel.
+
+        Compatible with Zabbix Agent and Zabbix Agent 2. The template intentionally uses only
+        standard agent keys and does not require Agent 2 plugins, UserParameter, privileged
+        commands, rndc, curl, jq, or external scripts.
+
+        Recommended statistics listener:
+        statistics-channels {
+            inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+        };
+
+        Project: https://github.com/kmansur/zabbix-isc-bind9
+        License: MIT. See LICENSE and NOTICE.md.
+        Export target: Zabbix 8.0 compatibility candidate.
+      vendor:
+        name: Net Tech
+        version: 0.1-0
+      groups:
+        - name: Templates/Applications
+      items:
+        - uuid: fc1ced7cb7114269b89a8e99c52cffc9
+          name: 'BIND: Statistics status raw'
+          type: ZABBIX_ACTIVE
+          key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
+          delay: 30s
+          history: 1h
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '(?s)({.*)'
+                - \1
+          tags:
+            - tag: component
+              value: raw
+          triggers:
+            - uuid: d48429e64c854d9b99cfb8aaba9fee7e
+              expression: 'nodata(/ISC BIND 9 by Zabbix Agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+              name: 'BIND: Statistics channel is unavailable'
+              priority: HIGH
+              description: 'No data has been received from the local BIND statistics channel within the configured interval.'
+        - uuid: 443e6db2e27443ea813feab8441acf62
+          name: 'BIND: Server statistics raw'
+          type: ZABBIX_ACTIVE
+          key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          delay: 30s
+          history: 1h
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '(?s)({.*)'
+                - \1
+          tags:
+            - tag: component
+              value: raw
+        - uuid: 70a53c2f16934d3d8bf8fad2f90ce827
+          name: 'BIND: Zone statistics raw'
+          type: ZABBIX_ACTIVE
+          key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+          delay: 5m
+          history: 1h
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '(?s)({.*)'
+                - \1
+          tags:
+            - tag: component
+              value: raw
+        - uuid: 214c0cd671e24a45bf080beae40be0ea
+          name: 'BIND: Memory statistics raw'
+          type: ZABBIX_ACTIVE
+          key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/mem","{$BIND.STATS.PORT}"]'
+          delay: 1m
+          history: 1h
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '(?s)({.*)'
+                - \1
+          tags:
+            - tag: component
+              value: raw
+        - uuid: 7bf26f3d319a4e9e841301d8847c5006
+          name: 'BIND: Network statistics raw'
+          type: ZABBIX_ACTIVE
+          key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+          delay: 1m
+          history: 1h
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '(?s)({.*)'
+                - \1
+          tags:
+            - tag: component
+              value: raw
+        - uuid: 3f658d65668d46479ff0e8bbbd4fec2c
+          name: 'BIND: Traffic statistics raw'
+          type: ZABBIX_ACTIVE
+          key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/traffic","{$BIND.STATS.PORT}"]'
+          delay: 1m
+          history: 1h
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '(?s)({.*)'
+                - \1
+          tags:
+            - tag: component
+              value: raw
+        - uuid: 3df51309864147dc93c9ffe338cfb77d
+          name: 'BIND: Version'
+          type: DEPENDENT
+          key: bind.version
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.version
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: identification
+        - uuid: fc05edeaac914f63aa7daa458214fe97
+          name: 'BIND: JSON statistics version'
+          type: DEPENDENT
+          key: bind.stats.json.version
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$["json-stats-version"]'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: identification
+        - uuid: bea3129156a443ad88ad493ab3ae1db8
+          name: 'BIND: Uptime'
+          type: DEPENDENT
+          key: bind.uptime
+          delay: '0'
+          history: 30d
+          units: uptime
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var now = Date.parse(d["current-time"]);
+                  var boot = Date.parse(d["boot-time"]);
+                  if (isNaN(now) || isNaN(boot)) {
+                      throw "invalid BIND status timestamps";
+                  }
+                  return Math.max(0, Math.floor((now - boot) / 1000));
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: status
+        - uuid: cf7d83b36e1749e58177e08dc4d8c95c
+          name: 'BIND: Time since last configuration'
+          type: DEPENDENT
+          key: bind.config.age
+          delay: '0'
+          history: 30d
+          units: uptime
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var now = Date.parse(d["current-time"]);
+                  var configured = Date.parse(d["config-time"]);
+                  if (isNaN(now) || isNaN(configured)) {
+                      throw "invalid BIND configuration timestamp";
+                  }
+                  return Math.max(0, Math.floor((now - configured) / 1000));
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: status
+        - uuid: 9c8cc662d17c48af84d668e5a220f861
+          name: 'BIND: IPv4 requests per second'
+          type: DEPENDENT
+          key: bind.nsstats.requestv4
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.Requestv4
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: queries
+        - uuid: 6c6eabf6b71c4010b8fa88b4375a9f8c
+          name: 'BIND: IPv6 requests per second'
+          type: DEPENDENT
+          key: bind.nsstats.requestv6
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.Requestv6
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: queries
+        - uuid: 7cfa575242074c178d27c57638338898
+          name: 'BIND: Dropped queries per second'
+          type: DEPENDENT
+          key: bind.nsstats.qrydropped
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.QryDropped
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: queries
+          triggers:
+            - uuid: 6c5c2dacc0034be1801f0ae5553401d0
+              expression: 'avg(/ISC BIND 9 by Zabbix Agent/bind.nsstats.qrydropped,5m)>{$BIND.QRYDROPPED.RATE.WARN}'
+              name: 'BIND: Dropped queries detected'
+              priority: HIGH
+              opdata: '{ITEM.LASTVALUE}'
+        - uuid: c632d2c537614f3880838114a8eb39e9
+          name: 'BIND: SERVFAIL responses per second'
+          type: DEPENDENT
+          key: bind.nsstats.servfail
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.QrySERVFAIL
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: queries
+          triggers:
+            - uuid: c93045208f9847c4a1a503aa4b75a7aa
+              expression: 'avg(/ISC BIND 9 by Zabbix Agent/bind.nsstats.servfail,5m)>{$BIND.SERVFAIL.RATE.WARN}'
+              name: 'BIND: High SERVFAIL response rate'
+              priority: HIGH
+              opdata: '{ITEM.LASTVALUE}'
+        - uuid: 42b093ecf0bc4738a4079a2b31a71178
+          name: 'BIND: Recursive queries per second'
+          type: DEPENDENT
+          key: bind.nsstats.recursion
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.QryRecursion
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: resolver
+        - uuid: b1f3d20f869d46ce8d2d7c6bbd1bf3d6
+          name: 'BIND: UDP requests per second'
+          type: DEPENDENT
+          key: bind.traffic.udp.requests
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var t = d.traffic || {};
+                  function sum(o) {
+                      var total = 0;
+                      Object.keys(o || {}).forEach(function (k) { total += Number(o[k]) || 0; });
+                      return total;
+                  }
+                  return sum(t["dns-udp-requests-sizes-received-ipv4"]) +
+                         sum(t["dns-udp-requests-sizes-received-ipv6"]);
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/traffic","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: traffic
+        - uuid: bc9a05e835d8436b8e6020fc62972549
+          name: 'BIND: TCP requests per second'
+          type: DEPENDENT
+          key: bind.traffic.tcp.requests
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var t = d.traffic || {};
+                  function sum(o) {
+                      var total = 0;
+                      Object.keys(o || {}).forEach(function (k) { total += Number(o[k]) || 0; });
+                      return total;
+                  }
+                  return sum(t["dns-tcp-requests-sizes-received-ipv4"]) +
+                         sum(t["dns-tcp-requests-sizes-received-ipv6"]);
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/traffic","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: traffic
+        - uuid: c4e14c3f227b4d1eadd32845e8c52e63
+          name: 'BIND: UDP responses per second'
+          type: DEPENDENT
+          key: bind.traffic.udp.responses
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var t = d.traffic || {};
+                  function sum(o) {
+                      var total = 0;
+                      Object.keys(o || {}).forEach(function (k) { total += Number(o[k]) || 0; });
+                      return total;
+                  }
+                  return sum(t["dns-udp-responses-sizes-sent-ipv4"]) +
+                         sum(t["dns-udp-responses-sizes-sent-ipv6"]);
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/traffic","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: traffic
+        - uuid: ae96a666465249b7846ee3ad20e69b04
+          name: 'BIND: TCP responses per second'
+          type: DEPENDENT
+          key: bind.traffic.tcp.responses
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          units: qps
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var t = d.traffic || {};
+                  function sum(o) {
+                      var total = 0;
+                      Object.keys(o || {}).forEach(function (k) { total += Number(o[k]) || 0; });
+                      return total;
+                  }
+                  return sum(t["dns-tcp-responses-sizes-sent-ipv4"]) +
+                         sum(t["dns-tcp-responses-sizes-sent-ipv6"]);
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/traffic","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: traffic
+      discovery_rules:
+        - uuid: c8766ef323e8404c9416e47091af90f7
+          name: 'BIND: nsstats discovery'
+          type: DEPENDENT
+          key: bind.nsstats.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 068d1638f0e74ef0aaea4a9a92a7e95a
+              name: 'BIND nsstats: {#BIND.COUNTER} per second'
+              type: DEPENDENT
+              key: 'bind.nsstats[{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.nsstats["{#BIND.COUNTER}"]'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: nsstats
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var counters = d.nsstats || {};
+                  var skip = {
+                      Requestv4: true,
+                      Requestv6: true,
+                      QryDropped: true,
+                      QrySERVFAIL: true,
+                      QryRecursion: true
+                  };
+                  var out = [];
+                  Object.keys(counters).forEach(function (name) {
+                      if (!skip[name]) {
+                          out.push({"{#BIND.COUNTER}": name});
+                      }
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: 1b648b4625424012a66c0947fb8a1ae3
+          name: 'BIND: Query type discovery'
+          type: DEPENDENT
+          key: bind.qtypes.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 781a26aeab6041f18e1e194407a478d6
+              name: 'BIND query type: {#BIND.COUNTER} per second'
+              type: DEPENDENT
+              key: 'bind.qtypes[{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.qtypes["{#BIND.COUNTER}"]'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: qtypes
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var counters = d.qtypes || {};
+                  var out = Object.keys(counters).map(function (name) {
+                      return {"{#BIND.COUNTER}": name};
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: 4198b32f98124f14b53725efb135e8cf
+          name: 'BIND: Response code discovery'
+          type: DEPENDENT
+          key: bind.rcodes.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: a5791ef0e1214e68bacedd678e414d80
+              name: 'BIND response code: {#BIND.COUNTER} per second'
+              type: DEPENDENT
+              key: 'bind.rcodes[{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: qps
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.rcodes["{#BIND.COUNTER}"]'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: rcodes
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var counters = d.rcodes || {};
+                  var out = Object.keys(counters).map(function (name) {
+                      return {"{#BIND.COUNTER}": name};
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: 612aa18b27cc486881922c30b26e2baf
+          name: 'BIND: Socket statistics discovery'
+          type: DEPENDENT
+          key: bind.sockstats.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 900ea0118a5b4241b94cb993734857da
+              name: 'BIND socket statistic: {#BIND.COUNTER} per second'
+              type: DEPENDENT
+              key: 'bind.sockstats[{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.sockstats["{#BIND.COUNTER}"]'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: sockets
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var counters = d.sockstats || {};
+                  var out = Object.keys(counters).map(function (name) {
+                      return {"{#BIND.COUNTER}": name};
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: 212a9f620cce41baa16a0f6f11021966
+          name: 'BIND: Zone discovery'
+          type: DEPENDENT
+          key: bind.zones.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 6975b397426642b39f1a7d67a8cbd4da
+              name: 'BIND zone [{#BIND.VIEW}] {#BIND.ZONE}: SOA serial'
+              type: DEPENDENT
+              key: 'bind.zone.serial[{#BIND.VIEW},{#BIND.ZONE}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var d = JSON.parse(value);
+                      var view = "{#BIND.VIEW}";
+                      var name = "{#BIND.ZONE}";
+                      var zones = d.views && d.views[view] ? d.views[view].zones : null;
+                      if (!zones) {
+                          throw "BIND view not found";
+                      }
+                      for (var i = 0; i < zones.length; i++) {
+                          if (zones[i].name === name && zones[i].serial !== undefined) {
+                              return zones[i].serial;
+                          }
+                      }
+                      throw "zone serial not available";
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: zones
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+                - tag: bind-zone
+                  value: '{#BIND.ZONE}'
+            - uuid: 30bdc6fa69ff46dead90df4e91290c2d
+              name: 'BIND zone [{#BIND.VIEW}] {#BIND.ZONE}: Loaded age'
+              type: DEPENDENT
+              key: 'bind.zone.loaded.age[{#BIND.VIEW},{#BIND.ZONE}]'
+              delay: '0'
+              history: 30d
+              units: uptime
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var d = JSON.parse(value);
+                      var view = "{#BIND.VIEW}";
+                      var name = "{#BIND.ZONE}";
+                      var zones = d.views && d.views[view] ? d.views[view].zones : null;
+                      if (!zones) {
+                          throw "BIND view not found";
+                      }
+                      for (var i = 0; i < zones.length; i++) {
+                          if (zones[i].name === name && zones[i].loaded) {
+                              var loaded = Date.parse(zones[i].loaded);
+                              if (isNaN(loaded)) {
+                                  throw "invalid zone loaded timestamp";
+                              }
+                              return Math.max(0, Math.floor((Date.now() - loaded) / 1000));
+                          }
+                      }
+                      throw "zone loaded timestamp not available";
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: zones
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+                - tag: bind-zone
+                  value: '{#BIND.ZONE}'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var out = [];
+                  Object.keys(views).forEach(function (viewName) {
+                      var zones = views[viewName].zones || [];
+                      zones.forEach(function (zone) {
+                          if (zone && zone.name) {
+                              out.push({
+                                  "{#BIND.VIEW}": viewName,
+                                  "{#BIND.ZONE}": zone.name,
+                                  "{#BIND.ZONE.TYPE}": zone.type || "unknown"
+                              });
+                          }
+                      });
+                  });
+                  return JSON.stringify({"data": out});
+      tags:
+        - tag: class
+          value: software
+        - tag: target
+          value: bind9
+      macros:
+        - macro: '{$BIND.QRYDROPPED.RATE.WARN}'
+          value: '0'
+          description: 'Average dropped-query rate above this value for 5 minutes raises a high-severity problem.'
+        - macro: '{$BIND.SERVFAIL.RATE.WARN}'
+          value: '5'
+          description: 'Average SERVFAIL rate above this value for 5 minutes raises a high-severity problem.'
+        - macro: '{$BIND.STATS.HOST}'
+          value: 'http://127.0.0.1'
+          description: 'Host portion used by web.page.get[]. Keep the statistics channel on loopback whenever possible.'
+        - macro: '{$BIND.STATS.NODATA}'
+          value: 10m
+          description: 'Maximum interval without status statistics before declaring the statistics channel unavailable.'
+        - macro: '{$BIND.STATS.PORT}'
+          value: '8053'
+          description: 'Local BIND statistics-channel TCP port.'
