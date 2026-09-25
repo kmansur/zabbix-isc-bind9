@@ -12,6 +12,7 @@
 | Linux | Agent clássico ou Agent 2 |
 | ISC BIND 9.20 | Alvo principal suportado do BIND |
 | ISC BIND 9.18.50 | Compatibilidade legado; EOL upstream |
+| ISC BIND 9.18.39 no Ubuntu 24.04 | Validação real dos endpoints concluída |
 
 O projeto não afirma suporte a todas as versões históricas do agent. Versões antigas podem funcionar se fornecerem as chaves padrão utilizadas, mas ficam fora da matriz mantida de testes.
 
@@ -19,4 +20,8 @@ O BIND deve possuir suporte às estatísticas JSON. Endpoints e contadores podem
 
 ## Nota de ciclo de vida do BIND
 
-O ISC encerrou a manutenção do BIND 9.18 após a versão 9.18.50 em junho de 2026. O projeto mantém compatibilidade com 9.18.50 para ambientes existentes, enquanto novas validações de produção priorizam a branch ESV 9.20 suportada.
+O ISC encerrou a manutenção do BIND 9.18 após a versão 9.18.50 em junho de 2026. O projeto mantém compatibilidade com 9.18 para ambientes existentes, enquanto novas validações de produção priorizam a branch ESV 9.20 suportada.
+
+## Nota de validação real
+
+Os endpoints JSON `status`, `server`, `zones`, `mem`, `net` e `traffic` foram validados no Ubuntu 24.04 com BIND 9.18.39. O servidor testado expôs os blocos do resolver `stats`, `qtypes`, `cache`, `cachestats` e `adb`, e exportou `sockstats` através de `/json/v1/net`.
