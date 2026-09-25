@@ -16,6 +16,24 @@ All notable changes to this project will be documented in this file.
 - BIND memory usage metrics from the native memory statistics endpoint.
 
 ### Changed
+- Per-zone secondary refresh/expiry discovery is now opt-in via `{$BIND.ZONE.SECONDARY.MATCHES}`; the default `^# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+### Validation
+- Completed a passive-template cleanup audit against the original community template: no active item types, legacy BIND9 macros, legacy LLD macros, legacy port 8653, shared item keys or shared UUIDs remain. The original project name remains only in license attribution.
+
+### Added
+- Added graceful BIND 9.20 incoming-transfer monitoring through `/json/v1/xfrins`, with a compatibility indicator and no unsupported items on BIND 9.18.
+- Secondary-zone refresh and expiry timers with trigger prototypes.
+- DNSSEC signing/refresh counter discovery that only creates items for zones exporting those statistics.
+- Resolver monitoring by view, including resolver counters, recursive query types and ADB discovery.
+- Resolver cache metrics for hits/misses, evictions, cache nodes and cache memory.
+- BIND memory usage metrics from the native memory statistics endpoint.
+
+ creates no per-zone secondary items.
 - Removed default all-zone SOA serial and loaded-age discovery; the base template now uses aggregate total/primary/secondary zone counts.
 - Per-zone DNSSEC discovery is opt-in via `{$BIND.ZONE.DNSSEC.MATCHES}` to control cardinality.
 - Optional zero-valued BIND counters are normalized to zero instead of becoming unsupported.
@@ -33,6 +51,6 @@ All notable changes to this project will be documented in this file.
 - Zabbix 7.0 and 8.0 versioned exports.
 - Repository validation and CI baseline.
 
-## [0.1.2] - 2026-09-25
+## [0.1.3] - 2026-09-25
 
 Initial engineering candidate. No production-stable release has been promoted yet.
