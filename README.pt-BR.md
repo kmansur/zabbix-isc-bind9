@@ -33,7 +33,8 @@ statistics-channels {
 | Zabbix Agent 2 6.0+ | Suportado pelo projeto |
 | FreeBSD | Agent clássico |
 | Linux | Agent clássico ou Agent 2 |
-| ISC BIND 9.18 | Validação principal |
+| ISC BIND 9.20 | Alvo principal suportado |
+| ISC BIND 9.18.50 | Compatibilidade legado (EOL upstream) |
 
 Agents mais antigos podem funcionar se fornecerem as chaves padrão utilizadas pelo template, mas não fazem parte da matriz mantida de testes.
 
