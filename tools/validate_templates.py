@@ -69,6 +69,8 @@ def load_template(version, path):
     macros = {m["macro"]: m.get("value") for m in template.get("macros", [])}
     assert macros["{$BIND.STATS.HOST}"] == "127.0.0.1"
     assert macros["{$BIND.STATS.PORT}"] == "8053"
+    assert macros["{$BIND.ZONE.SECONDARY.MATCHES}"] == "^$"
+    assert macros["{$BIND.ZONE.DNSSEC.MATCHES}"] == "^$"
 
     return template
 
