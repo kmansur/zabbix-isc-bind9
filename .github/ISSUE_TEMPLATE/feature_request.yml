@@ -1,0 +1,37 @@
+name: Feature request / Solicitação de melhoria
+description: Suggest a metric, compatibility improvement or documentation change. / Sugira métrica, compatibilidade ou melhoria de documentação.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: Request / Solicitação
+      description: Describe the desired change. / Descreva a alteração desejada.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Motivação
+      description: Explain the operational value. / Explique o valor operacional.
+    validations:
+      required: true
+
+  - type: input
+    id: endpoint
+    attributes:
+      label: BIND statistics endpoint / Endpoint de estatísticas do BIND
+      placeholder: "/json/v1/server, /json/v1/zones, etc. (optional)"
+    validations:
+      required: false
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Compatibility evidence / Evidência de compatibilidade
+      description: Sanitized BIND version and JSON sample, if applicable. / Versão do BIND e amostra JSON sanitizada, se aplicável.
+    validations:
+      required: false
