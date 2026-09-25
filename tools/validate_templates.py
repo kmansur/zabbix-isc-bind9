@@ -8,7 +8,7 @@ TARGETS = {
     "7.0": ROOT / "templates" / "7.0" / "isc-bind9-by-zabbix-agent.yaml",
     "8.0": ROOT / "templates" / "8.0" / "isc-bind9-by-zabbix-agent.yaml",
 }
-EXPECTED_NAME = "ISC BIND 9 by Zabbix Agent"
+EXPECTED_NAME = "ISC BIND by Zabbix agent"
 FORBIDDEN = (
     "system.run[",
     "type: SCRIPT",
@@ -35,7 +35,7 @@ def load_template(version, path):
     assert template["template"] == EXPECTED_NAME
     assert template["name"] == EXPECTED_NAME
     assert template["vendor"]["name"] == "Net Tech"
-    assert template["vendor"]["version"] == "0.1-3"
+    assert template["vendor"]["version"] == "0.1-4"
 
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
