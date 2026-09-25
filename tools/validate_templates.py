@@ -35,7 +35,7 @@ def load_template(version, path):
     assert template["template"] == EXPECTED_NAME
     assert template["name"] == EXPECTED_NAME
     assert template["vendor"]["name"] == "Net Tech"
-    assert template["vendor"]["version"] == "0.1-2"
+    assert template["vendor"]["version"] == "0.1-3"
 
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
