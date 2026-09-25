@@ -12,6 +12,20 @@
 | `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Limite de queries descartadas |
 | `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Limite de SERVFAIL |
 | `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Janela de aviso antes da expiração de uma zona secundária |
+| `{$BIND.ZONE.SECONDARY.MATCHES}` | `^# Configuração
+
+[English](../en/configuration.md)
+
+## Macros do template
+
+| Macro | Padrão | Finalidade |
+| --- | --- | --- |
+| `{$BIND.STATS.HOST}` | `127.0.0.1` | Host local das estatísticas |
+| `{$BIND.STATS.PORT}` | `8053` | Porta TCP das estatísticas |
+| `{$BIND.STATS.NODATA}` | `10m` | Limite sem dados |
+| `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Limite de queries descartadas |
+| `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Limite de SERVFAIL |
+ | Regex que seleciona zonas secundárias para monitoramento individual de refresh/expiry; o padrão desabilita a descoberta |
 | `{$BIND.ZONE.DNSSEC.MATCHES}` | `^# Configuração
 
 [English](../en/configuration.md)
