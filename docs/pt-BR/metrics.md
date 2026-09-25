@@ -14,7 +14,7 @@ A versão 0.1.0 separa a aquisição bruta dos endpoints das métricas cuja sem�
 - descoberta do resolver por view para estatísticas, tipos de query recursiva e contadores ADB;
 - métricas de cache do resolver por view: hits/misses, query hits/misses, remoções LRU/TTL, covering NSEC, nós e memória do cache;
 - memória em uso pelo BIND, memória malloced e quantidade de contextos de memória;
-- descoberta de zonas entre as views, incluindo tipo, serial SOA e idade de carregamento;
+- contadores agregados de zonas (total, primárias e secundárias), sem criar item para cada zona;
 - timers de refresh/expire de zonas secundárias, com prototypes de alerta para proximidade de expiração e zona expirada;
 - contadores DNSSEC de assinatura e refresh descobertos somente nas zonas que realmente exportam `dnssec-sign`/`dnssec-refresh`;
 - taxas agregadas UDP/TCP de requests e responses derivadas dos histogramas de tráfego do BIND.
@@ -34,3 +34,7 @@ Identidade da zona, serial e timers básicos não exigem contadores completos po
 ## Monitoramento de transferências recebidas
 
 O BIND 9.20 expõe o endpoint JSON `/json/v1/xfrins`. O template comum consulta esse endpoint sem transformar hosts 9.18 em unsupported. Em versões sem o endpoint, `bind.xfrins.supported` retorna `0` e as métricas de transferência permanecem em zero. No BIND 9.20, o template coleta quantidade de transferências ativas/em fila, transferências deferred, bytes atuais e taxa agregada.
+
+## Política de detalhamento por zona
+
+O template base evita deliberadamente descobrir serial SOA e idade de carregamento para todas as zonas. Em servidores autoritativos com centenas ou milhares de zonas, isso aumenta muito a cardinalidade sem oferecer informação de saúde suficiente isoladamente. A expiração de zonas secundárias continua sendo monitorada por zona porque cada secundária pode expirar de forma independente e exige um alerta acionável. Os contadores DNSSEC por zona são opt-in através de `{$BIND.ZONE.DNSSEC.MATCHES}`; o padrão `^$` não descobre nenhuma zona. Use uma expressão regular direcionada ou `.*` apenas quando o detalhamento DNSSEC completo for realmente necessário.
