@@ -11,5 +11,6 @@
 | `{$BIND.STATS.NODATA}` | `10m` | No-data threshold |
 | `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Dropped-query rate threshold |
 | `{$BIND.SERVFAIL.RATE.WARN}` | `5` | SERVFAIL rate threshold |
+| `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Warning window before a secondary zone expires |
 
 Keep the listener on loopback whenever possible. If another local address is required, restrict access with both the BIND ACL and the host/network firewall.
