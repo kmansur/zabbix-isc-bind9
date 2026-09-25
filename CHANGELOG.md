@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Validation
+- Completed a passive-template cleanup audit against the original community template: no active item types, legacy BIND9 macros, legacy LLD macros, legacy port 8653, shared item keys or shared UUIDs remain. The original project name remains only in license attribution.
+
 ### Added
 - Added graceful BIND 9.20 incoming-transfer monitoring through `/json/v1/xfrins`, with a compatibility indicator and no unsupported items on BIND 9.18.
 - Secondary-zone refresh and expiry timers with trigger prototypes.
@@ -27,6 +30,6 @@ All notable changes to this project will be documented in this file.
 - Zabbix 7.0 and 8.0 versioned exports.
 - Repository validation and CI baseline.
 
-## [0.1.0] - 2026-09-25
+## [0.1.1] - 2026-09-25
 
 Initial engineering candidate. No production-stable release has been promoted yet.
