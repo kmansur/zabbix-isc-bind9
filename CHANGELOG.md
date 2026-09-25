@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Added graceful BIND 9.20 incoming-transfer monitoring through `/json/v1/xfrins`, with a compatibility indicator and no unsupported items on BIND 9.18.
 - Secondary-zone refresh and expiry timers with trigger prototypes.
 - DNSSEC signing/refresh counter discovery that only creates items for zones exporting those statistics.
 - Resolver monitoring by view, including resolver counters, recursive query types and ADB discovery.
