@@ -26,7 +26,7 @@ Do not expose this listener to untrusted networks.
 
 ## 3. Configure the Zabbix agent
 
-Use either Zabbix Agent or Zabbix Agent 2. Active checks must work for the host. No custom agent plugin or external parser is required.
+Use either Zabbix Agent or Zabbix Agent 2. Passive checks must work for the host. No custom agent plugin or external parser is required.
 
 ## 4. Import the template
 
