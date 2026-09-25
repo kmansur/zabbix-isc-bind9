@@ -1125,7 +1125,7 @@ zabbix_export:
           value: '5'
           description: 'Average SERVFAIL rate above this value for 5 minutes raises a high-severity problem.'
         - macro: '{$BIND.STATS.HOST}'
-          value: 'http://127.0.0.1'
+          value: '127.0.0.1'
           description: 'Host portion used by web.page.get[]. Keep the statistics channel on loopback whenever possible.'
         - macro: '{$BIND.STATS.NODATA}'
           value: 10m
