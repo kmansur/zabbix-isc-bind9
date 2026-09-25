@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Secondary-zone refresh and expiry timers with trigger prototypes.
+- DNSSEC signing/refresh counter discovery that only creates items for zones exporting those statistics.
 - Resolver monitoring by view, including resolver counters, recursive query types and ADB discovery.
 - Resolver cache metrics for hits/misses, evictions, cache nodes and cache memory.
 - BIND memory usage metrics from the native memory statistics endpoint.
