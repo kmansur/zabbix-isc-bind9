@@ -9,6 +9,9 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Métricas de cache do resolver para hits/misses, evictions, nós e memória do cache.
 - Métricas de memória do BIND a partir do endpoint nativo de memória.
 
+### Alterado
+- Alterado o padrão dos itens mestres de active para passive Zabbix agent checks. Isso remove a dependência de ServerActive e corresponde ao modelo comum do Agent clássico, mantendo compatibilidade com Agent 2.
+
 ### Corrigido
 - Corrigido `{$BIND.STATS.HOST}` para usar `127.0.0.1` em vez de URL completa quando `web.page.get[]` também fornece path e porta.
 - A descoberta de estatísticas de socket agora utiliza `/json/v1/net`, conforme a semântica do statistics-channel do BIND.
