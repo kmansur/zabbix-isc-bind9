@@ -10,6 +10,46 @@
 4. Confirme o funcionamento dos active checks do Zabbix no host.
 5. Confirme que o build do BIND possui suporte às estatísticas JSON.
 
+## Ubuntu 24.04: named funciona, mas o systemd permanece em activating
+
+O BIND pode responder DNS, RNDC e estatísticas enquanto o `systemd` ainda mostra:
+
+```text
+ActiveState=activating
+SubState=start
+```
+
+Quando a unit utiliza `Type=notify`, verifique o log do kernel por bloqueios do AppArmor envolvendo:
+
+```text
+/run/systemd/notify
+/proc/version_signature
+```
+
+Um caso típico é o profile do AppArmor impedir o BIND de enviar o `READY=1` ao systemd. Nesse cenário, o `systemd` espera até `TimeoutStartSec` expirar e reinicia um `named` que estava funcional quando `Restart=on-failure` está habilitado.
+
+Prefira um override local do AppArmor em vez de editar diretamente o profile fornecido pelo pacote:
+
+```text
+/etc/apparmor.d/local/usr.sbin.named
+```
+
+Regras validadas em Ubuntu 24.04:
+
+```text
+/run/systemd/notify w,
+/proc/version_signature r,
+```
+
+Depois da alteração, valide e recarregue o AppArmor, reinicie o BIND e confirme:
+
+```text
+ActiveState=active
+SubState=running
+```
+
+Não conceda capabilities amplas como `sys_admin` apenas para eliminar uma mensagem de auditoria do AppArmor. Adicione permissões somente quando uma função necessária do BIND estiver comprovadamente sendo bloqueada.
+
 ## Item mestre bruto contém cabeçalhos HTTP
 
 O preprocessing mantém o objeto JSON iniciado no primeiro `{`. Se isso falhar, capture um resultado sanitizado do item mestre afetado e informe as versões do BIND e do agent.
