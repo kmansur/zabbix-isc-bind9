@@ -8,7 +8,7 @@ Template Zabbix com foco em segurança para monitoramento do **ISC BIND 9** atra
 
 ## Objetivos
 
-- mesmo template para Zabbix Agent e Zabbix Agent 2;
+- mesmo template para Zabbix Agent e Zabbix Agent 2, usando checks passivos por padrão;
 - statistics-channel restrito ao loopback por padrão;
 - dependent items e LLD para reduzir coleta repetida;
 - nenhuma operação de escrita/controle no BIND;
