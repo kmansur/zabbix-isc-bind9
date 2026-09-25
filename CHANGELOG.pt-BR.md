@@ -4,6 +4,9 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 
 ## [Não publicado]
 
+### Validação
+- Concluída auditoria de limpeza do template passivo contra o template comunitário original: não restam tipos de item ativos, macros BIND9 antigas, macros LLD antigas, porta 8653, keys compartilhadas ou UUIDs compartilhados. O nome do projeto original permanece apenas na atribuição de licença.
+
 ### Adicionado
 - Adicionado monitoramento compatível de transferências recebidas do BIND 9.20 via `/json/v1/xfrins`, com indicador de compatibilidade e sem itens unsupported no BIND 9.18.
 - Timers de refresh e expiração de zonas secundárias com prototypes de trigger.
@@ -27,6 +30,6 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Exports versionados para Zabbix 7.0 e 8.0.
 - Baseline de validação do repositório e CI.
 
-## [0.1.0] - 2026-09-25
+## [0.1.1] - 2026-09-25
 
 Candidata inicial de engenharia. Ainda não existe release promovida como estável para produção.
