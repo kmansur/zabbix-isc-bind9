@@ -35,4 +35,4 @@ Importe o arquivo correspondente ao Zabbix Server:
 - `templates/7.0/isc-bind9-by-zabbix-agent.yaml`
 - `templates/8.0/isc-bind9-by-zabbix-agent.yaml` para validação de compatibilidade
 
-Vincule **ISC BIND 9 by Zabbix Agent** ao host e revise Latest data antes de encaminhar alertas para produção.
+Vincule **ISC BIND by Zabbix agent** ao host e revise Latest data antes de encaminhar alertas para produção.
