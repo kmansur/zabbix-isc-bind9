@@ -130,6 +130,179 @@ zabbix_export:
             - tag: component
               value: raw
 
+        - uuid: 905c6f9e3b7741e493ab3f2feb2e3b51
+          name: 'BIND: Transfer statistics raw'
+          key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
+          delay: 1m
+          history: 1h
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: component
+              value: raw
+        - uuid: 200af6140c9449f8b4dfaedceba2511e
+          name: 'BIND: Transfer statistics endpoint supported'
+          type: DEPENDENT
+          key: bind.xfrins.supported
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  if (!/^HTTP\/\d(?:\.\d)?\s+200\b/m.test(value)) {
+                      return 0;
+                  }
+                  var p = value.indexOf("{");
+                  if (p < 0) {
+                      return 0;
+                  }
+                  try {
+                      var d = JSON.parse(value.substring(p));
+                      return d.views !== undefined ? 1 : 0;
+                  } catch (e) {
+                      return 0;
+                  }
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: transfers
+        - uuid: 3bd77fd257554daf98aa80d60119fb5d
+          name: 'BIND: Incoming transfers active or queued'
+          type: DEPENDENT
+          key: bind.xfrins.count
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var p = value.indexOf("{");
+                  if (p < 0) {
+                      return 0;
+                  }
+                  try {
+                      var d = JSON.parse(value.substring(p));
+                      var total = 0;
+                      Object.keys(d.views || {}).forEach(function (viewName) {
+                          total += (d.views[viewName].xfrins || []).length;
+                      });
+                      return total;
+                  } catch (e) {
+                      return 0;
+                  }
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: transfers
+        - uuid: c1b03b7f206c44e9907dfc439d125e07
+          name: 'BIND: Incoming transfers deferred'
+          type: DEPENDENT
+          key: bind.xfrins.deferred
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var p = value.indexOf("{");
+                  if (p < 0) {
+                      return 0;
+                  }
+                  try {
+                      var d = JSON.parse(value.substring(p));
+                      var total = 0;
+                      Object.keys(d.views || {}).forEach(function (viewName) {
+                          (d.views[viewName].xfrins || []).forEach(function (xfr) {
+                              if (xfr.state === "Deferred") {
+                                  total++;
+                              }
+                          });
+                      });
+                      return total;
+                  } catch (e) {
+                      return 0;
+                  }
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: transfers
+          triggers:
+            - uuid: 52e06f77bf45497cbf7dc9ae6feb4900
+              expression: 'min(/ISC BIND 9 by Zabbix Agent/bind.xfrins.deferred,5m)>0'
+              name: 'BIND: Incoming zone transfer has remained deferred'
+              priority: WARNING
+              description: 'At least one incoming zone transfer has remained in Deferred state for five minutes.'
+        - uuid: 8b491d2b6a9d4108b4b494b1f2aaa92c
+          name: 'BIND: Incoming transfer bytes'
+          type: DEPENDENT
+          key: bind.xfrins.bytes
+          delay: '0'
+          history: 30d
+          units: B
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var p = value.indexOf("{");
+                  if (p < 0) {
+                      return 0;
+                  }
+                  try {
+                      var d = JSON.parse(value.substring(p));
+                      var total = 0;
+                      Object.keys(d.views || {}).forEach(function (viewName) {
+                          (d.views[viewName].xfrins || []).forEach(function (xfr) {
+                              total += Number(xfr.nbytes) || 0;
+                          });
+                      });
+                      return total;
+                  } catch (e) {
+                      return 0;
+                  }
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: transfers
+        - uuid: 93e81ad52ab047b980e82d715769b6f5
+          name: 'BIND: Incoming transfer aggregate rate'
+          type: DEPENDENT
+          key: bind.xfrins.rate
+          delay: '0'
+          history: 30d
+          units: Bps
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var p = value.indexOf("{");
+                  if (p < 0) {
+                      return 0;
+                  }
+                  try {
+                      var d = JSON.parse(value.substring(p));
+                      var total = 0;
+                      Object.keys(d.views || {}).forEach(function (viewName) {
+                          (d.views[viewName].xfrins || []).forEach(function (xfr) {
+                              total += Number(xfr.rate) || 0;
+                          });
+                      });
+                      return total;
+                  } catch (e) {
+                      return 0;
+                  }
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: transfers
         - uuid: 04698aed05a34db58380afe9e45b3b53
           name: 'BIND: Memory in use'
           type: DEPENDENT
