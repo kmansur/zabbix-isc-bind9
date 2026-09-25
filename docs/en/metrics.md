@@ -30,3 +30,7 @@ Raw JSON master items use short history and no trends. Derived numeric items kee
 ## Zone statistics level
 
 Basic zone identity, serial and timer data are available without enabling full per-zone counters. DNSSEC per-zone counters require BIND zone statistics at the `full` level for the relevant zones. The DNSSEC discovery rule remains empty when those blocks are absent, so the common template does not create unsupported DNSSEC items.
+
+## Incoming transfer monitoring
+
+BIND 9.20 exposes the JSON `/json/v1/xfrins` endpoint. The common template polls this endpoint without forcing 9.18 hosts into an unsupported state. On versions without the endpoint, `bind.xfrins.supported` reports `0` and the transfer gauges remain zero. On BIND 9.20, the template collects active/queued transfer count, deferred transfers, current transfer bytes and aggregate transfer rate.
