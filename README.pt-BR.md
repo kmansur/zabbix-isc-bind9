@@ -1,10 +1,10 @@
-# ISC BIND 9 by Zabbix Agent
+# ISC BIND by Zabbix agent
 
 [English](README.md) | **Português (Brasil)**
 
-Template Zabbix com foco em segurança para monitoramento do **ISC BIND 9** através do canal HTTP nativo de estatísticas do BIND. O projeto é compatível com **Zabbix Agent** e **Zabbix Agent 2** e evita dependências exclusivas do Agent 2 ou scripts externos.
+Template Zabbix com foco em segurança para monitoramento do **ISC BIND** através do canal HTTP nativo de estatísticas do BIND. O projeto é compatível com **Zabbix Agent** e **Zabbix Agent 2** e evita dependências exclusivas do Agent 2 ou scripts externos.
 
-> **Status:** a versão `0.1.3` é uma candidata inicial de engenharia e ainda não é uma release estável para produção.
+> **Status:** a versão `0.1.4` é uma candidata inicial de engenharia e ainda não é uma release estável para produção.
 
 ## Objetivos
 
@@ -33,15 +33,15 @@ statistics-channels {
 | Zabbix Agent 2 6.0+ | Suportado pelo projeto |
 | FreeBSD | Agent clássico |
 | Linux | Agent clássico ou Agent 2 |
-| ISC BIND 9.20 | Alvo principal suportado |
-| ISC BIND 9.18.50 | Compatibilidade legado (EOL upstream) |
+| ISC BIND.20 | Alvo principal suportado |
+| ISC BIND.18.50 | Compatibilidade legado (EOL upstream) |
 
 Agents mais antigos podem funcionar se fornecerem as chaves padrão utilizadas pelo template, mas não fazem parte da matriz mantida de testes.
 
 ## Versionamento
 
 ```text
-VERSION:        0.1.3
+VERSION:        0.1.4
 STABLE_VERSION: 0.0.0
 ```
 
