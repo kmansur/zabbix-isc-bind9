@@ -9,7 +9,7 @@ TARGETS = {
     "8.0": ROOT / "templates" / "8.0" / "isc-bind9-by-zabbix-agent.yaml",
 }
 EXPECTED_NAME = "ISC BIND 9 by Zabbix Agent"
-FORBIDDEN = ("system.run[", "UserParameter", "sudo ", " rndc ", " curl ", " jq ")
+FORBIDDEN = ("system.run[", "type: SCRIPT", "type: SSH_AGENT", "type: TELNET")
 
 
 def load_template(version, path):
