@@ -17,6 +17,10 @@ def test_required_root_files():
         "NOTICE.pt-BR.md",
         "CHANGELOG.md",
         "CHANGELOG.pt-BR.md",
+        "CONTRIBUTING.md",
+        "CONTRIBUTING.pt-BR.md",
+        "SECURITY.md",
+        "SECURITY.pt-BR.md",
     ]
     for name in required:
         assert (ROOT / name).is_file(), name
@@ -24,7 +28,8 @@ def test_required_root_files():
 
 def test_template_paths():
     for version in ("7.0", "8.0"):
-        assert (ROOT / "templates" / version / "isc-bind9-by-zabbix-agent.yaml").is_file()
+        path = ROOT / "templates" / version / "isc-bind9-by-zabbix-agent.yaml"
+        assert path.is_file()
 
 
 def test_documentation_language_parity():
