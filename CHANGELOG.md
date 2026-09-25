@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - BIND memory usage metrics from the native memory statistics endpoint.
 
 ### Fixed
+- Corrected `{$BIND.STATS.HOST}` to use `127.0.0.1` instead of a full URL when `web.page.get[]` also supplies path and port parameters.
 - Socket statistics discovery now uses `/json/v1/net`, matching BIND statistics-channel semantics.
 
 ### Added
