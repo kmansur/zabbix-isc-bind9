@@ -1485,16 +1485,7 @@ zabbix_export:
           value: 1h
           description: 'Warn when a secondary zone is less than this interval away from its SOA expiry deadline.'
         - macro: '{$BIND.ZONE.DNSSEC.MATCHES}'
-          value: '^
-          value: '127.0.0.1'
-          description: 'Host portion used by web.page.get[]. Keep the statistics channel on loopback whenever possible.'
-        - macro: '{$BIND.STATS.NODATA}'
-          value: 10m
-          description: 'Maximum interval without status statistics before declaring the statistics channel unavailable.'
-        - macro: '{$BIND.STATS.PORT}'
-          value: '8053'
-          description: 'Local BIND statistics-channel TCP port.'
-
+          value: '^$'
           description: 'Regex of zone names for per-zone DNSSEC counter discovery. Default matches no zones; use .* to enable all zones.'
         - macro: '{$BIND.STATS.HOST}'
           value: '127.0.0.1'
