@@ -8,7 +8,7 @@
 
 A security-focused Zabbix template for monitoring **ISC BIND 9** through the native BIND HTTP statistics channel. The design is compatible with both **Zabbix Agent** and **Zabbix Agent 2** and intentionally avoids Agent 2-only plugins, external scripts, sudo, `rndc`, `curl` and `jq`.
 
-> **Development status:** version `0.1.0` is an initial engineering candidate and is not yet a production-stable release.
+> **Development status:** version `0.1.1` is an initial engineering candidate and is not yet a production-stable release.
 
 ## Design goals
 
@@ -98,7 +98,7 @@ python tools/validate_docs.py
 The project uses Semantic Versioning.
 
 ```text
-VERSION:        0.1.0
+VERSION:        0.1.1
 STABLE_VERSION: 0.0.0
 ```
 
