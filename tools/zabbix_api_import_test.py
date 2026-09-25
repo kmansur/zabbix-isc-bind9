@@ -10,8 +10,8 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-TEMPLATE_HOST = "ISC BIND 9 by Zabbix Agent"
-TEMPLATE_NAME = "ISC BIND 9 by Zabbix Agent"
+TEMPLATE_HOST = "ISC BIND by Zabbix agent"
+TEMPLATE_NAME = "ISC BIND by Zabbix agent"
 
 
 def call_api(url: str, method: str, params: Any, token: str | None = None) -> Any:
