@@ -14,7 +14,7 @@ Version 0.1.0 separates raw endpoint acquisition from metrics whose semantics ha
 - resolver discovery by view for resolver statistics, recursive query types and ADB counters;
 - resolver cache metrics per view: hits/misses, query hits/misses, LRU/TTL deletions, covering NSEC, cache nodes and cache memory;
 - BIND memory in use, malloced memory and memory-context count;
-- zone discovery across views, including zone type, SOA serial and loaded age;
+- aggregate zone counts (total, primary and secondary) without creating an item for every zone;
 - secondary-zone refresh/expiry timers with expiry warning/expired trigger prototypes;
 - DNSSEC signing and refresh counters discovered only for zones that actually export `dnssec-sign`/`dnssec-refresh` statistics;
 - aggregate UDP/TCP request and response rates derived from BIND traffic histograms.
@@ -34,3 +34,7 @@ Basic zone identity, serial and timer data are available without enabling full p
 ## Incoming transfer monitoring
 
 BIND 9.20 exposes the JSON `/json/v1/xfrins` endpoint. The common template polls this endpoint without forcing 9.18 hosts into an unsupported state. On versions without the endpoint, `bind.xfrins.supported` reports `0` and the transfer gauges remain zero. On BIND 9.20, the template collects active/queued transfer count, deferred transfers, current transfer bytes and aggregate transfer rate.
+
+## Per-zone detail policy
+
+The base template intentionally avoids discovering SOA serial and loaded age for every zone. On authoritative servers with hundreds or thousands of zones, those items add substantial cardinality while providing little standalone health information. Secondary-zone expiry monitoring remains per-zone because an individual secondary can expire independently and requires an actionable alert. Per-zone DNSSEC counters are opt-in through `{$BIND.ZONE.DNSSEC.MATCHES}`; the default `^$` discovers none. Set it to a targeted regular expression, or `.*` only when full per-zone DNSSEC detail is explicitly required.
