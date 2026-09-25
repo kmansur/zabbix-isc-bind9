@@ -29,12 +29,12 @@ The initial candidate includes:
 - IPv4 and IPv6 request rates;
 - dropped-query, SERVFAIL and recursion rates;
 - automatic discovery of `nsstats`, query types, response codes and socket counters;
-- zone discovery across BIND views, including zone type, SOA serial and loaded age;
+- aggregate zone counts (total, primary and secondary), with optional per-zone secondary/DNSSEC discovery;
 - local collection of the `status`, `server`, `zones`, `mem`, `net` and `traffic` JSON endpoints;
 - UDP/TCP traffic-rate aggregation from BIND traffic histograms;
 - availability and operational triggers for the statistics channel and critical DNS counters.
 
-Additional resolver/cache/DNSSEC, memory and network-derived metrics will be promoted only after their JSON semantics are validated across supported BIND branches.
+Resolver, cache, DNSSEC, memory, network and transfer metrics are included where their semantics have been validated across the supported BIND branches.
 
 ## Security model
 
@@ -60,8 +60,8 @@ No control operation is required by the template.
 | Zabbix Agent 2 6.0+ | Supported design target |
 | FreeBSD | Supported with classic Zabbix Agent |
 | Linux | Supported with Zabbix Agent or Agent 2 |
-| ISC BIND.20 | Primary supported validation target |
-| ISC BIND.18.50 | Legacy compatibility target (EOL upstream) |
+| ISC BIND 9.20 | Primary supported validation target |
+| ISC BIND 9.18.50 | Legacy compatibility target (EOL upstream) |
 | ISC BIND newer supported branches | Compatibility target |
 
 Older agents may work when they provide the required standard `web.page.get[]` key, but they are not part of the project's maintained test matrix.
