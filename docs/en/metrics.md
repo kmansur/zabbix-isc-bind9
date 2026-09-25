@@ -15,6 +15,8 @@ Version 0.1.0 separates raw endpoint acquisition from metrics whose semantics ha
 - resolver cache metrics per view: hits/misses, query hits/misses, LRU/TTL deletions, covering NSEC, cache nodes and cache memory;
 - BIND memory in use, malloced memory and memory-context count;
 - zone discovery across views, including zone type, SOA serial and loaded age;
+- secondary-zone refresh/expiry timers with expiry warning/expired trigger prototypes;
+- DNSSEC signing and refresh counters discovered only for zones that actually export `dnssec-sign`/`dnssec-refresh` statistics;
 - aggregate UDP/TCP request and response rates derived from BIND traffic histograms.
 
 ## Raw endpoint retention
@@ -24,3 +26,7 @@ The `/json/v1/mem` and `/json/v1/net` payloads remain available as short-retenti
 ## Retention model
 
 Raw JSON master items use short history and no trends. Derived numeric items keep normal history/trends so the raw payload does not unnecessarily increase the Zabbix database footprint.
+
+## Zone statistics level
+
+Basic zone identity, serial and timer data are available without enabling full per-zone counters. DNSSEC per-zone counters require BIND zone statistics at the `full` level for the relevant zones. The DNSSEC discovery rule remains empty when those blocks are absent, so the common template does not create unsupported DNSSEC items.
