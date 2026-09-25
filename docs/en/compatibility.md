@@ -12,6 +12,7 @@
 | Linux | Classic agent or Agent 2 |
 | ISC BIND 9.20 | Primary supported BIND validation target |
 | ISC BIND 9.18.50 | Legacy compatibility target; upstream EOL |
+| ISC BIND 9.18.39 on Ubuntu 24.04 | Runtime statistics endpoint validation completed |
 
 The project does not claim support for every historical agent version. Older agents can work if the standard keys used by the template are available, but they are outside the maintained test matrix.
 
@@ -19,4 +20,8 @@ BIND builds must provide JSON statistics support. Endpoint availability and indi
 
 ## BIND lifecycle note
 
-ISC ended maintenance for BIND 9.18 after 9.18.50 in June 2026. The project keeps 9.18.50 compatibility for existing deployments, while new production validation prioritizes the supported 9.20 ESV branch.
+ISC ended maintenance for BIND 9.18 after 9.18.50 in June 2026. The project keeps 9.18 compatibility for existing deployments, while new production validation prioritizes the supported 9.20 ESV branch.
+
+## Runtime validation note
+
+The `status`, `server`, `zones`, `mem`, `net` and `traffic` JSON endpoints were validated on Ubuntu 24.04 with BIND 9.18.39. The tested server exposed resolver blocks containing `stats`, `qtypes`, `cache`, `cachestats` and `adb`, and exported `sockstats` through `/json/v1/net`.
