@@ -42,3 +42,20 @@
  | Regex selecting zones for per-zone DNSSEC detail; default disables discovery |
 
 Keep the listener on loopback whenever possible. If another local address is required, restrict access with both the BIND ACL and the host/network firewall.
+
+
+## Native DNS health checks
+
+The template validates the DNS service itself independently of the statistics channel.
+
+| Macro | Default | Purpose |
+| --- | --- | --- |
+| `{$BIND.DNS.TEST.SERVER}` | `127.0.0.1` | DNS server address queried by the agent |
+| `{$BIND.DNS.TEST.NAME}` | `localhost` | DNS name used for the test query |
+| `{$BIND.DNS.TEST.TYPE}` | `A` | DNS record type |
+| `{$BIND.DNS.TEST.TIMEOUT}` | `1` | Per-attempt timeout in seconds |
+| `{$BIND.DNS.TEST.COUNT}` | `2` | Query attempts |
+| `{$BIND.DNS.FAIL.WINDOW}` | `3m` | Continuous failure window before an availability problem |
+| `{$BIND.DNS.RESPONSE.WARN}` | `0.1` | Average response-time warning threshold in seconds |
+
+The default `localhost/A` query is intended as a low-cost local service check. Override the name/type on hosts where the monitored BIND instance does not answer that query.
