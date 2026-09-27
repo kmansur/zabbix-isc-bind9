@@ -1,0 +1,59 @@
+{
+  "bind_version": "9.20.29",
+  "server": {
+    "json-stats-version": "1.8",
+    "views": {
+      "_default": {
+        "resolver": {
+          "stats": {"Queryv4": 10},
+          "qtypes": {"A": 10},
+          "cache": {"A": 1},
+          "cachestats": {
+            "CacheHits": 8,
+            "CacheMisses": 2,
+            "QueryHits": 8,
+            "QueryMisses": 2,
+            "DeleteLRU": 0,
+            "DeleteTTL": 0,
+            "CoveringNSEC": 0,
+            "CacheNodes": 12,
+            "CacheNSECNodes": 1,
+            "CacheBuckets": 1024,
+            "TreeMemInUse": 16384,
+            "HeapMemInUse": 8192
+          },
+          "adb": {"nentries": 2}
+        }
+      }
+    }
+  },
+  "xfrins": {
+    "json-stats-version": "1.8",
+    "views": {
+      "_default": {
+        "xfrins": [
+          {
+            "name": "secondary.example",
+            "state": "Running",
+            "firstrefresh": false,
+            "serial": 2026092502,
+            "nmsg": 4,
+            "nrecs": 120,
+            "nbytes": 24576,
+            "rate": 8192
+          },
+          {
+            "name": "waiting.example",
+            "state": "Deferred",
+            "firstrefresh": true,
+            "serial": 0,
+            "nmsg": 0,
+            "nrecs": 0,
+            "nbytes": 0,
+            "rate": 0
+          }
+        ]
+      }
+    }
+  }
+}
