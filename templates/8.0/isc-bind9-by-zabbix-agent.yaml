@@ -1687,6 +1687,14 @@ zabbix_export:
         - macro: '{$BIND.STATS.PORT}'
           value: '8053'
           description: 'Local BIND statistics-channel TCP port.'
+      valuemaps:
+        - uuid: a58ec67a532145548749f0922206d07c
+          name: 'BIND service state'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
       dashboards:
         - uuid: 2d74337d7f9d4a079c132de75522b6a1
           name: 'ISC BIND: Overview'
