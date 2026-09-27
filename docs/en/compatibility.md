@@ -30,3 +30,8 @@ The `status`, `server`, `zones`, `mem`, `net` and `traffic` JSON endpoints were 
 ## Zabbix 8.0 development validation
 
 The 8.0 export is continuously imported in CI against the official Zabbix trunk Docker images, which are the development line for Zabbix 8.0. This validates schema/import compatibility before a stable 8.0 release exists. Runtime behavior is still considered pre-release until validated against an official stable 8.0 build.
+
+
+## BIND JSON contract fixtures
+
+The repository includes representative JSON fixtures for BIND 9.18 and 9.20. Pytest validates the structural contracts used by preprocessing and discovery, including resolver/cache blocks, socket statistics, memory fields, traffic histograms, secondary-zone timers and the 9.20 incoming-transfer endpoint. These fixtures complement, rather than replace, runtime validation against real BIND servers.
