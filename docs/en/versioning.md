@@ -5,7 +5,7 @@
 The project uses Semantic Versioning.
 
 ```text
-VERSION:        0.3.0
+VERSION:        0.4.0
 STABLE_VERSION: 0.0.0
 ```
 
