@@ -25,3 +25,8 @@ O ISC encerrou a manutenção do BIND 9.18 após a versão 9.18.50 em junho de 2
 ## Nota de validação real
 
 Os endpoints JSON `status`, `server`, `zones`, `mem`, `net` e `traffic` foram validados no Ubuntu 24.04 com BIND 9.18.39. O servidor testado expôs os blocos do resolver `stats`, `qtypes`, `cache`, `cachestats` e `adb`, e exportou `sockstats` através de `/json/v1/net`.
+
+
+## Validação de desenvolvimento no Zabbix 8.0
+
+O export 8.0 é importado continuamente no CI contra as imagens Docker oficiais trunk do Zabbix, que correspondem à linha de desenvolvimento do Zabbix 8.0. Isso valida compatibilidade de schema/import antes da existência de uma versão 8.0 estável. O comportamento em runtime continua sendo considerado pré-release até a validação contra uma build oficial estável do 8.0.
