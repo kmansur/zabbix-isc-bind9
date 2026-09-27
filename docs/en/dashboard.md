@@ -16,6 +16,8 @@ The first page is intended for day-to-day operations. It includes:
 - uptime;
 - total, primary and secondary zone counts;
 - memory in use;
+- DNS UDP/TCP state;
+- local DNS response-time graph;
 - query-rate graph;
 - query-error graph;
 - DNS transport traffic graph;
