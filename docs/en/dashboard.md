@@ -42,6 +42,7 @@ The navigators use template item tags, so counters discovered by LLD appear auto
 This page focuses on recursive resolver behavior and resource-level diagnostics:
 
 - resolver counters grouped by BIND view;
+- resolver-cache graph prototypes per view for hit/miss rates, cache memory and cache nodes;
 - socket statistics;
 - memory graph;
 - zone inventory;
