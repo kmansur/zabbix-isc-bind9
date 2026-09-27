@@ -1,0 +1,128 @@
+{
+  "bind_version": "9.18.39",
+  "status": {
+    "json-stats-version": "1.7",
+    "version": "9.18.39-0ubuntu0.24.04.7-Ubuntu"
+  },
+  "server": {
+    "json-stats-version": "1.7",
+    "nsstats": {
+      "Requestv4": 1200,
+      "Requestv6": 150,
+      "QryDropped": 0,
+      "QrySERVFAIL": 3,
+      "QryRecursion": 870
+    },
+    "qtypes": {
+      "A": 900,
+      "AAAA": 250
+    },
+    "rcodes": {
+      "NOERROR": 1100,
+      "SERVFAIL": 3,
+      "NXDOMAIN": 97
+    },
+    "views": {
+      "_default": {
+        "resolver": {
+          "stats": {
+            "Queryv4": 700,
+            "Queryv6": 80
+          },
+          "qtypes": {
+            "A": 500,
+            "AAAA": 180
+          },
+          "cache": {
+            "A": 4,
+            "AAAA": 2
+          },
+          "cachestats": {
+            "CacheHits": 400,
+            "CacheMisses": 120,
+            "QueryHits": 390,
+            "QueryMisses": 130,
+            "DeleteLRU": 2,
+            "DeleteTTL": 8,
+            "CoveringNSEC": 0,
+            "CacheNodes": 320,
+            "CacheNSECNodes": 12,
+            "CacheBuckets": 1024,
+            "TreeMemTotal": 524288,
+            "TreeMemInUse": 360000,
+            "TreeMemMax": 524288,
+            "HeapMemTotal": 262144,
+            "HeapMemInUse": 180000,
+            "HeapMemMax": 262144
+          },
+          "adb": {
+            "nentries": 24,
+            "entriescnt": 24
+          }
+        }
+      }
+    }
+  },
+  "net": {
+    "json-stats-version": "1.7",
+    "sockstats": {
+      "UDP4Open": 12,
+      "UDP6Open": 8,
+      "TCP4Open": 5,
+      "TCP6Open": 3
+    }
+  },
+  "mem": {
+    "json-stats-version": "1.7",
+    "memory": {
+      "TotalUse": 35000000,
+      "InUse": 33000000,
+      "Malloced": 33200000,
+      "ContextSize": 4096,
+      "Lost": 0,
+      "contexts": {
+        "1": {"name": "main", "total": 12000000},
+        "2": {"name": "resolver", "total": 21000000}
+      }
+    }
+  },
+  "traffic": {
+    "json-stats-version": "1.7",
+    "traffic": {
+      "dns-udp-requests-sizes-received-ipv4": {"0-15": 100, "16-31": 200},
+      "dns-udp-requests-sizes-received-ipv6": {"0-15": 10},
+      "dns-tcp-requests-sizes-received-ipv4": {"0-15": 20},
+      "dns-tcp-requests-sizes-received-ipv6": {"0-15": 2},
+      "dns-udp-responses-sizes-sent-ipv4": {"0-15": 95, "16-31": 190},
+      "dns-udp-responses-sizes-sent-ipv6": {"0-15": 9},
+      "dns-tcp-responses-sizes-sent-ipv4": {"0-15": 18},
+      "dns-tcp-responses-sizes-sent-ipv6": {"0-15": 2}
+    }
+  },
+  "zones": {
+    "json-stats-version": "1.7",
+    "current-time": "2026-09-25T19:05:49.389Z",
+    "views": {
+      "_default": {
+        "zones": [
+          {
+            "name": "example.test",
+            "class": "IN",
+            "serial": 2026092501,
+            "type": "primary",
+            "loaded": "2026-09-25T18:36:26.000Z"
+          },
+          {
+            "name": "secondary.example",
+            "class": "IN",
+            "serial": 2026092502,
+            "type": "secondary",
+            "loaded": "2026-09-25T18:36:26.000Z",
+            "refresh": "2026-09-25T20:00:00.000Z",
+            "expires": "2026-10-02T18:36:26.000Z"
+          }
+        ]
+      }
+    }
+  }
+}
