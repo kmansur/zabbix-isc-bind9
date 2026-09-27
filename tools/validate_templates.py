@@ -91,6 +91,18 @@ def load_template(version, path):
     }
     assert graph_names == expected_graphs, "unexpected graph set"
 
+    cache_rule = next(
+        rule
+        for rule in template.get("discovery_rules", [])
+        if rule.get("key") == "bind.resolver.cache.discovery"
+    )
+    cache_graphs = {graph["name"] for graph in cache_rule.get("graph_prototypes", [])}
+    assert cache_graphs == {
+        "BIND cache [{#BIND.VIEW}]: Hit and miss rates",
+        "BIND cache [{#BIND.VIEW}]: Memory",
+        "BIND cache [{#BIND.VIEW}]: Nodes",
+    }
+
     return template
 
 
