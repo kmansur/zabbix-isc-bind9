@@ -72,6 +72,25 @@ def load_template(version, path):
     assert macros["{$BIND.ZONE.SECONDARY.MATCHES}"] == "^$"
     assert macros["{$BIND.ZONE.DNSSEC.MATCHES}"] == "^$"
 
+    dashboards = template.get("dashboards", [])
+    assert len(dashboards) == 1, "expected exactly one template dashboard"
+    assert dashboards[0]["name"] == "ISC BIND: Overview"
+    page_names = [page.get("name", "") for page in dashboards[0].get("pages", [])]
+    assert page_names == ["Overview", "DNS activity", "Resolver & resources"]
+
+    graph_names = {graph["name"] for graph in export.get("graphs", [])}
+    expected_graphs = {
+        "BIND: Query rates",
+        "BIND: Query errors",
+        "BIND: DNS transport traffic",
+        "BIND: Memory usage",
+        "BIND: Zone inventory",
+        "BIND: Incoming transfers",
+        "BIND: Incoming transfer rate",
+        "BIND: Server timing",
+    }
+    assert graph_names == expected_graphs, "unexpected graph set"
+
     return template
 
 
