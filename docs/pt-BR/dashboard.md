@@ -42,6 +42,7 @@ Os navegadores usam as tags dos itens do template. Assim, novos contadores desco
 Esta página concentra o resolver recursivo e diagnósticos de recursos:
 
 - contadores do resolver agrupados por view do BIND;
+- graph prototypes do cache por view para hits/misses, memória e quantidade de nós;
 - estatísticas de sockets;
 - gráfico de memória;
 - inventário de zonas;
