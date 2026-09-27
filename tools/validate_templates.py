@@ -44,7 +44,9 @@ def load_template(version, path):
     passive_items = [
         item
         for item in items
-        if item.get("key", "").startswith(("web.page.get[", "net.dns[", "net.dns.perf["))
+        if item.get("key", "").startswith(
+            ("web.page.get[", "net.dns[", "net.dns.perf[")
+        )
     ]
     assert passive_items, "no passive agent items found"
 
