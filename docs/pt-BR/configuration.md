@@ -42,3 +42,20 @@
  | Regex que seleciona zonas para detalhamento DNSSEC por zona; o padrão desabilita a descoberta |
 
 Mantenha o listener no loopback sempre que possível. Se outro endereço local for necessário, restrinja o acesso pela ACL do BIND e pelos firewalls do host/rede.
+
+
+## Verificações nativas de saúde do DNS
+
+O template valida o serviço DNS de forma independente do statistics-channel.
+
+| Macro | Padrão | Finalidade |
+| --- | --- | --- |
+| `{$BIND.DNS.TEST.SERVER}` | `127.0.0.1` | Endereço DNS consultado pelo agent |
+| `{$BIND.DNS.TEST.NAME}` | `localhost` | Nome DNS usado na consulta de teste |
+| `{$BIND.DNS.TEST.TYPE}` | `A` | Tipo de registro DNS |
+| `{$BIND.DNS.TEST.TIMEOUT}` | `1` | Timeout por tentativa em segundos |
+| `{$BIND.DNS.TEST.COUNT}` | `2` | Quantidade de tentativas |
+| `{$BIND.DNS.FAIL.WINDOW}` | `3m` | Janela contínua de falha antes do problema de disponibilidade |
+| `{$BIND.DNS.RESPONSE.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta em segundos |
+
+A consulta padrão `localhost/A` é um teste local de baixo custo. Altere nome/tipo no host caso o BIND monitorado não responda essa consulta.
