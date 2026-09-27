@@ -9,6 +9,8 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - O CI valida Python 3.11, 3.13 e 3.14, estrutura do template, documentação bilíngue e importação limpa no Zabbix 7.0.
 
 ### Adicionado
+- Adicionadas verificações nativas de disponibilidade real do serviço DNS via UDP/TCP e tempo de resposta usando `net.dns` e `net.dns.perf`.
+- Adicionado o gráfico `BIND: DNS query response time` e value map de estado do serviço.
 - Adicionados oito gráficos clássicos reutilizáveis e a dashboard nativa de três páginas `ISC BIND: Overview`.
 - Adicionados navegadores dinâmicos na dashboard para query types, response codes, nsstats, resolver, sockets e itens relacionados a zonas.
 - Adicionados graph prototypes do cache do resolver por view para hits/misses, memória e quantidade de nós.
@@ -21,6 +23,8 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Contadores agregados para zonas totais, primárias e secundárias.
 
 ### Alterado
+- A indisponibilidade do statistics-channel passa a ser Warning porque a disponibilidade do serviço DNS é monitorada independentemente.
+- Anomalias de SERVFAIL e queries descartadas passam a Warning e dependem da disponibilidade do statistics-channel.
 - Renomeado o template de `ISC BIND 9 by Zabbix Agent` para `ISC BIND by Zabbix agent`. O nome do repositório permanece inalterado.
 - A descoberta individual de refresh/expiry das zonas secundárias passa a ser opt-in via `{$BIND.ZONE.SECONDARY.MATCHES}`; o padrão `^$` não cria itens individuais por zona secundária.
 - Removida a descoberta padrão de serial SOA e idade de carregamento para todas as zonas; o template base passa a usar contadores agregados de zonas totais/primárias/secundárias.
@@ -32,6 +36,6 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Corrigido `{$BIND.STATS.HOST}` para usar `127.0.0.1` em vez de URL completa quando `web.page.get[]` também fornece path e porta.
 - A descoberta de estatísticas de socket agora utiliza `/json/v1/net`, conforme a semântica do statistics-channel do BIND.
 
-## [0.2.0] - 2026-09-27
+## [0.3.0] - 2026-09-27
 
 Candidata de engenharia com dashboard/gráficos. Ainda não existe release promovida como estável para produção.
