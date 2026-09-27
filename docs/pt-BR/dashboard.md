@@ -16,6 +16,8 @@ A primeira página foi pensada para operação diária. Ela inclui:
 - uptime;
 - quantidade total de zonas, primárias e secundárias;
 - memória em uso;
+- estado DNS UDP/TCP;
+- gráfico de tempo de resposta DNS local;
 - gráfico de taxa de queries;
 - gráfico de erros de query;
 - gráfico de tráfego DNS UDP/TCP;
