@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - CI validates Python 3.11, 3.13 and 3.14, template structure, bilingual documentation and a fresh import into Zabbix 7.0.
 
 ### Added
+- Added eight reusable classic graphs and the native three-page `ISC BIND: Overview` template dashboard.
+- Added dynamic dashboard navigators for query types, response codes, nsstats, resolver counters, socket statistics and zone-related items.
 - Added graceful BIND 9.20 incoming-transfer monitoring through `/json/v1/xfrins`, with a compatibility indicator and no unsupported items on BIND 9.18.
 - Secondary-zone refresh and expiry timers with trigger prototypes.
 - DNSSEC signing/refresh counter discovery for zones exporting `dnssec-sign`/`dnssec-refresh`.
@@ -29,6 +31,6 @@ All notable changes to this project will be documented in this file.
 - Corrected `{$BIND.STATS.HOST}` to use `127.0.0.1` instead of a full URL when `web.page.get[]` also supplies path and port parameters.
 - Socket statistics discovery now uses `/json/v1/net`, matching BIND statistics-channel semantics.
 
-## [0.1.4] - 2026-09-25
+## [0.2.0] - 2026-09-27
 
-Current engineering candidate. No production-stable release has been promoted yet.
+Dashboard/graph engineering candidate. No production-stable release has been promoted yet.
