@@ -4,7 +4,7 @@
 
 Template Zabbix com foco em segurança para monitoramento do **ISC BIND** através do canal HTTP nativo de estatísticas do BIND. O projeto é compatível com **Zabbix Agent** e **Zabbix Agent 2** e evita dependências exclusivas do Agent 2 ou scripts externos.
 
-> **Status:** a versão `0.2.0` é uma candidata inicial de engenharia e ainda não é uma release estável para produção.
+> **Status:** a versão `0.3.0` é uma candidata inicial de engenharia e ainda não é uma release estável para produção.
 
 ## Objetivos
 
@@ -38,12 +38,12 @@ statistics-channels {
 
 Agents mais antigos podem funcionar se fornecerem as chaves padrão utilizadas pelo template, mas não fazem parte da matriz mantida de testes.
 
-A versão 0.2.0 inclui oito gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
+A versão 0.3.0 inclui oito gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
 
 ## Versionamento
 
 ```text
-VERSION:        0.2.0
+VERSION:        0.3.0
 STABLE_VERSION: 0.0.0
 ```
 
