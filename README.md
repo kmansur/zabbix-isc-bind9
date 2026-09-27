@@ -32,6 +32,7 @@ The initial candidate includes:
 - aggregate zone counts (total, primary and secondary), with optional per-zone secondary/DNSSEC discovery;
 - local collection of the `status`, `server`, `zones`, `mem`, `net` and `traffic` JSON endpoints;
 - UDP/TCP traffic-rate aggregation from BIND traffic histograms;
+- native UDP/TCP DNS availability and response-time checks through standard Zabbix agent keys;
 - availability and operational triggers for the statistics channel and critical DNS counters;
 - eight reusable classic graphs and a native three-page Zabbix dashboard.
 
