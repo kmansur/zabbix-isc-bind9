@@ -35,3 +35,8 @@ The 8.0 export is continuously imported in CI against the official Zabbix trunk 
 ## BIND JSON contract fixtures
 
 The repository includes representative JSON fixtures for BIND 9.18 and 9.20. Pytest validates the structural contracts used by preprocessing and discovery, including resolver/cache blocks, socket statistics, memory fields, traffic histograms, secondary-zone timers and the 9.20 incoming-transfer endpoint. These fixtures complement, rather than replace, runtime validation against real BIND servers.
+
+
+## Live BIND container validation
+
+CI starts the official ISC Docker images for BIND 9.18 and 9.20 with a minimal statistics-channel configuration and validates the live JSON endpoints used by the template. The 9.18 job verifies that `/json/v1/xfrins` is absent, while the 9.20 job requires it to be present. This protects the version-aware transfer design against upstream endpoint changes.
