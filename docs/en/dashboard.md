@@ -2,7 +2,7 @@
 
 [Português (Brasil)](../pt-BR/dashboard.md)
 
-Version 0.2.0 adds a native Zabbix template dashboard and reusable classic graphs.
+Version 0.3.0 adds a native Zabbix template dashboard and reusable classic graphs.
 
 ## Template dashboard
 
