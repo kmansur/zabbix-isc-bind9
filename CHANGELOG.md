@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - CI validates Python 3.11, 3.13 and 3.14, template structure, bilingual documentation and a fresh import into Zabbix 7.0.
 
 ### Added
+- Added native UDP/TCP DNS service availability and response-time checks using `net.dns` and `net.dns.perf`.
+- Added `BIND: DNS query response time` graph and a service-state value map.
 - Added eight reusable classic graphs and the native three-page `ISC BIND: Overview` template dashboard.
 - Added dynamic dashboard navigators for query types, response codes, nsstats, resolver counters, socket statistics and zone-related items.
 - Added resolver-cache graph prototypes per BIND view for hit/miss rates, cache memory and cache nodes.
@@ -21,6 +23,8 @@ All notable changes to this project will be documented in this file.
 - Aggregate zone counters for total, primary and secondary zones.
 
 ### Changed
+- Statistics-channel unavailability is now a warning because DNS service availability is monitored independently.
+- SERVFAIL and dropped-query anomalies are warnings and depend on statistics-channel availability.
 - Renamed the template from `ISC BIND 9 by Zabbix Agent` to `ISC BIND by Zabbix agent`. The repository name remains unchanged.
 - Per-zone secondary refresh/expiry discovery is opt-in via `{$BIND.ZONE.SECONDARY.MATCHES}`; the default `^$` creates no per-zone secondary items.
 - Removed default all-zone SOA serial and loaded-age discovery; the base template now uses aggregate total/primary/secondary zone counts.
@@ -32,6 +36,6 @@ All notable changes to this project will be documented in this file.
 - Corrected `{$BIND.STATS.HOST}` to use `127.0.0.1` instead of a full URL when `web.page.get[]` also supplies path and port parameters.
 - Socket statistics discovery now uses `/json/v1/net`, matching BIND statistics-channel semantics.
 
-## [0.2.0] - 2026-09-27
+## [0.3.0] - 2026-09-27
 
 Dashboard/graph engineering candidate. No production-stable release has been promoted yet.
