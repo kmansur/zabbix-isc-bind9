@@ -2,7 +2,7 @@
 
 [English](../en/dashboard.md)
 
-A versão 0.3.0 adiciona uma dashboard nativa de template do Zabbix e gráficos clássicos reutilizáveis.
+A versão 0.4.0 adiciona uma dashboard nativa de template do Zabbix e gráficos clássicos reutilizáveis.
 
 ## Dashboard do template
 
