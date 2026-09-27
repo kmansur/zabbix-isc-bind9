@@ -15,6 +15,8 @@ Template Zabbix com foco em segurança para monitoramento do **ISC BIND** atrav�
 - documentação em inglês com versão equivalente em português do Brasil;
 - Zabbix 7.0 como baseline principal e Zabbix 8.0 como alvo de compatibilidade.
 
+A versão 0.3.0 também monitora disponibilidade DNS UDP/TCP e tempo de resposta usando as keys nativas `net.dns` e `net.dns.perf` do Zabbix Agent.
+
 ## Configuração recomendada
 
 ```conf
