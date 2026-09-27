@@ -32,7 +32,8 @@ The initial candidate includes:
 - aggregate zone counts (total, primary and secondary), with optional per-zone secondary/DNSSEC discovery;
 - local collection of the `status`, `server`, `zones`, `mem`, `net` and `traffic` JSON endpoints;
 - UDP/TCP traffic-rate aggregation from BIND traffic histograms;
-- availability and operational triggers for the statistics channel and critical DNS counters.
+- availability and operational triggers for the statistics channel and critical DNS counters;
+- eight reusable classic graphs and a native three-page Zabbix dashboard.
 
 Resolver, cache, DNSSEC, memory, network and transfer metrics are included where their semantics have been validated across the supported BIND branches.
 
@@ -66,7 +67,7 @@ No control operation is required by the template.
 
 Older agents may work when they provide the required standard `web.page.get[]` key, but they are not part of the project's maintained test matrix.
 
-See [docs/en/compatibility.md](docs/en/compatibility.md).
+See [docs/en/compatibility.md](docs/en/compatibility.md) and [docs/en/dashboard.md](docs/en/dashboard.md).
 
 ## Repository layout
 
