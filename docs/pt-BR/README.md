@@ -7,6 +7,7 @@
 - [Configuração](configuration.md)
 - [Compatibilidade](compatibility.md)
 - [Métricas](metrics.md)
+- [Dashboard e gráficos](dashboard.md)
 - [Segurança](security.md)
 - [Solução de problemas](troubleshooting.md)
 - [Versionamento](versioning.md)
