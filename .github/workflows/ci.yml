@@ -120,3 +120,68 @@ jobs:
           docker logs zabbix-db || true
           docker logs zabbix-server || true
           docker logs zabbix-web || true
+
+
+  zabbix-8-import:
+    name: Zabbix 8.0 trunk fresh import
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Start disposable Zabbix 8.0 trunk stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create zabbix8-ci
+          docker run -d --name zabbix8-db --network zabbix8-ci \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            postgres:16-alpine
+
+          for i in $(seq 1 60); do
+            if docker exec zabbix8-db pg_isready -U zabbix -d zabbix >/dev/null 2>&1; then
+              break
+            fi
+            sleep 2
+          done
+          docker exec zabbix8-db pg_isready -U zabbix -d zabbix
+
+          docker run -d --name zabbix8-server --network zabbix8-ci \
+            -e DB_SERVER_HOST=zabbix8-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            zabbix/zabbix-server-pgsql:trunk-alpine
+
+          docker run -d --name zabbix8-web --network zabbix8-ci -p 8081:8080 \
+            -e DB_SERVER_HOST=zabbix8-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            -e ZBX_SERVER_HOST=zabbix8-server \
+            -e ZBX_SERVER_NAME="ISC BIND template CI 8.0" \
+            zabbix/zabbix-web-nginx-pgsql:trunk-alpine
+
+      - name: Import and verify template
+        run: >
+          python tools/zabbix_api_import_test.py
+          --url http://127.0.0.1:8081/api_jsonrpc.php
+          --template templates/8.0/isc-bind9-by-zabbix-agent.yaml
+          --wait 360
+
+      - name: Container diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          docker ps -a || true
+          docker logs zabbix8-db || true
+          docker logs zabbix8-server || true
+          docker logs zabbix8-web || true
