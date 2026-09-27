@@ -35,22 +35,24 @@ def load_template(version, path):
     assert template["template"] == EXPECTED_NAME
     assert template["name"] == EXPECTED_NAME
     assert template["vendor"]["name"] == "Net Tech"
-    assert template["vendor"]["version"] == "0.2-0"
+    assert template["vendor"]["version"] == "0.3-0"
 
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
 
     items = template.get("items", [])
-    masters = [
-        item for item in items if item.get("key", "").startswith("web.page.get[")
+    passive_items = [
+        item
+        for item in items
+        if item.get("key", "").startswith(("web.page.get[", "net.dns[", "net.dns.perf["))
     ]
-    assert masters, "no web.page.get[] master items found"
+    assert passive_items, "no passive agent items found"
 
     for item in items:
         item_type = item.get("type")
-        if item in masters:
+        if item in passive_items:
             assert item_type is None, (
-                f"passive agent master item must omit type: {item.get('key')}"
+                f"passive agent item must omit type: {item.get('key')}"
             )
         else:
             assert item_type == "DEPENDENT", (
@@ -71,6 +73,9 @@ def load_template(version, path):
     assert macros["{$BIND.STATS.PORT}"] == "8053"
     assert macros["{$BIND.ZONE.SECONDARY.MATCHES}"] == "^$"
     assert macros["{$BIND.ZONE.DNSSEC.MATCHES}"] == "^$"
+    assert macros["{$BIND.DNS.TEST.SERVER}"] == "127.0.0.1"
+    assert macros["{$BIND.DNS.TEST.NAME}"] == "localhost"
+    assert macros["{$BIND.DNS.TEST.TYPE}"] == "A"
 
     dashboards = template.get("dashboards", [])
     assert len(dashboards) == 1, "expected exactly one template dashboard"
@@ -88,6 +93,7 @@ def load_template(version, path):
         "BIND: Incoming transfers",
         "BIND: Incoming transfer rate",
         "BIND: Server timing",
+        "BIND: DNS query response time",
     }
     assert graph_names == expected_graphs, "unexpected graph set"
 
