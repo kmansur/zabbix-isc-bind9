@@ -40,6 +40,19 @@ def load_template(version, path):
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
 
+    idle_safe_discovery_tokens = (
+        "var counters = d.nsstats || {};",
+        "var counters = d.qtypes || {};",
+        "var counters = d.rcodes || {};",
+        "var views = d.views || {};",
+        "var resolver = views[viewName].resolver || {};",
+        "var stats = resolver.stats || {};",
+        "var qtypes = resolver.qtypes || {};",
+        "var adb = resolver.adb || {};",
+    )
+    for token in idle_safe_discovery_tokens:
+        assert token in text, f"idle-safe discovery guard missing: {token!r}"
+
     items = template.get("items", [])
     passive_items = [
         item
