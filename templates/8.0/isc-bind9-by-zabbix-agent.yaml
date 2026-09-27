@@ -29,7 +29,7 @@ zabbix_export:
         Export target: Zabbix 8.0 compatibility candidate.
       vendor:
         name: Net Tech
-        version: 0.1-4
+        version: 0.2-0
       groups:
         - name: Templates/Applications
       items:
@@ -1504,3 +1504,544 @@ zabbix_export:
         - macro: '{$BIND.STATS.PORT}'
           value: '8053'
           description: 'Local BIND statistics-channel TCP port.'
+      dashboards:
+        - uuid: 2d74337d7f9d4a079c132de75522b6a1
+          name: 'ISC BIND: Overview'
+          display_period: '3600'
+          pages:
+            - name: Overview
+              widgets:
+                - type: item
+                  name: 'BIND version'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: bind.version
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                - type: item
+                  name: Uptime
+                  x: '12'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: bind.uptime
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                - type: item
+                  name: 'Zones total'
+                  x: '24'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: bind.zones.total
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                - type: item
+                  name: 'Primary zones'
+                  x: '36'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: bind.zones.primary
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                - type: item
+                  name: 'Secondary zones'
+                  x: '48'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: bind.zones.secondary
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                - type: item
+                  name: 'Memory in use'
+                  x: '60'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: bind.memory.inuse
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                - type: graph
+                  'y': '2'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Query rates'
+                    - type: STRING
+                      name: reference
+                      value: BNDOA
+                - type: graph
+                  x: '36'
+                  'y': '2'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Query errors'
+                    - type: STRING
+                      name: reference
+                      value: BNDOB
+                - type: graph
+                  'y': '7'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: DNS transport traffic'
+                    - type: STRING
+                      name: reference
+                      value: BNDOC
+                - type: graph
+                  x: '36'
+                  'y': '7'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Memory usage'
+                    - type: STRING
+                      name: reference
+                      value: BNDOD
+                - type: graph
+                  'y': '12'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Server timing'
+                    - type: STRING
+                      name: reference
+                      value: BNDOE
+                - type: graph
+                  x: '36'
+                  'y': '12'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Incoming transfers'
+                    - type: STRING
+                      name: reference
+                      value: BNDOF
+                - type: problems
+                  'y': '17'
+                  width: '72'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: reference
+                      value: BNDOG
+                    - type: INTEGER
+                      name: show
+                      value: '3'
+                    - type: INTEGER
+                      name: show_lines
+                      value: '100'
+                    - type: INTEGER
+                      name: show_timeline
+                      value: '0'
+            - name: 'DNS activity'
+              widgets:
+                - type: graph
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Query rates'
+                    - type: STRING
+                      name: reference
+                      value: BNDPA
+                - type: graph
+                  x: '36'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Query errors'
+                    - type: STRING
+                      name: reference
+                      value: BNDPB
+                - type: graph
+                  'y': '5'
+                  width: '72'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: DNS transport traffic'
+                    - type: STRING
+                      name: reference
+                      value: BNDPC
+                - type: itemnavigator
+                  name: 'Query types'
+                  'y': '10'
+                  width: '24'
+                  height: '9'
+                  fields:
+                    - type: INTEGER
+                      name: item_tags.0.operator
+                      value: '1'
+                    - type: STRING
+                      name: item_tags.0.tag
+                      value: component
+                    - type: STRING
+                      name: item_tags.0.value
+                      value: qtypes
+                    - type: STRING
+                      name: reference
+                      value: BNDPD
+                    - type: INTEGER
+                      name: show_lines
+                      value: '100'
+                - type: itemnavigator
+                  name: 'Response codes'
+                  x: '24'
+                  'y': '10'
+                  width: '24'
+                  height: '9'
+                  fields:
+                    - type: INTEGER
+                      name: item_tags.0.operator
+                      value: '1'
+                    - type: STRING
+                      name: item_tags.0.tag
+                      value: component
+                    - type: STRING
+                      name: item_tags.0.value
+                      value: rcodes
+                    - type: STRING
+                      name: reference
+                      value: BNDPE
+                    - type: INTEGER
+                      name: show_lines
+                      value: '100'
+                - type: itemnavigator
+                  name: 'Server counters'
+                  x: '48'
+                  'y': '10'
+                  width: '24'
+                  height: '9'
+                  fields:
+                    - type: INTEGER
+                      name: item_tags.0.operator
+                      value: '1'
+                    - type: STRING
+                      name: item_tags.0.tag
+                      value: component
+                    - type: STRING
+                      name: item_tags.0.value
+                      value: nsstats
+                    - type: STRING
+                      name: reference
+                      value: BNDPF
+                    - type: INTEGER
+                      name: show_lines
+                      value: '100'
+            - name: 'Resolver & resources'
+              widgets:
+                - type: itemnavigator
+                  name: 'Resolver counters'
+                  width: '36'
+                  height: '10'
+                  fields:
+                    - type: INTEGER
+                      name: group_by.0.attribute
+                      value: '3'
+                    - type: STRING
+                      name: group_by.0.tag_name
+                      value: bind-view
+                    - type: INTEGER
+                      name: item_tags.0.operator
+                      value: '1'
+                    - type: STRING
+                      name: item_tags.0.tag
+                      value: component
+                    - type: STRING
+                      name: item_tags.0.value
+                      value: resolver
+                    - type: STRING
+                      name: reference
+                      value: BNDRA
+                    - type: INTEGER
+                      name: show_lines
+                      value: '200'
+                - type: itemnavigator
+                  name: 'Socket statistics'
+                  x: '36'
+                  width: '36'
+                  height: '10'
+                  fields:
+                    - type: INTEGER
+                      name: item_tags.0.operator
+                      value: '1'
+                    - type: STRING
+                      name: item_tags.0.tag
+                      value: component
+                    - type: STRING
+                      name: item_tags.0.value
+                      value: sockets
+                    - type: STRING
+                      name: reference
+                      value: BNDRB
+                    - type: INTEGER
+                      name: show_lines
+                      value: '200'
+                - type: graph
+                  'y': '10'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Memory usage'
+                    - type: STRING
+                      name: reference
+                      value: BNDRC
+                - type: graph
+                  x: '36'
+                  'y': '10'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Zone inventory'
+                    - type: STRING
+                      name: reference
+                      value: BNDRD
+                - type: graph
+                  'y': '15'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Incoming transfers'
+                    - type: STRING
+                      name: reference
+                      value: BNDRE
+                - type: graph
+                  x: '36'
+                  'y': '15'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Incoming transfer rate'
+                    - type: STRING
+                      name: reference
+                      value: BNDRF
+                - type: itemnavigator
+                  name: 'Zone-related items'
+                  'y': '20'
+                  width: '72'
+                  height: '7'
+                  fields:
+                    - type: INTEGER
+                      name: group_by.0.attribute
+                      value: '3'
+                    - type: STRING
+                      name: group_by.0.tag_name
+                      value: bind-zone
+                    - type: INTEGER
+                      name: item_tags.0.operator
+                      value: '1'
+                    - type: STRING
+                      name: item_tags.0.tag
+                      value: component
+                    - type: STRING
+                      name: item_tags.0.value
+                      value: zones
+                    - type: STRING
+                      name: reference
+                      value: BNDRG
+                    - type: INTEGER
+                      name: show_lines
+                      value: '200'
+  graphs:
+    - uuid: 626e281c9f064fa0937ac918caac7e83
+      name: 'BIND: Query rates'
+      graph_items:
+        - color: 199C0D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.nsstats.requestv4
+        - sortorder: '1'
+          color: 00A1F1
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.nsstats.requestv6
+        - sortorder: '2'
+          color: F7941D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.nsstats.recursion
+    - uuid: 8e71af304cfa494bbd1e51612541d390
+      name: 'BIND: Query errors'
+      graph_items:
+        - color: E45959
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.nsstats.servfail
+        - sortorder: '1'
+          color: FFBF59
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.nsstats.qrydropped
+    - uuid: 414ca9010d9945e6b0dc71ef36b9584e
+      name: 'BIND: DNS transport traffic'
+      graph_items:
+        - color: 199C0D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.traffic.udp.requests
+        - sortorder: '1'
+          color: 00A1F1
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.traffic.udp.responses
+        - sortorder: '2'
+          color: F7941D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.traffic.tcp.requests
+        - sortorder: '3'
+          color: 6C59DC
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.traffic.tcp.responses
+    - uuid: c017f7e6d875443b8056538ad3cf8f1b
+      name: 'BIND: Memory usage'
+      graph_items:
+        - drawtype: GRADIENT_LINE
+          color: 199C0D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.memory.inuse
+        - sortorder: '1'
+          drawtype: BOLD_LINE
+          color: 00A1F1
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.memory.malloced
+    - uuid: 7a1c1fae60a94733aa9f6d7ec4221b79
+      name: 'BIND: Zone inventory'
+      graph_items:
+        - color: 199C0D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.zones.total
+        - sortorder: '1'
+          color: 00A1F1
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.zones.primary
+        - sortorder: '2'
+          color: F7941D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.zones.secondary
+    - uuid: 18e780fc8c9e4d50844131600bc3f22e
+      name: 'BIND: Incoming transfers'
+      graph_items:
+        - color: 00A1F1
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.xfrins.count
+        - sortorder: '1'
+          color: E45959
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.xfrins.deferred
+    - uuid: 2ecfb664fb8249c59265e77d439c135e
+      name: 'BIND: Incoming transfer rate'
+      graph_items:
+        - drawtype: GRADIENT_LINE
+          color: 199C0D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.xfrins.rate
+    - uuid: 8b74be8071304ab9a76182283e30fd6a
+      name: 'BIND: Server timing'
+      graph_items:
+        - color: 199C0D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.uptime
+        - sortorder: '1'
+          color: F7941D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.config.age
