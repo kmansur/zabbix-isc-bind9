@@ -5,10 +5,12 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 ## [Não publicado]
 
 ### Validação
+- Adicionado gate de fresh-import do Zabbix 8.0 trunk no CI usando as imagens Docker oficiais de desenvolvimento.
 - Concluída a auditoria de limpeza do template passivo contra o template comunitário original: não restam tipos de item ativos, macros BIND9 antigas, macros LLD antigas, porta 8653, keys compartilhadas ou UUIDs compartilhados. O nome do projeto original permanece apenas na atribuição de licença.
 - O CI valida Python 3.11, 3.13 e 3.14, estrutura do template, documentação bilíngue e importação limpa no Zabbix 7.0.
 
 ### Adicionado
+- Adicionados cards de saúde DNS UDP/TCP e gráfico de tempo de resposta DNS local na página Overview.
 - Adicionadas verificações nativas de disponibilidade real do serviço DNS via UDP/TCP e tempo de resposta usando `net.dns` e `net.dns.perf`.
 - Adicionado o gráfico `BIND: DNS query response time` e value map de estado do serviço.
 - Adicionados oito gráficos clássicos reutilizáveis e a dashboard nativa de três páginas `ISC BIND: Overview`.
@@ -36,6 +38,6 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Corrigido `{$BIND.STATS.HOST}` para usar `127.0.0.1` em vez de URL completa quando `web.page.get[]` também fornece path e porta.
 - A descoberta de estatísticas de socket agora utiliza `/json/v1/net`, conforme a semântica do statistics-channel do BIND.
 
-## [0.3.0] - 2026-09-27
+## [0.4.0] - 2026-09-27
 
 Candidata de engenharia com dashboard/gráficos. Ainda não existe release promovida como estável para produção.
