@@ -2,9 +2,9 @@
 
 [Português (Brasil)](../pt-BR/metrics.md)
 
-Version 0.3.0 separates raw endpoint acquisition from metrics whose semantics have already been validated.
+Version 0.4.0 separates raw endpoint acquisition from metrics whose semantics have already been validated.
 
-## Parsed in 0.3.0
+## Parsed in 0.4.0
 
 - BIND version and JSON statistics version;
 - server uptime and time since the last configuration;
