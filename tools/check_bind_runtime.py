@@ -40,10 +40,16 @@ def validate(base_url: str, expected_version: str, timeout: int) -> None:
         )
 
     server = get_json(f"{base_url}/json/v1/server")
-    required_server = {"nsstats", "qtypes", "rcodes", "views"}
-    missing = required_server - server.keys()
-    if missing:
-        raise RuntimeError(f"server endpoint missing keys: {sorted(missing)}")
+    if "views" not in server:
+        raise RuntimeError("server endpoint does not contain views")
+
+    # BIND omits zero-valued counter families on a freshly started/idle server.
+    # When present, they must still have the object shape used by template LLD.
+    for optional_map in ("nsstats", "qtypes", "rcodes"):
+        if optional_map in server and not isinstance(server[optional_map], dict):
+            raise RuntimeError(
+                f"server endpoint {optional_map!r} is not a JSON object"
+            )
 
     net = get_json(f"{base_url}/json/v1/net")
     if "sockstats" not in net:
