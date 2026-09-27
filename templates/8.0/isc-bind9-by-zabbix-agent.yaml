@@ -1833,7 +1833,7 @@ zabbix_export:
                       name: reference
                       value: BNDON
                 - type: graph
-                  'y': '12'
+                  'y': '7'
                   width: '36'
                   height: '5'
                   fields:
@@ -1843,12 +1843,11 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Query rates'
                     - type: STRING
-                  'y': '7'
                       name: reference
                       value: BNDOA
                 - type: graph
                   x: '36'
-                  'y': '12'
+                  'y': '7'
                   width: '36'
                   height: '5'
                   fields:
@@ -1858,7 +1857,6 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Query errors'
                     - type: STRING
-                  'y': '7'
                       name: reference
                       value: BNDOB
                 - type: graph
@@ -1872,7 +1870,6 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: DNS transport traffic'
                     - type: STRING
-                  'y': '12'
                       name: reference
                       value: BNDOC
                 - type: graph
@@ -1887,11 +1884,10 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Memory usage'
                     - type: STRING
-                  'y': '12'
                       name: reference
                       value: BNDOD
                 - type: graph
-                  'y': '12'
+                  'y': '17'
                   width: '36'
                   height: '5'
                   fields:
@@ -1901,12 +1897,11 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Server timing'
                     - type: STRING
-                  'y': '17'
                       name: reference
                       value: BNDOE
                 - type: graph
                   x: '36'
-                  'y': '12'
+                  'y': '17'
                   width: '36'
                   height: '5'
                   fields:
@@ -1916,16 +1911,14 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Incoming transfers'
                     - type: STRING
-                  'y': '17'
                       name: reference
                       value: BNDOF
                 - type: problems
-                  'y': '17'
+                  'y': '22'
                   width: '72'
                   height: '5'
                   fields:
                     - type: STRING
-                  'y': '22'
                       name: reference
                       value: BNDOG
                     - type: INTEGER
