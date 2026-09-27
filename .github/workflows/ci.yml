@@ -185,3 +185,61 @@ jobs:
           docker logs zabbix8-db || true
           docker logs zabbix8-server || true
           docker logs zabbix8-web || true
+
+
+  bind-runtime-contract:
+    name: BIND ${{ matrix.bind-version }} live JSON contract
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        bind-version:
+          - "9.18"
+          - "9.20"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Create minimal BIND configuration
+        shell: bash
+        run: |
+          cat > "${RUNNER_TEMP}/named.conf" <<'EOF'
+          options {
+              directory "/var/cache/bind";
+              listen-on { any; };
+              listen-on-v6 { none; };
+              recursion yes;
+              allow-query { any; };
+          };
+
+          statistics-channels {
+              inet 0.0.0.0 port 8053 allow { any; };
+          };
+          EOF
+
+      - name: Start official ISC BIND
+        shell: bash
+        run: |
+          docker run -d --name bind-ci \
+            -p 127.0.0.1:18053:8053 \
+            -v "${RUNNER_TEMP}/named.conf:/etc/bind/named.conf:ro" \
+            internetsystemsconsortium/bind9:${{ matrix.bind-version }}
+
+      - name: Validate live statistics-channel JSON
+        run: >
+          python tools/check_bind_runtime.py
+          --version ${{ matrix.bind-version }}
+          --wait 120
+
+      - name: Container diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          docker ps -a || true
+          docker logs bind-ci || true
