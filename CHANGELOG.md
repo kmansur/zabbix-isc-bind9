@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added eight reusable classic graphs and the native three-page `ISC BIND: Overview` template dashboard.
 - Added dynamic dashboard navigators for query types, response codes, nsstats, resolver counters, socket statistics and zone-related items.
+- Added resolver-cache graph prototypes per BIND view for hit/miss rates, cache memory and cache nodes.
 - Added graceful BIND 9.20 incoming-transfer monitoring through `/json/v1/xfrins`, with a compatibility indicator and no unsupported items on BIND 9.18.
 - Secondary-zone refresh and expiry timers with trigger prototypes.
 - DNSSEC signing/refresh counter discovery for zones exporting `dnssec-sign`/`dnssec-refresh`.
