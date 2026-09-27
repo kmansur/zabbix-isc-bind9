@@ -35,3 +35,8 @@ O export 8.0 é importado continuamente no CI contra as imagens Docker oficiais 
 ## Fixtures de contrato JSON do BIND
 
 O repositório inclui fixtures JSON representativas do BIND 9.18 e 9.20. O pytest valida os contratos estruturais usados pelo preprocessing e pelas descobertas, incluindo blocos de resolver/cache, estatísticas de sockets, campos de memória, histogramas de tráfego, timers de zonas secundárias e o endpoint de transferências recebidas do 9.20. Essas fixtures complementam, mas não substituem, a validação em runtime contra servidores BIND reais.
+
+
+## Validação em containers BIND reais
+
+O CI inicia as imagens Docker oficiais do ISC para BIND 9.18 e 9.20 com uma configuração mínima do statistics-channel e valida os endpoints JSON reais usados pelo template. No 9.18 o job confirma que `/json/v1/xfrins` não existe; no 9.20 ele exige a presença desse endpoint. Isso protege o desenho version-aware das transferências contra mudanças upstream.
