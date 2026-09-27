@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Validation
+- Added BIND 9.18/9.20 JSON contract fixtures and pytest coverage for the endpoint structures used by preprocessing and LLD.
 - Added a Zabbix 8.0 trunk fresh-import CI gate using the official development Docker images.
 - Completed a passive-template cleanup audit against the original community template: no active item types, legacy BIND9 macros, legacy LLD macros, legacy port 8653, shared item keys or shared UUIDs remain. The original project name remains only in license attribution.
 - CI validates Python 3.11, 3.13 and 3.14, template structure, bilingual documentation and a fresh import into Zabbix 7.0.
