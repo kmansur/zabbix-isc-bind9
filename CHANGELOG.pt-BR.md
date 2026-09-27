@@ -11,6 +11,7 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 ### Adicionado
 - Adicionados oito gráficos clássicos reutilizáveis e a dashboard nativa de três páginas `ISC BIND: Overview`.
 - Adicionados navegadores dinâmicos na dashboard para query types, response codes, nsstats, resolver, sockets e itens relacionados a zonas.
+- Adicionados graph prototypes do cache do resolver por view para hits/misses, memória e quantidade de nós.
 - Monitoramento compatível de transferências recebidas do BIND 9.20 via `/json/v1/xfrins`, com indicador de compatibilidade e sem itens unsupported no BIND 9.18.
 - Timers de refresh e expiração de zonas secundárias com prototypes de trigger.
 - Descoberta de contadores DNSSEC de assinatura/refresh para zonas que exportam `dnssec-sign`/`dnssec-refresh`.
