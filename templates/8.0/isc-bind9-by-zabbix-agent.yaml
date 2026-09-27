@@ -29,7 +29,7 @@ zabbix_export:
         Export target: Zabbix 8.0 compatibility candidate.
       vendor:
         name: Net Tech
-        version: 0.3-0
+        version: 0.4-0
       groups:
         - name: Templates/Applications
       items:
@@ -1788,8 +1788,52 @@ zabbix_export:
                     - type: INTEGER
                       name: show.0
                       value: '2'
-                - type: graph
+                - type: item
+                  name: 'DNS UDP'
                   'y': '2'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                - type: item
+                  name: 'DNS TCP'
+                  x: '12'
+                  'y': '2'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp]'
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                - type: graph
+                  name: 'DNS response time'
+                  x: '24'
+                  'y': '2'
+                  width: '48'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: DNS query response time'
+                    - type: STRING
+                      name: reference
+                      value: BNDON
+                - type: graph
+                  'y': '12'
                   width: '36'
                   height: '5'
                   fields:
@@ -1799,11 +1843,12 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Query rates'
                     - type: STRING
+                  'y': '7'
                       name: reference
                       value: BNDOA
                 - type: graph
                   x: '36'
-                  'y': '2'
+                  'y': '12'
                   width: '36'
                   height: '5'
                   fields:
@@ -1813,10 +1858,11 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Query errors'
                     - type: STRING
+                  'y': '7'
                       name: reference
                       value: BNDOB
                 - type: graph
-                  'y': '7'
+                  'y': '12'
                   width: '36'
                   height: '5'
                   fields:
@@ -1826,11 +1872,12 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: DNS transport traffic'
                     - type: STRING
+                  'y': '12'
                       name: reference
                       value: BNDOC
                 - type: graph
                   x: '36'
-                  'y': '7'
+                  'y': '12'
                   width: '36'
                   height: '5'
                   fields:
@@ -1840,6 +1887,7 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Memory usage'
                     - type: STRING
+                  'y': '12'
                       name: reference
                       value: BNDOD
                 - type: graph
@@ -1853,6 +1901,7 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Server timing'
                     - type: STRING
+                  'y': '17'
                       name: reference
                       value: BNDOE
                 - type: graph
@@ -1867,6 +1916,7 @@ zabbix_export:
                         host: 'ISC BIND by Zabbix agent'
                         name: 'BIND: Incoming transfers'
                     - type: STRING
+                  'y': '17'
                       name: reference
                       value: BNDOF
                 - type: problems
@@ -1875,6 +1925,7 @@ zabbix_export:
                   height: '5'
                   fields:
                     - type: STRING
+                  'y': '22'
                       name: reference
                       value: BNDOG
                     - type: INTEGER
