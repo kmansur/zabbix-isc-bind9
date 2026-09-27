@@ -1247,6 +1247,55 @@ zabbix_export:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.HeapMemInUse'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          graph_prototypes:
+            - uuid: a65af25619194da5829684f766645d0c
+              name: 'BIND cache [{#BIND.VIEW}]: Hit and miss rates'
+              graph_items:
+                - color: 199C0D
+                  item:
+                    host: 'ISC BIND by Zabbix agent'
+                    key: 'bind.cache.hits[{#BIND.VIEW}]'
+                - sortorder: '1'
+                  color: E45959
+                  item:
+                    host: 'ISC BIND by Zabbix agent'
+                    key: 'bind.cache.misses[{#BIND.VIEW}]'
+                - sortorder: '2'
+                  color: 00A1F1
+                  item:
+                    host: 'ISC BIND by Zabbix agent'
+                    key: 'bind.cache.queryhits[{#BIND.VIEW}]'
+                - sortorder: '3'
+                  color: FFBF59
+                  item:
+                    host: 'ISC BIND by Zabbix agent'
+                    key: 'bind.cache.querymisses[{#BIND.VIEW}]'
+            - uuid: 8e961585c97d4cd7b4871b09d67a6f77
+              name: 'BIND cache [{#BIND.VIEW}]: Memory'
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 199C0D
+                  item:
+                    host: 'ISC BIND by Zabbix agent'
+                    key: 'bind.cache.tree.memory[{#BIND.VIEW}]'
+                - sortorder: '1'
+                  drawtype: BOLD_LINE
+                  color: 00A1F1
+                  item:
+                    host: 'ISC BIND by Zabbix agent'
+                    key: 'bind.cache.heap.memory[{#BIND.VIEW}]'
+            - uuid: 182118262fec4912a4634288add85e09
+              name: 'BIND cache [{#BIND.VIEW}]: Nodes'
+              graph_items:
+                - color: 199C0D
+                  item:
+                    host: 'ISC BIND by Zabbix agent'
+                    key: 'bind.cache.nodes[{#BIND.VIEW}]'
+                - sortorder: '1'
+                  color: F7941D
+                  item:
+                    host: 'ISC BIND by Zabbix agent'
+                    key: 'bind.cache.nsecnodes[{#BIND.VIEW}]'
           master_item:
             key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
           preprocessing:
@@ -1849,43 +1898,52 @@ zabbix_export:
                     - type: INTEGER
                       name: show_lines
                       value: '200'
-                - type: graph
+                - type: graphprototype
                   'y': '10'
                   width: '36'
                   height: '5'
                   fields:
-                    - type: GRAPH
+                    - type: INTEGER
+                      name: columns
+                      value: '1'
+                    - type: GRAPH_PROTOTYPE
                       name: graphid.0
                       value:
                         host: 'ISC BIND by Zabbix agent'
-                        name: 'BIND: Memory usage'
+                        name: 'BIND cache [{#BIND.VIEW}]: Hit and miss rates'
                     - type: STRING
                       name: reference
                       value: BNDRC
-                - type: graph
+                - type: graphprototype
                   x: '36'
                   'y': '10'
                   width: '36'
                   height: '5'
                   fields:
-                    - type: GRAPH
+                    - type: INTEGER
+                      name: columns
+                      value: '1'
+                    - type: GRAPH_PROTOTYPE
                       name: graphid.0
                       value:
                         host: 'ISC BIND by Zabbix agent'
-                        name: 'BIND: Zone inventory'
+                        name: 'BIND cache [{#BIND.VIEW}]: Memory'
                     - type: STRING
                       name: reference
                       value: BNDRD
-                - type: graph
+                - type: graphprototype
                   'y': '15'
                   width: '36'
                   height: '5'
                   fields:
-                    - type: GRAPH
+                    - type: INTEGER
+                      name: columns
+                      value: '1'
+                    - type: GRAPH_PROTOTYPE
                       name: graphid.0
                       value:
                         host: 'ISC BIND by Zabbix agent'
-                        name: 'BIND: Incoming transfers'
+                        name: 'BIND cache [{#BIND.VIEW}]: Nodes'
                     - type: STRING
                       name: reference
                       value: BNDRE
@@ -1899,14 +1957,55 @@ zabbix_export:
                       name: graphid.0
                       value:
                         host: 'ISC BIND by Zabbix agent'
-                        name: 'BIND: Incoming transfer rate'
+                        name: 'BIND: Memory usage'
                     - type: STRING
                       name: reference
                       value: BNDRF
+                - type: graph
+                  'y': '20'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Zone inventory'
+                    - type: STRING
+                      name: reference
+                      value: BNDRG
+                - type: graph
+                  x: '36'
+                  'y': '20'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Incoming transfers'
+                    - type: STRING
+                      name: reference
+                      value: BNDRH
+                - type: graph
+                  'y': '25'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: Incoming transfer rate'
+                    - type: STRING
+                      name: reference
+                      value: BNDRI
                 - type: itemnavigator
                   name: 'Zone-related items'
-                  'y': '20'
-                  width: '72'
+                  x: '36'
+                  'y': '25'
+                  width: '36'
                   height: '7'
                   fields:
                     - type: INTEGER
@@ -1926,10 +2025,11 @@ zabbix_export:
                       value: zones
                     - type: STRING
                       name: reference
-                      value: BNDRG
+                      value: BNDRJ
                     - type: INTEGER
                       name: show_lines
                       value: '200'
+
   graphs:
     - uuid: 626e281c9f064fa0937ac918caac7e83
       name: 'BIND: Query rates'
