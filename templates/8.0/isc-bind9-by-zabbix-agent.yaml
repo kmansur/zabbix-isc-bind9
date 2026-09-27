@@ -29,7 +29,7 @@ zabbix_export:
         Export target: Zabbix 8.0 compatibility candidate.
       vendor:
         name: Net Tech
-        version: 0.2-0
+        version: 0.3-0
       groups:
         - name: Templates/Applications
       items:
@@ -52,8 +52,107 @@ zabbix_export:
             - uuid: d48429e64c854d9b99cfb8aaba9fee7e
               expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
               name: 'BIND: Statistics channel is unavailable'
+              priority: WARNING
+              description: 'No data has been received from the local BIND statistics channel within the configured interval. This indicates monitoring degradation; DNS service availability is checked independently.'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 9c65ecaa51804a66922a6296d6bc1bb1
+          name: 'BIND: DNS UDP availability'
+          key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
+          delay: 30s
+          history: 30d
+          valuemap:
+            name: 'BIND service state'
+          tags:
+            - tag: component
+              value: dns
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: c52ae7683e0540ebbb851f7f5e107c0f
+              expression: 'max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],{$BIND.DNS.FAIL.WINDOW})=0'
+              name: 'BIND: DNS service is not answering UDP queries'
               priority: HIGH
-              description: 'No data has been received from the local BIND statistics channel within the configured interval.'
+              description: 'The local BIND service has not returned a successful UDP DNS answer for the configured test query during the failure window.'
+              opdata: 'UDP DNS state: {ITEM.LASTVALUE}'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 8ad961fe0ff74eada45a2db93edbf9e4
+          name: 'BIND: DNS TCP availability'
+          key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp]'
+          delay: 30s
+          history: 30d
+          valuemap:
+            name: 'BIND service state'
+          tags:
+            - tag: component
+              value: dns
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: 779e5fd8b1ce46c78193b8e32188fdbb
+              expression: 'max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],{$BIND.DNS.FAIL.WINDOW})=0'
+              name: 'BIND: DNS service is not answering TCP queries'
+              priority: HIGH
+              description: 'The local BIND service has not returned a successful TCP DNS answer for the configured test query during the failure window.'
+              opdata: 'TCP DNS state: {ITEM.LASTVALUE}'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 99f17316072342ceb59d9f7a81973ee8
+          name: 'BIND: DNS UDP response time'
+          key: 'net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
+          delay: 30s
+          history: 30d
+          value_type: FLOAT
+          units: s
+          tags:
+            - tag: component
+              value: dns
+            - tag: scope
+              value: performance
+          triggers:
+            - uuid: d07fbe65e24c4b7db379a05b01b1226f
+              expression: 'avg(/ISC BIND by Zabbix agent/net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],5m)>{$BIND.DNS.RESPONSE.WARN} and min(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],5m)=1'
+              name: 'BIND: DNS UDP response time is high'
+              event_name: 'BIND: DNS UDP response time is high (over {$BIND.DNS.RESPONSE.WARN}s for 5m)'
+              priority: WARNING
+              description: 'The average response time of the local UDP DNS test query has exceeded the configured warning threshold for five minutes.'
+              opdata: 'Response time: {ITEM.LASTVALUE}'
+              dependencies:
+                - name: 'BIND: DNS service is not answering UDP queries'
+                  expression: 'max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],{$BIND.DNS.FAIL.WINDOW})=0'
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: e92db09808e0414a9068ea00f299fb19
+          name: 'BIND: DNS TCP response time'
+          key: 'net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp]'
+          delay: 30s
+          history: 30d
+          value_type: FLOAT
+          units: s
+          tags:
+            - tag: component
+              value: dns
+            - tag: scope
+              value: performance
+          triggers:
+            - uuid: bdd417fc1d444b97bc30598874b0fba4
+              expression: 'avg(/ISC BIND by Zabbix agent/net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],5m)>{$BIND.DNS.RESPONSE.WARN} and min(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],5m)=1'
+              name: 'BIND: DNS TCP response time is high'
+              event_name: 'BIND: DNS TCP response time is high (over {$BIND.DNS.RESPONSE.WARN}s for 5m)'
+              priority: WARNING
+              description: 'The average response time of the local TCP DNS test query has exceeded the configured warning threshold for five minutes.'
+              opdata: 'Response time: {ITEM.LASTVALUE}'
+              dependencies:
+                - name: 'BIND: DNS service is not answering TCP queries'
+                  expression: 'max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],{$BIND.DNS.FAIL.WINDOW})=0'
+              tags:
+                - tag: scope
+                  value: performance
         - uuid: 443e6db2e27443ea813feab8441acf62
           name: 'BIND: Server statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
@@ -580,8 +679,15 @@ zabbix_export:
             - uuid: 6c5c2dacc0034be1801f0ae5553401d0
               expression: 'avg(/ISC BIND by Zabbix agent/bind.nsstats.qrydropped,5m)>{$BIND.QRYDROPPED.RATE.WARN}'
               name: 'BIND: Dropped queries detected'
-              priority: HIGH
+              priority: WARNING
+              description: 'The average dropped-query rate has exceeded the configured threshold for five minutes.'
               opdata: '{ITEM.LASTVALUE}'
+              dependencies:
+                - name: 'BIND: Statistics channel is unavailable'
+                  expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+              tags:
+                - tag: scope
+                  value: performance
         - uuid: c632d2c537614f3880838114a8eb39e9
           name: 'BIND: SERVFAIL responses per second'
           type: DEPENDENT
@@ -608,8 +714,15 @@ zabbix_export:
             - uuid: c93045208f9847c4a1a503aa4b75a7aa
               expression: 'avg(/ISC BIND by Zabbix agent/bind.nsstats.servfail,5m)>{$BIND.SERVFAIL.RATE.WARN}'
               name: 'BIND: High SERVFAIL response rate'
-              priority: HIGH
+              priority: WARNING
+              description: 'The average SERVFAIL response rate has exceeded the configured threshold for five minutes.'
               opdata: '{ITEM.LASTVALUE}'
+              dependencies:
+                - name: 'BIND: Statistics channel is unavailable'
+                  expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+              tags:
+                - tag: scope
+                  value: performance
         - uuid: 42b093ecf0bc4738a4079a2b31a71178
           name: 'BIND: Recursive queries per second'
           type: DEPENDENT
@@ -1529,12 +1642,33 @@ zabbix_export:
         - tag: target
           value: bind9
       macros:
+        - macro: '{$BIND.DNS.TEST.SERVER}'
+          value: '127.0.0.1'
+          description: 'DNS server address used by the native Zabbix DNS health checks.'
+        - macro: '{$BIND.DNS.TEST.NAME}'
+          value: localhost
+          description: 'DNS name used for service availability and response-time checks. Override on the host if localhost is not answered by the monitored BIND instance.'
+        - macro: '{$BIND.DNS.TEST.TYPE}'
+          value: A
+          description: 'DNS record type used by the native service health checks.'
+        - macro: '{$BIND.DNS.TEST.TIMEOUT}'
+          value: '1'
+          description: 'Per-attempt DNS query timeout in seconds.'
+        - macro: '{$BIND.DNS.TEST.COUNT}'
+          value: '2'
+          description: 'Number of DNS query attempts performed by the native Zabbix agent key.'
+        - macro: '{$BIND.DNS.FAIL.WINDOW}'
+          value: 3m
+          description: 'Continuous failure window before UDP or TCP DNS availability raises a problem.'
+        - macro: '{$BIND.DNS.RESPONSE.WARN}'
+          value: '0.1'
+          description: 'Average local DNS response-time warning threshold in seconds.'
         - macro: '{$BIND.QRYDROPPED.RATE.WARN}'
           value: '0'
-          description: 'Average dropped-query rate above this value for 5 minutes raises a high-severity problem.'
+          description: 'Average dropped-query rate above this value for 5 minutes raises a warning.'
         - macro: '{$BIND.SERVFAIL.RATE.WARN}'
           value: '5'
-          description: 'Average SERVFAIL rate above this value for 5 minutes raises a high-severity problem.'
+          description: 'Average SERVFAIL rate above this value for 5 minutes raises a warning.'
         - macro: '{$BIND.ZONE.EXPIRES.WARN}'
           value: 1h
           description: 'Warn when a secondary zone is less than this interval away from its SOA expiry deadline.'
@@ -2031,6 +2165,18 @@ zabbix_export:
                       value: '200'
 
   graphs:
+    - uuid: 7a577742752e46149a724b9e88af5201
+      name: 'BIND: DNS query response time'
+      graph_items:
+        - color: 199C0D
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: 'net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
+        - sortorder: '1'
+          color: 00A1F1
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: 'net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp]'
     - uuid: 626e281c9f064fa0937ac918caac7e83
       name: 'BIND: Query rates'
       graph_items:
