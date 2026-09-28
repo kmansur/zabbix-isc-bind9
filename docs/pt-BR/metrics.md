@@ -2,9 +2,9 @@
 
 [English](../en/metrics.md)
 
-A versão 1.0.0 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
+A versão 1.0.1 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
 
-## Interpretado na 1.0.0
+## Interpretado na 1.0.x
 
 - versão do BIND e versão JSON das estatísticas;
 - uptime do servidor e tempo desde a última configuração;
@@ -29,7 +29,7 @@ Itens mestres JSON brutos possuem histórico curto e sem trends. Métricas numé
 
 ## Nível de estatísticas por zona
 
-Identidade da zona, serial e timers básicos não exigem contadores completos por zona. Os contadores DNSSEC por zona exigem `zone-statistics full` no BIND para as zonas relevantes. Quando esses blocos não existem, a descoberta DNSSEC fica vazia e o template comum não cria itens DNSSEC unsupported.
+O endpoint de zonas do BIND pode expor identidade, serial e timers, mas o template base mantém deliberadamente apenas contadores agregados de zonas. Itens de refresh/expiry de secundárias são opt-in. Os contadores DNSSEC por zona exigem `zone-statistics full` no BIND para as zonas relevantes. Quando esses blocos não existem, a descoberta DNSSEC fica vazia e o template comum não cria itens DNSSEC unsupported.
 
 ## Monitoramento de transferências recebidas
 
