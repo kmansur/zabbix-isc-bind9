@@ -240,7 +240,8 @@ jobs:
       - name: Start official ISC BIND
         shell: bash
         run: |
-          docker run -d --name bind-ci \
+          docker network create bind-runtime-ci
+          docker run -d --name bind-ci --network bind-runtime-ci \
             -p 127.0.0.1:18053:8053 \
             -v "${RUNNER_TEMP}/named.conf:/etc/bind/named.conf:ro" \
             -v "${RUNNER_TEMP}/db.template.test:/etc/bind/db.template.test:ro" \
@@ -259,31 +260,27 @@ jobs:
           set -euo pipefail
           IMAGE="zabbix/zabbix-agent:alpine-7.0-latest"
           docker pull "$IMAGE"
+          BIND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bind-ci)
+          echo "Testing classic agent against BIND at $BIND_IP"
 
           run_agent() {
-            docker run --rm --network container:bind-ci \
+            docker run --rm --network bind-runtime-ci \
               --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" -t "$1"
           }
 
-          OUT=$(run_agent 'web.page.get[127.0.0.1,/json/v1/status,8053]')
+          OUT=$(run_agent "web.page.get[$BIND_IP,/json/v1/status,8053]")
           printf '%s\n' "$OUT"
           grep -q '200 OK' <<<"$OUT"
 
-          for i in $(seq 1 15); do
-            OUT=$(run_agent 'net.dns[127.0.0.1,www.template.test,A,1,2,udp]')
-            printf '%s\n' "$OUT"
-            if grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"; then
-              break
-            fi
-            sleep 1
-          done
-          grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
-
-          OUT=$(run_agent 'net.dns[127.0.0.1,www.template.test,A,1,2,tcp]')
+          OUT=$(run_agent "net.dns[$BIND_IP,www.template.test,A,1,2,udp]")
           printf '%s\n' "$OUT"
           grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
 
-          OUT=$(run_agent 'net.dns.perf[127.0.0.1,www.template.test,A,1,2,udp]')
+          OUT=$(run_agent "net.dns[$BIND_IP,www.template.test,A,1,2,tcp]")
+          printf '%s\n' "$OUT"
+          grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
+
+          OUT=$(run_agent "net.dns.perf[$BIND_IP,www.template.test,A,1,2,udp]")
           printf '%s\n' "$OUT"
           grep -Eq '\[[[:alpha:]]+\|0\.[0-9]+' <<<"$OUT"
 
@@ -293,31 +290,27 @@ jobs:
           set -euo pipefail
           IMAGE="zabbix/zabbix-agent2:alpine-7.0-latest"
           docker pull "$IMAGE"
+          BIND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bind-ci)
+          echo "Testing agent2 against BIND at $BIND_IP"
 
           run_agent() {
-            docker run --rm --network container:bind-ci \
+            docker run --rm --network bind-runtime-ci \
               --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" -t "$1"
           }
 
-          OUT=$(run_agent 'web.page.get[127.0.0.1,/json/v1/status,8053]')
+          OUT=$(run_agent "web.page.get[$BIND_IP,/json/v1/status,8053]")
           printf '%s\n' "$OUT"
           grep -q '200 OK' <<<"$OUT"
 
-          for i in $(seq 1 15); do
-            OUT=$(run_agent 'net.dns[127.0.0.1,www.template.test,A,1,2,udp]')
-            printf '%s\n' "$OUT"
-            if grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"; then
-              break
-            fi
-            sleep 1
-          done
-          grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
-
-          OUT=$(run_agent 'net.dns[127.0.0.1,www.template.test,A,1,2,tcp]')
+          OUT=$(run_agent "net.dns[$BIND_IP,www.template.test,A,1,2,udp]")
           printf '%s\n' "$OUT"
           grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
 
-          OUT=$(run_agent 'net.dns.perf[127.0.0.1,www.template.test,A,1,2,udp]')
+          OUT=$(run_agent "net.dns[$BIND_IP,www.template.test,A,1,2,tcp]")
+          printf '%s\n' "$OUT"
+          grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
+
+          OUT=$(run_agent "net.dns.perf[$BIND_IP,www.template.test,A,1,2,udp]")
           printf '%s\n' "$OUT"
           grep -Eq '\[[[:alpha:]]+\|0\.[0-9]+' <<<"$OUT"
 
