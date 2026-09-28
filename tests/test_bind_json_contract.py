@@ -68,7 +68,6 @@ KNOWN_CACHE_STATS = {
 }
 
 
-
 def load(name: str) -> dict:
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
 
