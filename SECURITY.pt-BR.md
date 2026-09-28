@@ -26,4 +26,4 @@ Uma issue pública sanitizada pode ser utilizada quando o problema puder ser rep
 
 ## Versões suportadas
 
-A versão `0.1.0` é uma candidata de engenharia. Ainda não existe release promovida como estável para produção; `STABLE_VERSION` permanece `0.0.0`.
+A versão `0.4.0` é a candidata de engenharia atual. Ainda não existe release promovida como estável para produção; `STABLE_VERSION` permanece `0.0.0`.
