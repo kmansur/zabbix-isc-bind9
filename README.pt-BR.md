@@ -40,7 +40,7 @@ statistics-channels {
 
 Agents mais antigos podem funcionar se fornecerem as chaves padrão utilizadas pelo template, mas não fazem parte da matriz mantida de testes.
 
-A versão 0.4.0 inclui oito gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
+A versão 0.4.0 inclui nove gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
 
 ## Versionamento
 
