@@ -2,7 +2,7 @@
 
 [Português (Brasil)](../pt-BR/dashboard.md)
 
-Version 1.0.1 provides a streamlined native Zabbix template dashboard and reusable classic graphs.
+Version 1.0.2 provides a streamlined native Zabbix template dashboard and reusable classic graphs.
 
 ## Template dashboard
 
@@ -17,6 +17,7 @@ The first page is intended for day-to-day operations. It includes:
 - total, primary and secondary zone counts;
 - memory in use;
 - DNS UDP/TCP state;
+- BIND JSON statistics version;
 - local DNS response-time graph;
 - query-rate graph;
 - query-error graph;
