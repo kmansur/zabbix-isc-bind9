@@ -4,43 +4,61 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 
 ## [Não publicado]
 
+Sem alterações não publicadas.
+
+## [1.0.0] - 2026-09-28
+
+Primeira release estável para produção do **ISC BIND by Zabbix agent**.
+
 ### Validação
-- Confirmados os checks nativos de disponibilidade DNS UDP/TCP e tempo de resposta com Zabbix agent clássico no Ubuntu 24.04/BIND 9.18.39; os tempos locais ficaram abaixo de 1 ms.
-- Adicionada validação live do statistics-channel contra os containers oficiais do ISC BIND 9.18 e 9.20, incluindo o comportamento version-aware de `/json/v1/xfrins`.
-- Adicionadas fixtures de contrato JSON do BIND 9.18/9.20 e cobertura pytest para as estruturas de endpoint usadas pelo preprocessing e LLD.
-- Adicionado gate de fresh-import do Zabbix 8.0 trunk no CI usando as imagens Docker oficiais de desenvolvimento.
-- Concluída a auditoria de limpeza do template passivo contra o template comunitário original: não restam tipos de item ativos, macros BIND9 antigas, macros LLD antigas, porta 8653, keys compartilhadas ou UUIDs compartilhados. O nome do projeto original permanece apenas na atribuição de licença.
-- O CI valida Python 3.11, 3.13 e 3.14, estrutura do template, documentação bilíngue e importação limpa no Zabbix 7.0.
+
+- Validação real em runtime no Ubuntu 24.04 com BIND 9.18.39 e Zabbix Agent clássico.
+- Checks nativos de disponibilidade DNS UDP/TCP e tempo de resposta validados no ambiente real; tempos locais abaixo de 1 ms.
+- Validação live do contrato do statistics-channel contra as imagens oficiais ISC BIND 9.18.50 e 9.20.29.
+- Validação version-aware confirma ausência de `/json/v1/xfrins` no BIND 9.18 e presença no BIND 9.20.
+- Checks de capacidade do Zabbix Agent clássico e Agent 2 executados contra instâncias BIND reais no CI.
+- Gates de fresh-import para Zabbix 7.0 e imagens oficiais trunk de desenvolvimento do Zabbix 8.0.
+- Python 3.11, 3.13 e 3.14 com lint, formatação, pytest, validação de templates e documentação bilíngue.
+- Fixtures JSON do BIND 9.18/9.20 protegem as premissas de preprocessing e LLD.
+- Paridade funcional completa entre os corpos dos templates 7.0 e 8.0 e suas definições de gráficos.
+- Auditoria do template passivo confirma que não restam tipos ativos antigos, macros BIND9 legadas, macros LLD antigas, porta 8653, keys ou UUIDs compartilhados com a origem comunitária.
 
 ### Adicionado
-- Adicionados cards de saúde DNS UDP/TCP e gráfico de tempo de resposta DNS local na página Overview.
-- Adicionadas verificações nativas de disponibilidade real do serviço DNS via UDP/TCP e tempo de resposta usando `net.dns` e `net.dns.perf`.
-- Adicionado o gráfico `BIND: DNS query response time` e value map de estado do serviço.
-- Adicionados oito gráficos clássicos reutilizáveis e a dashboard nativa de três páginas `ISC BIND: Overview`.
-- Adicionados navegadores dinâmicos na dashboard para query types, response codes, nsstats, resolver, sockets e itens relacionados a zonas.
-- Adicionados graph prototypes do cache do resolver por view para hits/misses, memória e quantidade de nós.
-- Monitoramento compatível de transferências recebidas do BIND 9.20 via `/json/v1/xfrins`, com indicador de compatibilidade e sem itens unsupported no BIND 9.18.
-- Timers de refresh e expiração de zonas secundárias com prototypes de trigger.
-- Descoberta de contadores DNSSEC de assinatura/refresh para zonas que exportam `dnssec-sign`/`dnssec-refresh`.
-- Monitoramento do resolver por view, incluindo contadores, tipos de query recursiva e descoberta ADB.
-- Métricas de cache do resolver para hits/misses, evictions, nós e memória do cache.
-- Métricas de memória do BIND a partir do endpoint nativo de memória.
-- Contadores agregados para zonas totais, primárias e secundárias.
+
+- Disponibilidade DNS UDP/TCP e tempo de resposta usando `net.dns[]` e `net.dns.perf[]`.
+- Versão do BIND, versão JSON das estatísticas, uptime e idade da configuração.
+- Taxas IPv4/IPv6, recursão, queries descartadas e SERVFAIL.
+- LLD de `nsstats`, tipos de query, response codes e estatísticas de sockets.
+- Estatísticas do resolver, query types, ADB e cache por view do BIND.
+- Memória em uso, memória malloced e contextos de memória.
+- Contadores agregados de zonas totais, primárias e secundárias.
+- Monitoramento opt-in de refresh/expiry de zonas secundárias com trigger prototypes.
+- Contadores DNSSEC por zona em modo opt-in.
+- Monitoramento de transferências recebidas do BIND 9.20 via `/json/v1/xfrins`, com compatibilidade limpa no BIND 9.18.
+- Nove gráficos clássicos reutilizáveis.
+- Três graph prototypes de cache por view.
+- Dashboard nativa de três páginas `ISC BIND: Overview`: Overview, DNS activity e Resolver & resources.
+- Navegadores dinâmicos para query types, response codes, nsstats, resolver, sockets e itens de zonas.
+- CI, CodeQL, testes de higiene do repositório e documentação bilíngue EN/pt-BR.
 
 ### Alterado
-- A indisponibilidade do statistics-channel passa a ser Warning porque a disponibilidade do serviço DNS é monitorada independentemente.
-- Anomalias de SERVFAIL e queries descartadas passam a Warning e dependem da disponibilidade do statistics-channel.
-- Renomeado o template de `ISC BIND 9 by Zabbix Agent` para `ISC BIND by Zabbix agent`. O nome do repositório permanece inalterado.
-- A descoberta individual de refresh/expiry das zonas secundárias passa a ser opt-in via `{$BIND.ZONE.SECONDARY.MATCHES}`; o padrão `^$` não cria itens individuais por zona secundária.
-- Removida a descoberta padrão de serial SOA e idade de carregamento para todas as zonas; o template base passa a usar contadores agregados de zonas totais/primárias/secundárias.
-- A descoberta DNSSEC por zona passa a ser opt-in via `{$BIND.ZONE.DNSSEC.MATCHES}` para controlar cardinalidade.
-- Contadores opcionais do BIND com valor zero passam a ser normalizados para zero em vez de ficarem unsupported.
-- Alterado o padrão dos itens mestres de active para passive Zabbix agent checks. Isso remove a dependência de `ServerActive` e mantém compatibilidade com Agent 2.
 
-### Corrigido
-- Corrigido `{$BIND.STATS.HOST}` para usar `127.0.0.1` em vez de URL completa quando `web.page.get[]` também fornece path e porta.
-- A descoberta de estatísticas de socket agora utiliza `/json/v1/net`, conforme a semântica do statistics-channel do BIND.
+- Identidade do template padronizada como `ISC BIND by Zabbix agent`.
+- Checks passivos do Zabbix Agent são a arquitetura padrão; `ServerActive` não é necessário.
+- Indisponibilidade do statistics-channel é Warning porque o serviço DNS é validado separadamente.
+- Anomalias de SERVFAIL e queries descartadas são Warning e dependem da disponibilidade do statistics-channel.
+- Monitoramento por zona é opt-in para manter baixa a cardinalidade padrão.
+- Contadores opcionais zerados são normalizados ou omitidos com segurança em vez de gerar ruído unsupported.
+- Descoberta de sockets utiliza `/json/v1/net`, conforme a semântica do BIND.
+- `{$BIND.STATS.HOST}` usa `127.0.0.1`, pois path e porta são fornecidos separadamente ao `web.page.get[]`.
+
+### Segurança
+
+- Arquitetura somente leitura.
+- statistics-channel restrito ao loopback por padrão.
+- Não requer `sudo`, `rndc`, `system.run[]`, scripts externos, `curl`, `jq`, itens SSH/Telnet ou plugins exclusivos do Agent 2.
+- Não requer permissão de escrita/controle no BIND.
 
 ## [0.4.0] - 2026-09-27
 
-Candidata de engenharia com dashboard/gráficos. Ainda não existe release promovida como estável para produção.
+Linha final candidata de engenharia usada para validação de runtime, dashboard e CI antes da 1.0.0.
