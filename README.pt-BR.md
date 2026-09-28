@@ -4,7 +4,7 @@
 
 Template Zabbix com foco em segurança para monitoramento do **ISC BIND** através do canal HTTP nativo de estatísticas do BIND. O projeto é compatível com **Zabbix Agent** e **Zabbix Agent 2** e evita dependências exclusivas do Agent 2 ou scripts externos.
 
-> **Release estável:** a versão `1.0.1` é a release estável atual do projeto para produção.
+> **Release estável:** a versão `1.0.2` é a release estável atual do projeto para produção.
 
 ## Objetivos
 
@@ -15,7 +15,7 @@ Template Zabbix com foco em segurança para monitoramento do **ISC BIND** atrav�
 - documentação em inglês com versão equivalente em português do Brasil;
 - Zabbix 7.0 como baseline principal e Zabbix 8.0 como alvo de compatibilidade.
 
-A versão 1.0.1 também monitora disponibilidade DNS UDP/TCP e tempo de resposta usando as keys nativas `net.dns` e `net.dns.perf` do Zabbix Agent.
+A versão 1.0.2 monitora disponibilidade DNS UDP/TCP e tempo de resposta usando as keys nativas `net.dns` e `net.dns.perf`; os alertas funcionais ficam desabilitados por padrão até a escolha de um nome de teste válido para o host.
 
 ## Configuração recomendada
 
@@ -31,25 +31,25 @@ statistics-channels {
 | --- | --- |
 | Zabbix Server 7.0 LTS | Principal |
 | Zabbix Server 8.0 | Validado em runtime no 8.0.0beta2; export mantido para a linha 8.0 |
-| Zabbix Agent 6.0+ | Suportado pelo projeto |
-| Zabbix Agent 2 6.0+ | Suportado pelo projeto |
+| Zabbix Agent 7.0+ | Alvo suportado e testado |
+| Zabbix Agent 2 7.0+ | Alvo suportado e testado |
 | FreeBSD | Compatível por arquitetura com Agent clássico; validação runtime recomendada |
 | Linux | Agent clássico ou Agent 2 |
 | ISC BIND 9.20 | Alvo principal suportado |
 | ISC BIND 9.18.50 | Compatibilidade legado (EOL upstream) |
 
-Agents mais antigos podem funcionar se fornecerem as chaves padrão utilizadas pelo template, mas não fazem parte da matriz mantida de testes.
+Agents mais antigos ficam fora da matriz mantida de testes. O template atual requer as keys padrão `web.page.get[]`, `net.dns[]` e `net.dns.perf[]`; o baseline mantido é 7.0+.
 
-A versão 1.0.1 inclui nove gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
+A versão 1.0.2 inclui nove gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
 
 ## Versionamento
 
 ```text
-VERSION:        1.0.1
-STABLE_VERSION: 1.0.1
+VERSION:        1.0.2
+STABLE_VERSION: 1.0.2
 ```
 
-`STABLE_VERSION` identifica a linha suportada para produção. A versão `1.0.1` é o baseline estável atual.
+`STABLE_VERSION` identifica a linha suportada para produção. A versão `1.0.2` é o baseline estável atual.
 
 ## Origem
 
