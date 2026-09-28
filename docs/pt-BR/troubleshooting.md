@@ -7,7 +7,7 @@
 1. Confirme que o BIND carregou a configuração `statistics-channels`.
 2. Teste `/json/v1/status` localmente no host monitorado.
 3. Confirme `{$BIND.STATS.HOST}` e `{$BIND.STATS.PORT}`.
-4. Confirme o funcionamento dos active checks do Zabbix no host.
+4. Confirme que os checks passivos do Zabbix agent funcionam no host e que a interface Agent está acessível pelo Zabbix Server/Proxy.
 5. Confirme que o build do BIND possui suporte às estatísticas JSON.
 
 ## Ubuntu 24.04: named funciona, mas o systemd permanece em activating
