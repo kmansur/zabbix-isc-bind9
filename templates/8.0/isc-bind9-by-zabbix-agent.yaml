@@ -29,7 +29,7 @@ zabbix_export:
         Exports are maintained for Zabbix 7.0 and 8.0.
       vendor:
         name: Net Tech
-        version: 1.0-0
+        version: 1.0-1
       groups:
         - name: Templates/Applications
       items:
@@ -1970,122 +1970,22 @@ zabbix_export:
                     - type: STRING
                       name: reference
                       value: BNDPC
-                - type: itemnavigator
-                  name: 'Query types'
+                - type: graph
                   'y': '10'
-                  width: '24'
-                  height: '9'
+                  width: '72'
+                  height: '5'
                   fields:
-                    - type: INTEGER
-                      name: item_tags.0.operator
-                      value: '1'
-                    - type: STRING
-                      name: item_tags.0.tag
-                      value: component
-                    - type: STRING
-                      name: item_tags.0.value
-                      value: qtypes
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        name: 'BIND: DNS query response time'
                     - type: STRING
                       name: reference
                       value: BNDPD
-                    - type: INTEGER
-                      name: show_lines
-                      value: '100'
-                - type: itemnavigator
-                  name: 'Response codes'
-                  x: '24'
-                  'y': '10'
-                  width: '24'
-                  height: '9'
-                  fields:
-                    - type: INTEGER
-                      name: item_tags.0.operator
-                      value: '1'
-                    - type: STRING
-                      name: item_tags.0.tag
-                      value: component
-                    - type: STRING
-                      name: item_tags.0.value
-                      value: rcodes
-                    - type: STRING
-                      name: reference
-                      value: BNDPE
-                    - type: INTEGER
-                      name: show_lines
-                      value: '100'
-                - type: itemnavigator
-                  name: 'Server counters'
-                  x: '48'
-                  'y': '10'
-                  width: '24'
-                  height: '9'
-                  fields:
-                    - type: INTEGER
-                      name: item_tags.0.operator
-                      value: '1'
-                    - type: STRING
-                      name: item_tags.0.tag
-                      value: component
-                    - type: STRING
-                      name: item_tags.0.value
-                      value: nsstats
-                    - type: STRING
-                      name: reference
-                      value: BNDPF
-                    - type: INTEGER
-                      name: show_lines
-                      value: '100'
             - name: 'Resolver & resources'
               widgets:
-                - type: itemnavigator
-                  name: 'Resolver counters'
-                  width: '36'
-                  height: '10'
-                  fields:
-                    - type: INTEGER
-                      name: group_by.0.attribute
-                      value: '3'
-                    - type: STRING
-                      name: group_by.0.tag_name
-                      value: bind-view
-                    - type: INTEGER
-                      name: item_tags.0.operator
-                      value: '1'
-                    - type: STRING
-                      name: item_tags.0.tag
-                      value: component
-                    - type: STRING
-                      name: item_tags.0.value
-                      value: resolver
-                    - type: STRING
-                      name: reference
-                      value: BNDRA
-                    - type: INTEGER
-                      name: show_lines
-                      value: '200'
-                - type: itemnavigator
-                  name: 'Socket statistics'
-                  x: '36'
-                  width: '36'
-                  height: '10'
-                  fields:
-                    - type: INTEGER
-                      name: item_tags.0.operator
-                      value: '1'
-                    - type: STRING
-                      name: item_tags.0.tag
-                      value: component
-                    - type: STRING
-                      name: item_tags.0.value
-                      value: sockets
-                    - type: STRING
-                      name: reference
-                      value: BNDRB
-                    - type: INTEGER
-                      name: show_lines
-                      value: '200'
                 - type: graphprototype
-                  'y': '10'
                   width: '36'
                   height: '5'
                   fields:
@@ -2099,10 +1999,9 @@ zabbix_export:
                         name: 'BIND cache [{#BIND.VIEW}]: Hit and miss rates'
                     - type: STRING
                       name: reference
-                      value: BNDRC
+                      value: BNDRA
                 - type: graphprototype
                   x: '36'
-                  'y': '10'
                   width: '36'
                   height: '5'
                   fields:
@@ -2116,9 +2015,9 @@ zabbix_export:
                         name: 'BIND cache [{#BIND.VIEW}]: Memory'
                     - type: STRING
                       name: reference
-                      value: BNDRD
+                      value: BNDRB
                 - type: graphprototype
-                  'y': '15'
+                  'y': '5'
                   width: '36'
                   height: '5'
                   fields:
@@ -2132,10 +2031,10 @@ zabbix_export:
                         name: 'BIND cache [{#BIND.VIEW}]: Nodes'
                     - type: STRING
                       name: reference
-                      value: BNDRE
+                      value: BNDRC
                 - type: graph
                   x: '36'
-                  'y': '15'
+                  'y': '5'
                   width: '36'
                   height: '5'
                   fields:
@@ -2146,9 +2045,9 @@ zabbix_export:
                         name: 'BIND: Memory usage'
                     - type: STRING
                       name: reference
-                      value: BNDRF
+                      value: BNDRD
                 - type: graph
-                  'y': '20'
+                  'y': '10'
                   width: '36'
                   height: '5'
                   fields:
@@ -2159,10 +2058,10 @@ zabbix_export:
                         name: 'BIND: Zone inventory'
                     - type: STRING
                       name: reference
-                      value: BNDRG
+                      value: BNDRE
                 - type: graph
                   x: '36'
-                  'y': '20'
+                  'y': '10'
                   width: '36'
                   height: '5'
                   fields:
@@ -2173,10 +2072,10 @@ zabbix_export:
                         name: 'BIND: Incoming transfers'
                     - type: STRING
                       name: reference
-                      value: BNDRH
+                      value: BNDRF
                 - type: graph
-                  'y': '25'
-                  width: '36'
+                  'y': '15'
+                  width: '72'
                   height: '5'
                   fields:
                     - type: GRAPH
@@ -2186,35 +2085,7 @@ zabbix_export:
                         name: 'BIND: Incoming transfer rate'
                     - type: STRING
                       name: reference
-                      value: BNDRI
-                - type: itemnavigator
-                  name: 'Zone-related items'
-                  x: '36'
-                  'y': '25'
-                  width: '36'
-                  height: '7'
-                  fields:
-                    - type: INTEGER
-                      name: group_by.0.attribute
-                      value: '3'
-                    - type: STRING
-                      name: group_by.0.tag_name
-                      value: bind-zone
-                    - type: INTEGER
-                      name: item_tags.0.operator
-                      value: '1'
-                    - type: STRING
-                      name: item_tags.0.tag
-                      value: component
-                    - type: STRING
-                      name: item_tags.0.value
-                      value: zones
-                    - type: STRING
-                      name: reference
-                      value: BNDRJ
-                    - type: INTEGER
-                      name: show_lines
-                      value: '200'
+                      value: BNDRG
 
   graphs:
     - uuid: 7a577742752e46149a724b9e88af5201
