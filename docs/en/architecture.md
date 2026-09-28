@@ -22,4 +22,4 @@ Raw master items
 
 The design avoids external scripts and privileged control paths. Raw endpoint data is retained briefly, while derived numeric metrics keep normal history.
 
-The first candidate uses `/json/v1/status`, `server`, `zones`, `mem`, `net` and `traffic`. Additional parsing is added only after cross-version validation.
+Version 1.0.0 uses `/json/v1/status`, `server`, `zones`, `mem`, `net` and `traffic`, plus the version-aware `/json/v1/xfrins` path on BIND 9.20. Parsing is promoted only after cross-version validation.
