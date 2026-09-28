@@ -168,6 +168,57 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
+        - uuid: a7d0ef7451d4460789f690f72ef89c12
+          name: 'BIND: TCP connections high-water'
+          type: DEPENDENT
+          key: bind.nsstats.tcpconn.highwater
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.TCPConnHighWater
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: queries
+        - uuid: f42fc38dba954a26a823af30a84b82a7
+          name: 'BIND: Recursive clients high-water'
+          type: DEPENDENT
+          key: bind.nsstats.recurs.highwater
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.RecursHighwater
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: resolver
+        - uuid: f96213adbfed4acebe73eb2f5babfc30
+          name: 'BIND: Recursive clients current'
+          type: DEPENDENT
+          key: bind.nsstats.recurs.clients
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.RecursClients
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: resolver
         - uuid: 70a53c2f16934d3d8bf8fad2f90ce827
           name: 'BIND: Zone statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
@@ -184,7 +235,7 @@ zabbix_export:
             - tag: component
               value: raw
         - uuid: 81f8e78c7a0544b787e5c5a12fce5140
-          name: 'BIND: Zones total'
+          name: 'BIND: Zones total (all types)'
           type: DEPENDENT
           key: bind.zones.total
           delay: '0'
@@ -254,6 +305,56 @@ zabbix_export:
           tags:
             - tag: component
               value: zones
+        - uuid: acf8eea560874a1ab02f2575c3fbac88
+          name: 'BIND: Built-in zones'
+          type: DEPENDENT
+          key: bind.zones.builtin
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var total = 0;
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      (d.views[viewName].zones || []).forEach(function (zone) {
+                          if (zone.type === "builtin") {
+                              total++;
+                          }
+                      });
+                  });
+                  return total;
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: zones
+        - uuid: 58dfb2b6a2a64817993071f9a2c3da58
+          name: 'BIND: Other zones'
+          type: DEPENDENT
+          key: bind.zones.other
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var total = 0;
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      (d.views[viewName].zones || []).forEach(function (zone) {
+                          if (zone.type !== "primary" && zone.type !== "secondary" && zone.type !== "builtin") {
+                              total++;
+                          }
+                      });
+                  });
+                  return total;
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: zones
         - uuid: 214c0cd671e24a45bf080beae40be0ea
           name: 'BIND: Memory statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/mem","{$BIND.STATS.PORT}"]'
@@ -284,6 +385,108 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
+        - uuid: 61c9dc8157374b9bbfe280c490a77fd9
+          name: 'BIND: UDP/IPv4 sockets active'
+          type: DEPENDENT
+          key: bind.sockstats.udp4.active
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.sockstats.UDP4Active
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: sockets
+        - uuid: 3c263a00ae134235a019671323f72339
+          name: 'BIND: UDP/IPv6 sockets active'
+          type: DEPENDENT
+          key: bind.sockstats.udp6.active
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.sockstats.UDP6Active
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: sockets
+        - uuid: 0890ed84a74b4adab8054932dcb73df9
+          name: 'BIND: TCP/IPv4 sockets active'
+          type: DEPENDENT
+          key: bind.sockstats.tcp4.active
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.sockstats.TCP4Active
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: sockets
+        - uuid: bb078492128149e09b2b94bd6ada09b5
+          name: 'BIND: TCP/IPv6 sockets active'
+          type: DEPENDENT
+          key: bind.sockstats.tcp6.active
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.sockstats.TCP6Active
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: sockets
+        - uuid: 505b0346ea0e4c3c93e32e935bf82a25
+          name: 'BIND: TCP/IPv4 clients connected'
+          type: DEPENDENT
+          key: bind.sockstats.tcp4.clients
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.sockstats.TCP4Clients
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: sockets
+        - uuid: a8ff8531f31940a790326887497fbc33
+          name: 'BIND: TCP/IPv6 clients connected'
+          type: DEPENDENT
+          key: bind.sockstats.tcp6.clients
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.sockstats.TCP6Clients
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: sockets
         - uuid: 3f658d65668d46479ff0e8bbbd4fec2c
           name: 'BIND: Traffic statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/traffic","{$BIND.STATS.PORT}"]'
