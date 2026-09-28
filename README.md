@@ -34,7 +34,7 @@ The initial candidate includes:
 - UDP/TCP traffic-rate aggregation from BIND traffic histograms;
 - native UDP/TCP DNS availability and response-time checks through standard Zabbix agent keys;
 - availability and operational triggers for the statistics channel and critical DNS counters;
-- eight reusable classic graphs and a native three-page Zabbix dashboard.
+- nine reusable classic graphs and a native three-page Zabbix dashboard.
 
 Resolver, cache, DNSSEC, memory, network and transfer metrics are included where their semantics have been validated across the supported BIND branches.
 
