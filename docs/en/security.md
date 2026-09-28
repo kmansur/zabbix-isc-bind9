@@ -8,7 +8,7 @@ The project defaults follow these principles:
 
 - bind the statistics channel to loopback;
 - allow localhost only;
-- use Zabbix active checks for local acquisition;
+- use standard passive Zabbix agent checks for local acquisition;
 - require no privileged BIND control permissions;
 - perform no write or configuration operation;
 - avoid external parsing programs.
