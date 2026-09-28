@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 No unreleased changes.
 
+## [1.0.1] - 2026-09-28
+
+### Changed
+
+- Removed all `Item navigator` widgets from the template dashboard after real-use validation showed that the long Query Type, Response Code, `nsstats`, resolver, socket and zone lists added visual noise without improving day-to-day operations.
+- Reorganized the **DNS activity** page around query rates, query errors, DNS transport traffic and DNS response time.
+- Reorganized **Resolver & resources** around resolver-cache graph prototypes, memory, zone inventory and transfer graphs.
+- Detailed LLD values remain available through Latest data without being forced into the operational dashboard.
+
 ## [1.0.0] - 2026-09-28
 
 First production-stable release of **ISC BIND by Zabbix agent**.
