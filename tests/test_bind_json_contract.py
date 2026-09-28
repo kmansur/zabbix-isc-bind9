@@ -101,18 +101,16 @@ def test_bind_920_transfer_contract() -> None:
     data = load("bind-9.20.json")
 
     assert data["bind_version"].startswith("9.20.")
-    assert {"RecursClients", "RecursHighwater", "TCPConnHighWater"} <= data[
-        "server"
-    ]["nsstats"].keys()
+    assert {"RecursClients", "RecursHighwater", "TCPConnHighWater"} <= data["server"][
+        "nsstats"
+    ].keys()
 
     resolver = data["server"]["views"]["_default"]["resolver"]
     assert {"stats", "qtypes", "cache", "cachestats", "adb"} <= resolver.keys()
     assert {"QueryCurUDP", "QueryCurTCP", "NumFetch", "BucketSize"} <= resolver[
         "stats"
     ].keys()
-    assert {"nentries", "entriescnt", "nnames", "namescnt"} <= resolver[
-        "adb"
-    ].keys()
+    assert {"nentries", "entriescnt", "nnames", "namescnt"} <= resolver["adb"].keys()
     assert {"UDP4Active", "TCP4Active", "TCP4Clients"} <= data["net"][
         "sockstats"
     ].keys()
