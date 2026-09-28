@@ -97,7 +97,9 @@ def load_template(version, path):
     assert dashboards[0]["name"] == "ISC BIND: Overview"
     page_names = [page.get("name", "") for page in dashboards[0].get("pages", [])]
     assert page_names == ["Overview", "DNS activity", "Resolver & resources"]
-    assert "itemnavigator" not in text, "dashboard must not contain item navigator widgets"
+    assert "itemnavigator" not in text, (
+        "dashboard must not contain item navigator widgets"
+    )
 
     graph_names = {graph["name"] for graph in export.get("graphs", [])}
     expected_graphs = {
@@ -164,9 +166,7 @@ def load_template(version, path):
         assert name in preprocessing_script(resolver_gauge)
 
     adb_rule = discovery_rule(template, "bind.resolver.adb.discovery")
-    adb_item = prototype(
-        adb_rule, "bind.resolver.adb[{#BIND.VIEW},{#BIND.COUNTER}]"
-    )
+    adb_item = prototype(adb_rule, "bind.resolver.adb[{#BIND.VIEW},{#BIND.COUNTER}]")
     assert "CHANGE_PER_SECOND" not in preprocessing_types(adb_item)
 
     cache_rule = next(
