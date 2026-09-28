@@ -35,7 +35,7 @@ def load_template(version, path):
     assert template["template"] == EXPECTED_NAME
     assert template["name"] == EXPECTED_NAME
     assert template["vendor"]["name"] == "Net Tech"
-    assert template["vendor"]["version"] == "1.0-0"
+    assert template["vendor"]["version"] == "1.0-1"
 
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
@@ -97,6 +97,7 @@ def load_template(version, path):
     assert dashboards[0]["name"] == "ISC BIND: Overview"
     page_names = [page.get("name", "") for page in dashboards[0].get("pages", [])]
     assert page_names == ["Overview", "DNS activity", "Resolver & resources"]
+    assert "itemnavigator" not in text, "dashboard must not contain item navigator widgets"
 
     graph_names = {graph["name"] for graph in export.get("graphs", [])}
     expected_graphs = {
