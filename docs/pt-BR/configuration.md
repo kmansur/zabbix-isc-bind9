@@ -59,3 +59,16 @@ O template valida o serviço DNS de forma independente do statistics-channel.
 | `{$BIND.DNS.RESPONSE.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta em segundos |
 
 A consulta padrão `localhost/A` é um teste local de baixo custo. Altere nome/tipo no host caso o BIND monitorado não responda essa consulta.
+
+
+### Escolhendo o nome para o teste funcional de DNS
+
+O padrão `{$BIND.DNS.TEST.NAME}=localhost` foi validado com sucesso no ambiente real Ubuntu 24.04/BIND 9.18.39 usado durante o desenvolvimento, mas não existe garantia de que toda configuração BIND responda esse nome.
+
+Escolha um nome que represente o papel do servidor monitorado:
+
+- **servidor autoritativo:** utilize um registro estável de uma zona que essa instância BIND deva responder autoritativamente;
+- **resolver recursivo:** utilize um nome externo estável somente quando a recursão estiver intencionalmente habilitada e deva funcionar;
+- **papel misto:** prefira um registro autoritativo estável para testar o daemon local e use monitoramento externo separado caso seja necessário medir a recursão fim a fim.
+
+Antes de encaminhar alertas para produção, valide localmente o nome configurado em UDP e TCP usando os mesmos parâmetros de `net.dns[]` do template. Valor `1` significa que a consulta produziu resposta; valor `0` significa que a troca DNS não produziu uma resposta utilizável.
