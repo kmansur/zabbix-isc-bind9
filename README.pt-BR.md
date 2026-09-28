@@ -17,6 +17,8 @@ Template Zabbix com foco em segurança para monitoramento do **ISC BIND** atrav�
 
 A versão 1.0.2 monitora disponibilidade DNS UDP/TCP e tempo de resposta usando as keys nativas `net.dns` e `net.dns.perf`; os alertas funcionais ficam desabilitados por padrão até a escolha de um nome de teste válido para o host.
 
+A linha em desenvolvimento também adiciona checks independentes do processo `named` e dos listeners UDP/TCP, normalização escalável do dataset de zonas, serial local de secundárias selecionadas, hit ratio do cache e monitoramento dedicado de clientes recursivos.
+
 ## Configuração recomendada
 
 ```conf
