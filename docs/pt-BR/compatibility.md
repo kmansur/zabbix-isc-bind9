@@ -31,7 +31,7 @@ Os endpoints JSON `status`, `server`, `zones`, `mem`, `net` e `traffic` foram va
 
 O export 8.0 é importado continuamente no CI contra as imagens Docker oficiais trunk do Zabbix.
 
-Além disso, o template na versão `1.0-2` foi importado com sucesso em um servidor real **Zabbix 8.0.0beta2** e vinculado ao host BIND monitorado. A coleta em runtime foi confirmada, incluindo disponibilidade DNS UDP/TCP e tempo de resposta, taxas de requests IPv4/IPv6, SERVFAIL/queries descartadas, métricas de transferências, memória, contadores de zonas, endpoints brutos de estatísticas e dados descobertos.
+Além disso, uma build anterior do template (`1.0-0`) foi importada com sucesso em um servidor real **Zabbix 8.0.0beta2** e vinculado ao host BIND monitorado. A coleta em runtime foi confirmada, incluindo disponibilidade DNS UDP/TCP e tempo de resposta, taxas de requests IPv4/IPv6, SERVFAIL/queries descartadas, métricas de transferências, memória, contadores de zonas, endpoints brutos de estatísticas e dados descobertos.
 
 No Zabbix 8.0.0beta2 validado, o template apresentou 35 itens base, 8 triggers, 9 gráficos clássicos, 1 dashboard e 10 regras de descoberta, com os dados descobertos sendo coletados normalmente.
 
@@ -50,7 +50,7 @@ O CI inicia as imagens Docker oficiais do ISC para BIND 9.18 e 9.20 com uma conf
 
 ## Validação real dos checks nativos de saúde DNS
 
-A validação em runtime no Ubuntu 24.04 com BIND 9.18.39 e Zabbix agent clássico confirmou todos os checks nativos de serviço usados pela versão 1.0.2.2 do template:
+A validação em runtime no Ubuntu 24.04 com BIND 9.18.39 e Zabbix agent clássico confirmou todos os checks nativos de serviço usados pela versão 1.0.2 do template:
 
 - disponibilidade DNS UDP: `1`
 - disponibilidade DNS TCP: `1`
@@ -62,4 +62,4 @@ A validação original utilizou `127.0.0.1`, nome `localhost`, tipo `A`, timeout
 
 ## Nota sobre FreeBSD
 
-O template utiliza deliberadamente apenas keys padrão do Agent clássico e não possui scripts auxiliares exclusivos de Linux nem comandos privilegiados. A coleção de Ports do FreeBSD disponibiliza o Zabbix 7 Agent clássico (`net-mgmt/zabbix7-agent`), que atende ao caminho de implantação projetado. A validação real em runtime do projeto foi realizada em Linux; por isso, no escopo da versão 1.0, o FreeBSD é considerado compatível por arquitetura, e não uma plataforma certificada separadamente em runtime.
+O template utiliza deliberadamente apenas keys padrão do Agent clássico e não possui scripts auxiliares exclusivos de Linux nem comandos privilegiados. A coleção de Ports do FreeBSD disponibiliza o Zabbix 7 Agent clássico (`net-mgmt/zabbix7-agent`), que atende ao caminho de implantação projetado. A validação real em runtime do projeto foi realizada em Linux; por isso, no escopo da versão 1.0.2, o FreeBSD é considerado compatível por arquitetura, e não uma plataforma certificada separadamente em runtime.
