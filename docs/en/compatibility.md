@@ -44,7 +44,7 @@ CI starts the official ISC Docker images for BIND 9.18 and 9.20 with a minimal s
 
 ## Real native DNS health-check validation
 
-Runtime validation on Ubuntu 24.04 with BIND 9.18.39 and the classic Zabbix agent confirmed all native service checks used by template version 0.4.0:
+Runtime validation on Ubuntu 24.04 with BIND 9.18.39 and the classic Zabbix agent confirmed all native service checks used by template version 1.0.0:
 
 - UDP DNS availability: `1`
 - TCP DNS availability: `1`
