@@ -50,6 +50,8 @@ type:   A
 
 A consulta `localhost/A` foi validada com sucesso no ambiente runtime Ubuntu 24.04/BIND 9.18.39 usado pelo projeto, mas nem toda configuração BIND é obrigada a responder esse nome.
 
+> **Importante:** `localhost` só é um padrão seguro quando a instância BIND monitorada está realmente configurada para responder `localhost/A`. Em servidores exclusivamente autoritativos, essa consulta pode legitimamente não produzir uma resposta utilizável e gerar falsos positivos de indisponibilidade UDP/TCP. Para servidores autoritativos, sobrescreva `{$BIND.DNS.TEST.NAME}` no host ou no template com um registro estável de uma zona servida pela própria instância BIND. Por exemplo, se o servidor é autoritativo por `example.com`, utilize `example.com` ou outro nome estável dessa zona.
+
 ### Escolhendo o nome para o teste funcional de DNS
 
 Escolha um nome que represente o papel do servidor monitorado:
