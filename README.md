@@ -58,15 +58,15 @@ No control operation is required by the template.
 | --- | --- |
 | Zabbix Server 7.0 LTS | Primary |
 | Zabbix Server 8.0 | Runtime validated on 8.0.0beta2; compatibility export maintained for the 8.0 line |
-| Zabbix Agent 6.0+ | Supported design target |
-| Zabbix Agent 2 6.0+ | Supported design target |
+| Zabbix Agent 7.0+ | Supported and tested design target |
+| Zabbix Agent 2 7.0+ | Supported and tested design target |
 | FreeBSD | Architecture-compatible with classic Zabbix Agent; runtime validation recommended |
 | Linux | Supported with Zabbix Agent or Agent 2 |
 | ISC BIND 9.20 | Primary supported validation target |
 | ISC BIND 9.18.50 | Legacy compatibility target (EOL upstream) |
 | ISC BIND newer supported branches | Compatibility target |
 
-Older agents may work when they provide the required standard `web.page.get[]` key, but they are not part of the project's maintained test matrix.
+Older agents are outside the maintained test matrix. The template requires the standard `web.page.get[]`, `net.dns[]` and `net.dns.perf[]` keys; in particular, the classic Zabbix Agent 6.0 line does not provide `net.dns.perf[]` and is therefore not a supported baseline.
 
 See [docs/en/compatibility.md](docs/en/compatibility.md) and [docs/en/dashboard.md](docs/en/dashboard.md).
 
