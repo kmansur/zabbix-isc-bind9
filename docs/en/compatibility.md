@@ -6,15 +6,15 @@
 | --- | --- |
 | Zabbix 7.0 | Primary export target |
 | Zabbix 8.0 | Runtime validated on Zabbix 8.0.0beta2; continuously fresh-import validated against official trunk images |
-| Classic Zabbix Agent 6.0+ | Maintained design target |
-| Zabbix Agent 2 6.0+ | Maintained design target |
+| Classic Zabbix Agent 7.0+ | Maintained and CI-tested design target |
+| Zabbix Agent 2 7.0+ | Maintained and CI-tested design target |
 | FreeBSD | Classic agent design path; package availability verified, runtime validation still recommended |
 | Linux | Classic agent or Agent 2 |
 | ISC BIND 9.20 | Primary supported BIND validation target |
 | ISC BIND 9.18.50 | Legacy compatibility target; upstream EOL |
 | ISC BIND 9.18.39 on Ubuntu 24.04 | Runtime statistics endpoint validation completed |
 
-The project does not claim support for every historical agent version. Older agents can work if the standard keys used by the template are available, but they are outside the maintained test matrix.
+The maintained agent baseline is 7.0+. The template requires `web.page.get[]`, `net.dns[]` and `net.dns.perf[]`. Classic Zabbix Agent 6.0 provides `net.dns[]` but not `net.dns.perf[]`, so 6.0 is not considered fully compatible with the current template.
 
 BIND builds must provide JSON statistics support. Endpoint availability and individual counters can vary by BIND branch/build; unsupported optional semantics are not guessed.
 
