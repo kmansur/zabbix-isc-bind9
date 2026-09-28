@@ -57,7 +57,7 @@ No control operation is required by the template.
 | Component | Project target |
 | --- | --- |
 | Zabbix Server 7.0 LTS | Primary |
-| Zabbix Server 8.0 | Compatibility export / validation target |
+| Zabbix Server 8.0 | Runtime validated on 8.0.0beta2; compatibility export maintained for the 8.0 line |
 | Zabbix Agent 6.0+ | Supported design target |
 | Zabbix Agent 2 6.0+ | Supported design target |
 | FreeBSD | Architecture-compatible with classic Zabbix Agent; runtime validation recommended |
