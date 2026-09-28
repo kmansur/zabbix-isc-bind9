@@ -2,7 +2,7 @@
 
 [Português (Brasil)](../pt-BR/dashboard.md)
 
-Version 1.0.0 adds a native Zabbix template dashboard and reusable classic graphs.
+Version 1.0.1 provides a streamlined native Zabbix template dashboard and reusable classic graphs.
 
 ## Template dashboard
 
@@ -33,26 +33,21 @@ This page focuses on request behavior and DNS protocol results:
 - IPv4, IPv6 and recursive query rates;
 - SERVFAIL and dropped-query rates;
 - UDP/TCP request and response rates;
-- dynamic Query Type navigator;
-- dynamic Response Code navigator;
-- dynamic server `nsstats` navigator.
+- local DNS response-time graph.
 
-The navigators use template item tags, so counters discovered by LLD appear automatically without requiring a dashboard redesign.
+Detailed Query Type, Response Code and `nsstats` values remain available in Latest data, but are intentionally not listed as dashboard navigators to keep the operational view concise.
 
 ### Resolver & resources
 
 This page focuses on recursive resolver behavior and resource-level diagnostics:
 
-- resolver counters grouped by BIND view;
 - resolver-cache graph prototypes per view for hit/miss rates, cache memory and cache nodes;
-- socket statistics;
 - memory graph;
 - zone inventory;
 - incoming transfers;
-- transfer rate;
-- zone-related item navigator.
+- transfer rate.
 
-Per-zone secondary and DNSSEC items remain opt-in. When enabled through their macros, discovered zone items automatically appear in the zone-related navigator.
+Detailed resolver, socket and per-zone items remain available in Latest data. Per-zone secondary and DNSSEC items remain opt-in through their macros.
 
 ## Classic graphs
 
@@ -68,4 +63,4 @@ The template also provides reusable graphs outside the dashboard:
 - `BIND: Server timing`
 - `BIND: DNS query response time`
 
-These graphs are intentionally based on stable, low-cardinality items. Dynamic LLD families such as query types, response codes, resolver counters and socket counters are presented through dashboard navigators instead of generating large numbers of graph prototypes.
+These graphs are intentionally based on stable, low-cardinality items. Dynamic LLD families such as query types, response codes, resolver counters and socket counters remain available in Latest data without cluttering the dashboard.
