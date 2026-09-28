@@ -66,7 +66,7 @@ def validate(
         raise RuntimeError(f"memory endpoint missing keys: {sorted(missing)}")
 
     if not isinstance(memory["contexts"], list):
-        raise RuntimeError("memory endpoint contexts is not a JSON array")
+        raise TypeError("memory endpoint contexts is not a JSON array")
 
     traffic = get_json(f"{base_url}/json/v1/traffic")
     if "traffic" not in traffic:
