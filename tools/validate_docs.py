@@ -10,9 +10,9 @@ EN = ROOT / "docs" / "en"
 PT = ROOT / "docs" / "pt-BR"
 TEMPLATE = ROOT / "templates" / "7.0" / "isc-bind9-by-zabbix-agent.yaml"
 
-LINK_RE = re.compile(r"!?[[^]]*](([^)]+))")
+LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 MACRO_ROW_RE = re.compile(
-    r"^| `(?P<macro>{$[^\`]+})` | `(?P<default>[^\`]+)` |",
+    r"^\|\s*`(?P<macro>\{\$[^`]+\})`\s*\|\s*`(?P<default>[^`]*)`\s*\|",
     re.MULTILINE,
 )
 
@@ -55,10 +55,8 @@ def validate_internal_links():
         text = path.read_text(encoding="utf-8")
         for match in LINK_RE.finditer(text):
             target = match.group(1).strip().strip("<>")
-            if (
-                not target
-                or target.startswith("#")
-                or target.startswith(("https://", "http://", "mailto:"))
+            if not target or target.startswith(
+                ("#", "https://", "http://", "mailto:")
             ):
                 continue
 
