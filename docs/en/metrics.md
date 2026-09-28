@@ -27,6 +27,12 @@ The `/json/v1/mem` and `/json/v1/net` payloads remain available as short-retenti
 
 Raw JSON master items use short history and no trends. Derived numeric items keep normal history/trends so the raw payload does not unnecessarily increase the Zabbix database footprint.
 
+## Aggregate zone-count semantics
+
+`bind.zones.total` counts every zone object exposed by the BIND statistics endpoint. `bind.zones.primary` and `bind.zones.secondary` count only those two specific zone types. BIND supports additional zone types such as hint, forward, stub, static-stub, mirror and redirect, so **total is not expected to equal primary + secondary**.
+
+A future minor release may expose an additional "other zones" or per-type breakdown without changing the existing keys.
+
 ## Zone statistics level
 
 The BIND zones endpoint can expose zone identity, serial and timer fields, but the base template intentionally keeps only aggregate zone counts. Per-secondary refresh/expiry items are opt-in. DNSSEC per-zone counters require BIND zone statistics at the `full` level for the relevant zones. The DNSSEC discovery rule remains empty when those blocks are absent, so the common template does not create unsupported DNSSEC items.
