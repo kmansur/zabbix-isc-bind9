@@ -5,7 +5,7 @@
 | Componente | Status |
 | --- | --- |
 | Zabbix 7.0 | Alvo principal |
-| Zabbix 8.0 | Export de compatibilidade; fresh-import validado continuamente contra imagens oficiais trunk |
+| Zabbix 8.0 | Validado em runtime no Zabbix 8.0.0beta2; fresh-import validado continuamente contra imagens oficiais trunk |
 | Zabbix Agent clássico 6.0+ | Alvo mantido pelo projeto |
 | Zabbix Agent 2 6.0+ | Alvo mantido pelo projeto |
 | FreeBSD | Caminho de projeto com Agent clássico; disponibilidade do pacote verificada, com validação runtime recomendada |
@@ -27,9 +27,15 @@ O ISC encerrou a manutenção do BIND 9.18 após a versão 9.18.50 em junho de 2
 Os endpoints JSON `status`, `server`, `zones`, `mem`, `net` e `traffic` foram validados no Ubuntu 24.04 com BIND 9.18.39. O servidor testado expôs os blocos do resolver `stats`, `qtypes`, `cache`, `cachestats` e `adb`, e exportou `sockstats` através de `/json/v1/net`.
 
 
-## Validação de desenvolvimento no Zabbix 8.0
+## Validação no Zabbix 8.0
 
-O export 8.0 é importado continuamente no CI contra as imagens Docker oficiais trunk do Zabbix, que correspondem à linha de desenvolvimento do Zabbix 8.0. Isso valida compatibilidade de schema/import antes da existência de uma versão 8.0 estável. O comportamento em runtime continua sendo considerado pré-release até a validação contra uma build oficial estável do 8.0.
+O export 8.0 é importado continuamente no CI contra as imagens Docker oficiais trunk do Zabbix.
+
+Além disso, o template na versão `1.0-0` foi importado com sucesso em um servidor real **Zabbix 8.0.0beta2** e vinculado ao host BIND monitorado. A coleta em runtime foi confirmada, incluindo disponibilidade DNS UDP/TCP e tempo de resposta, taxas de requests IPv4/IPv6, SERVFAIL/queries descartadas, métricas de transferências, memória, contadores de zonas, endpoints brutos de estatísticas e dados descobertos.
+
+No Zabbix 8.0.0beta2 validado, o template apresentou 35 itens base, 8 triggers, 9 gráficos clássicos, 1 dashboard e 10 regras de descoberta, com os dados descobertos sendo coletados normalmente.
+
+Isso fornece validação real em runtime para a linha de desenvolvimento do Zabbix 8.0. Uma build estável final do Zabbix 8.0 ainda deverá ser revalidada quando estiver disponível, pois podem existir mudanças de schema ou frontend entre beta e stable.
 
 
 ## Fixtures de contrato JSON do BIND
