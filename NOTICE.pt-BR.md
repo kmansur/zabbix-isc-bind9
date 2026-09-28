@@ -2,7 +2,7 @@
 
 [English](NOTICE.md) | **Português (Brasil)**
 
-`ISC BIND 9 by Zabbix Agent` é um projeto comunitário independente.
+`ISC BIND by Zabbix agent` é um projeto comunitário independente.
 
 ## Origem
 
