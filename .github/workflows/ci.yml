@@ -221,6 +221,20 @@ jobs:
           statistics-channels {
               inet 0.0.0.0 port 8053 allow { any; };
           };
+
+          zone "template.test" {
+              type primary;
+              file "/etc/bind/db.template.test";
+          };
+          EOF
+
+          cat > "${RUNNER_TEMP}/db.template.test" <<'EOF'
+          $TTL 60
+          @   IN SOA ns.template.test. hostmaster.template.test. (
+                  2026092801 60 60 3600 60 )
+              IN NS  ns.template.test.
+          ns  IN A   127.0.0.1
+          www IN A   192.0.2.10
           EOF
 
       - name: Start official ISC BIND
@@ -229,6 +243,7 @@ jobs:
           docker run -d --name bind-ci \
             -p 127.0.0.1:18053:8053 \
             -v "${RUNNER_TEMP}/named.conf:/etc/bind/named.conf:ro" \
+            -v "${RUNNER_TEMP}/db.template.test:/etc/bind/db.template.test:ro" \
             internetsystemsconsortium/bind9:${{ matrix.bind-version }}
 
       - name: Validate live statistics-channel JSON
@@ -248,10 +263,10 @@ jobs:
             -t 'web.page.get[127.0.0.1,/json/v1/status,8053]' | grep -q '200 OK'
           docker run --rm --network container:bind-ci \
             --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
-            -t 'net.dns[127.0.0.1,localhost,A,1,2,udp]' | grep -Eq '\[u\|1\]'
+            -t 'net.dns[127.0.0.1,www.template.test,A,1,2,udp]' | grep -Eq '\[u\|1\]'
           docker run --rm --network container:bind-ci \
             --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
-            -t 'net.dns[127.0.0.1,localhost,A,1,2,tcp]' | grep -Eq '\[u\|1\]'
+            -t 'net.dns[127.0.0.1,www.template.test,A,1,2,tcp]' | grep -Eq '\[u\|1\]'
 
       - name: Validate Zabbix agent 2 keys
         shell: bash
@@ -268,13 +283,13 @@ jobs:
 
           OUT=$(docker run --rm --network container:bind-ci \
             --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
-            -t 'net.dns[127.0.0.1,localhost,A,1,2,udp]')
+            -t 'net.dns[127.0.0.1,www.template.test,A,1,2,udp]')
           printf '%s\n' "$OUT"
           grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
 
           OUT=$(docker run --rm --network container:bind-ci \
             --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
-            -t 'net.dns[127.0.0.1,localhost,A,1,2,tcp]')
+            -t 'net.dns[127.0.0.1,www.template.test,A,1,2,tcp]')
           printf '%s\n' "$OUT"
           grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
 
