@@ -10,7 +10,7 @@ Version 1.0.1 separates raw endpoint acquisition from metrics whose semantics ha
 - server uptime and time since the last configuration;
 - IPv4 and IPv6 request rates;
 - dropped-query, SERVFAIL and recursive-query rates;
-- low-level discovery of `nsstats`, authoritative `qtypes`, `rcodes` and network `sockstats`;
+- low-level discovery of `nsstats`, server incoming `qtypes`, `rcodes` and network `sockstats`;
 - resolver discovery by view for resolver statistics, recursive query types and ADB counters;
 - resolver cache metrics per view: hits/misses, query hits/misses, LRU/TTL deletions, covering NSEC, cache nodes and cache memory;
 - BIND memory in use, malloced memory and memory-context count;
