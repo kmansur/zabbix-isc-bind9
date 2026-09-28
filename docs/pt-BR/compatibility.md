@@ -40,3 +40,15 @@ O repositório inclui fixtures JSON representativas do BIND 9.18 e 9.20. O pytes
 ## Validação em containers BIND reais
 
 O CI inicia as imagens Docker oficiais do ISC para BIND 9.18 e 9.20 com uma configuração mínima do statistics-channel e valida os endpoints JSON reais usados pelo template. No 9.18 o job confirma que `/json/v1/xfrins` não existe; no 9.20 ele exige a presença desse endpoint. Isso protege o desenho version-aware das transferências contra mudanças upstream.
+
+
+## Validação real dos checks nativos de saúde DNS
+
+A validação em runtime no Ubuntu 24.04 com BIND 9.18.39 e Zabbix agent clássico confirmou todos os checks nativos de serviço usados pela versão 0.4.0 do template:
+
+- disponibilidade DNS UDP: `1`
+- disponibilidade DNS TCP: `1`
+- tempo de resposta UDP: aproximadamente `0.000480 s` (0,48 ms)
+- tempo de resposta TCP: aproximadamente `0.000616 s` (0,62 ms)
+
+Os checks utilizaram `127.0.0.1`, nome `localhost`, tipo `A`, timeout de um segundo e duas tentativas. Isso confirma que `net.dns[]` e `net.dns.perf[]` funcionam conforme projetado com o Zabbix agent clássico passivo no ambiente real de teste com BIND 9.18.39.
