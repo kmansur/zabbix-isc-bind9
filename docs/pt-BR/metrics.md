@@ -10,7 +10,7 @@ A versão 1.0.1 separa a aquisição bruta dos endpoints das métricas cuja sem�
 - uptime do servidor e tempo desde a última configuração;
 - taxas de requests IPv4 e IPv6;
 - taxas de queries descartadas, SERVFAIL e recursão;
-- low-level discovery de `nsstats`, `qtypes` autoritativos, `rcodes` e `sockstats` de rede;
+- low-level discovery de `nsstats`, `qtypes` de queries recebidas pelo servidor, `rcodes` e `sockstats` de rede;
 - descoberta do resolver por view para estatísticas, tipos de query recursiva e contadores ADB;
 - métricas de cache do resolver por view: hits/misses, query hits/misses, remoções LRU/TTL, covering NSEC, nós e memória do cache;
 - memória em uso pelo BIND, memória malloced e quantidade de contextos de memória;
