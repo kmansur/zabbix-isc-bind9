@@ -6,15 +6,15 @@
 | --- | --- |
 | Zabbix 7.0 | Alvo principal |
 | Zabbix 8.0 | Validado em runtime no Zabbix 8.0.0beta2; fresh-import validado continuamente contra imagens oficiais trunk |
-| Zabbix Agent clássico 6.0+ | Alvo mantido pelo projeto |
-| Zabbix Agent 2 6.0+ | Alvo mantido pelo projeto |
+| Zabbix Agent clássico 7.0+ | Alvo mantido e testado no CI |
+| Zabbix Agent 2 7.0+ | Alvo mantido e testado no CI |
 | FreeBSD | Caminho de projeto com Agent clássico; disponibilidade do pacote verificada, com validação runtime recomendada |
 | Linux | Agent clássico ou Agent 2 |
 | ISC BIND 9.20 | Alvo principal suportado do BIND |
 | ISC BIND 9.18.50 | Compatibilidade legado; EOL upstream |
 | ISC BIND 9.18.39 no Ubuntu 24.04 | Validação real dos endpoints concluída |
 
-O projeto não afirma suporte a todas as versões históricas do agent. Versões antigas podem funcionar se fornecerem as chaves padrão utilizadas, mas ficam fora da matriz mantida de testes.
+O baseline mantido dos agents é 7.0+. O template requer `web.page.get[]`, `net.dns[]` e `net.dns.perf[]`. O Zabbix Agent clássico 6.0 fornece `net.dns[]`, mas não `net.dns.perf[]`, portanto a linha 6.0 não é considerada totalmente compatível com o template atual.
 
 O BIND deve possuir suporte às estatísticas JSON. Endpoints e contadores podem variar entre branches/builds; semânticas opcionais não suportadas não serão inventadas.
 
