@@ -27,6 +27,12 @@ Os payloads `/json/v1/mem` e `/json/v1/net` continuam disponíveis como itens me
 
 Itens mestres JSON brutos possuem histórico curto e sem trends. Métricas numéricas derivadas mantêm histórico/trends normais para evitar crescimento desnecessário do banco do Zabbix.
 
+## Semântica dos contadores agregados de zonas
+
+`bind.zones.total` conta todos os objetos de zona expostos pelo endpoint de estatísticas do BIND. `bind.zones.primary` e `bind.zones.secondary` contam somente esses dois tipos específicos. O BIND suporta outros tipos, como hint, forward, stub, static-stub, mirror e redirect; portanto, **não é esperado que total seja igual a primárias + secundárias**.
+
+Uma futura release minor pode adicionar um contador "other zones" ou detalhamento por tipo sem alterar as keys existentes.
+
 ## Nível de estatísticas por zona
 
 O endpoint de zonas do BIND pode expor identidade, serial e timers, mas o template base mantém deliberadamente apenas contadores agregados de zonas. Itens de refresh/expiry de secundárias são opt-in. Os contadores DNSSEC por zona exigem `zone-statistics full` no BIND para as zonas relevantes. Quando esses blocos não existem, a descoberta DNSSEC fica vazia e o template comum não cria itens DNSSEC unsupported.
