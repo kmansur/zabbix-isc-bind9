@@ -22,11 +22,11 @@ ROOT_DOCS = (
     "SECURITY.pt-BR.md",
 )
 
-LINK_RE = re.compile(r"!?\\[[^\\]]*\\]\\(([^)]+)\\)")
-H1_RE = re.compile(r"^#\\s+.+$", re.MULTILINE)
+LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+H1_RE = re.compile(r"^#\s+.+$", re.MULTILINE)
 MACRO_ROW_RE = re.compile(
-    r"^\\|\\s+\\x60(\\{\\$[^\\x60]+\\})\\x60\\s+\\|\\s+"
-    r"\\x60([^\\x60]*)\\x60\\s+\\|",
+    r"^\|\s+`(\{\$[^`]+\})`\s+\|\s+"
+    r"`([^`]*)`\s+\|",
     re.MULTILINE,
 )
 
