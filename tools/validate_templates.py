@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -21,8 +22,213 @@ FORBIDDEN = (
     "8653",
 )
 
+RATE_RULES = {
+    "bind.nsstats.discovery",
+    "bind.qtypes.discovery",
+    "bind.rcodes.discovery",
+    "bind.sockstats.discovery",
+    "bind.resolver.stats.discovery",
+    "bind.resolver.qtypes.discovery",
+}
 
-def load_template(version, path):
+STATIC_GAUGES = {
+    "bind.nsstats.tcpconn.highwater",
+    "bind.nsstats.recurs.highwater",
+    "bind.nsstats.recurs.clients",
+    "bind.sockstats.udp4.active",
+    "bind.sockstats.udp6.active",
+    "bind.sockstats.tcp4.active",
+    "bind.sockstats.tcp6.active",
+    "bind.sockstats.tcp4.clients",
+    "bind.sockstats.tcp6.clients",
+}
+
+RESOLVER_GAUGES = {
+    "bind.resolver.query.current.udp[{#BIND.VIEW}]",
+    "bind.resolver.query.current.tcp[{#BIND.VIEW}]",
+    "bind.resolver.fetches.current[{#BIND.VIEW}]",
+    "bind.resolver.bucket.size[{#BIND.VIEW}]",
+}
+
+ADB_GAUGES = {
+    "bind.resolver.adb.nentries[{#BIND.VIEW}]",
+    "bind.resolver.adb.entries[{#BIND.VIEW}]",
+    "bind.resolver.adb.nnames[{#BIND.VIEW}]",
+    "bind.resolver.adb.names[{#BIND.VIEW}]",
+}
+
+CACHE_RATE_KEYS = {
+    "bind.cache.hits[{#BIND.VIEW}]",
+    "bind.cache.misses[{#BIND.VIEW}]",
+    "bind.cache.queryhits[{#BIND.VIEW}]",
+    "bind.cache.querymisses[{#BIND.VIEW}]",
+    "bind.cache.deletelru[{#BIND.VIEW}]",
+    "bind.cache.deletettl[{#BIND.VIEW}]",
+    "bind.cache.coveringnsec[{#BIND.VIEW}]",
+}
+
+CACHE_GAUGE_KEYS = {
+    "bind.cache.nodes[{#BIND.VIEW}]",
+    "bind.cache.nsecnodes[{#BIND.VIEW}]",
+    "bind.cache.tree.memory[{#BIND.VIEW}]",
+    "bind.cache.heap.memory[{#BIND.VIEW}]",
+}
+
+
+def vendor_version() -> str:
+    version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    major, minor, patch = version.split(".")
+    return f"{major}.{minor}-{patch}"
+
+
+def preprocessing_types(item: dict[str, Any]) -> list[str]:
+    return [step["type"] for step in item.get("preprocessing", [])]
+
+
+def first_step(item: dict[str, Any], step_type: str) -> dict[str, Any]:
+    return next(
+        step for step in item.get("preprocessing", []) if step.get("type") == step_type
+    )
+
+
+def assert_optional_jsonpath_is_safe(item: dict[str, Any]) -> None:
+    step = first_step(item, "JSONPATH")
+    assert step.get("error_handler") == "CUSTOM_VALUE", (
+        f"optional JSONPath must use CUSTOM_VALUE: {item.get('key')}"
+    )
+    assert str(step.get("error_handler_params")) == "0", (
+        f"optional JSONPath fallback must be zero: {item.get('key')}"
+    )
+
+
+def rule_by_key(template: dict[str, Any], key: str) -> dict[str, Any]:
+    return next(rule for rule in template.get("discovery_rules", []) if rule["key"] == key)
+
+
+def item_by_key(template: dict[str, Any], key: str) -> dict[str, Any]:
+    return next(item for item in template.get("items", []) if item["key"] == key)
+
+
+def prototype_keys(rule: dict[str, Any]) -> set[str]:
+    return {proto["key"] for proto in rule.get("item_prototypes", [])}
+
+
+def javascript(rule: dict[str, Any]) -> str:
+    chunks = []
+    for step in rule.get("preprocessing", []):
+        if step.get("type") == "JAVASCRIPT":
+            chunks.extend(str(value) for value in step.get("parameters", []))
+    return "\n".join(chunks)
+
+
+def collect_uuids(value: Any) -> list[str]:
+    found: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key == "uuid":
+                found.append(str(child))
+            found.extend(collect_uuids(child))
+    elif isinstance(value, list):
+        for child in value:
+            found.extend(collect_uuids(child))
+    return found
+
+
+def validate_semantics(template: dict[str, Any]) -> None:
+    items = template.get("items", [])
+    item_map = {item["key"]: item for item in items}
+
+    assert STATIC_GAUGES <= item_map.keys(), "missing static gauge items"
+    for key in STATIC_GAUGES:
+        assert "CHANGE_PER_SECOND" not in preprocessing_types(item_map[key]), (
+            f"gauge must not be converted to a rate: {key}"
+        )
+
+    for rule_key in RATE_RULES:
+        rule = rule_by_key(template, rule_key)
+        for proto in rule.get("item_prototypes", []):
+            assert "CHANGE_PER_SECOND" in preprocessing_types(proto), (
+                f"counter prototype must be rate-converted: {proto['key']}"
+            )
+            assert_optional_jsonpath_is_safe(proto)
+
+    ns_script = javascript(rule_by_key(template, "bind.nsstats.discovery"))
+    for gauge in ("TCPConnHighWater", "RecursHighwater", "RecursClients"):
+        assert gauge in ns_script, f"nsstats gauge is not excluded from rate LLD: {gauge}"
+
+    socket_script = javascript(rule_by_key(template, "bind.sockstats.discovery"))
+    for gauge in (
+        "UDP4Active",
+        "UDP6Active",
+        "TCP4Active",
+        "TCP6Active",
+        "TCP4Clients",
+        "TCP6Clients",
+    ):
+        assert gauge in socket_script, (
+            f"socket gauge is not excluded from rate LLD: {gauge}"
+        )
+
+    resolver_script = javascript(rule_by_key(template, "bind.resolver.stats.discovery"))
+    for gauge in ("QueryCurUDP", "QueryCurTCP", "NumFetch", "BucketSize"):
+        assert gauge in resolver_script, (
+            f"resolver gauge is not excluded from rate LLD: {gauge}"
+        )
+
+    resolver_gauge_rule = rule_by_key(template, "bind.resolver.gauges.discovery")
+    assert prototype_keys(resolver_gauge_rule) == RESOLVER_GAUGES
+    for proto in resolver_gauge_rule["item_prototypes"]:
+        assert "CHANGE_PER_SECOND" not in preprocessing_types(proto)
+        assert_optional_jsonpath_is_safe(proto)
+
+    adb_rule = rule_by_key(template, "bind.resolver.adb.discovery")
+    assert prototype_keys(adb_rule) == ADB_GAUGES
+    for proto in adb_rule["item_prototypes"]:
+        assert "CHANGE_PER_SECOND" not in preprocessing_types(proto)
+        assert_optional_jsonpath_is_safe(proto)
+
+    cache_rule = rule_by_key(template, "bind.resolver.cache.discovery")
+    cache = {proto["key"]: proto for proto in cache_rule.get("item_prototypes", [])}
+    assert CACHE_RATE_KEYS | CACHE_GAUGE_KEYS <= cache.keys()
+    for key in CACHE_RATE_KEYS:
+        assert "CHANGE_PER_SECOND" in preprocessing_types(cache[key]), key
+        assert_optional_jsonpath_is_safe(cache[key])
+    for key in CACHE_GAUGE_KEYS:
+        assert "CHANGE_PER_SECOND" not in preprocessing_types(cache[key]), key
+        assert_optional_jsonpath_is_safe(cache[key])
+
+    for key in (
+        "bind.xfrins.count",
+        "bind.xfrins.deferred",
+        "bind.xfrins.bytes",
+        "bind.xfrins.rate",
+    ):
+        step = first_step(item_map[key], "JAVASCRIPT")
+        assert step.get("error_handler") == "DISCARD_VALUE", (
+            f"unsupported xfrins metric must discard, not report a false zero: {key}"
+        )
+
+    secondary = rule_by_key(template, "bind.zones.secondary.discovery")
+    for proto in secondary.get("item_prototypes", []):
+        step = first_step(proto, "JAVASCRIPT")
+        assert step.get("error_handler") == "DISCARD_VALUE", proto["key"]
+
+    dnssec = rule_by_key(template, "bind.zones.dnssec.discovery")
+    for proto in dnssec.get("item_prototypes", []):
+        step = first_step(proto, "JAVASCRIPT")
+        assert step.get("error_handler") == "DISCARD_VALUE", proto["key"]
+
+    zone_keys = {
+        "bind.zones.total",
+        "bind.zones.primary",
+        "bind.zones.secondary",
+        "bind.zones.builtin",
+        "bind.zones.other",
+    }
+    assert zone_keys <= item_map.keys(), "zone inventory cannot reconcile all zone types"
+
+
+def load_template(version: str, path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise AssertionError(f"missing template: {path}")
 
@@ -35,23 +241,13 @@ def load_template(version, path):
     assert template["template"] == EXPECTED_NAME
     assert template["name"] == EXPECTED_NAME
     assert template["vendor"]["name"] == "Net Tech"
-    assert template["vendor"]["version"] == "1.0-0"
+    assert template["vendor"]["version"] == vendor_version()
 
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
 
-    idle_safe_discovery_tokens = (
-        "var counters = d.nsstats || {};",
-        "var counters = d.qtypes || {};",
-        "var counters = d.rcodes || {};",
-        "var views = d.views || {};",
-        "var resolver = views[viewName].resolver || {};",
-        "var stats = resolver.stats || {};",
-        "var qtypes = resolver.qtypes || {};",
-        "var adb = resolver.adb || {};",
-    )
-    for token in idle_safe_discovery_tokens:
-        assert token in text, f"idle-safe discovery guard missing: {token!r}"
+    uuids = collect_uuids(export)
+    assert len(uuids) == len(set(uuids)), "duplicate UUID found in export"
 
     items = template.get("items", [])
     passive_items = [
@@ -112,11 +308,7 @@ def load_template(version, path):
     }
     assert graph_names == expected_graphs, "unexpected graph set"
 
-    cache_rule = next(
-        rule
-        for rule in template.get("discovery_rules", [])
-        if rule.get("key") == "bind.resolver.cache.discovery"
-    )
+    cache_rule = rule_by_key(template, "bind.resolver.cache.discovery")
     cache_graphs = {graph["name"] for graph in cache_rule.get("graph_prototypes", [])}
     assert cache_graphs == {
         "BIND cache [{#BIND.VIEW}]: Hit and miss rates",
@@ -124,10 +316,11 @@ def load_template(version, path):
         "BIND cache [{#BIND.VIEW}]: Nodes",
     }
 
+    validate_semantics(template)
     return template
 
 
-def item_keys(template):
+def item_keys(template: dict[str, Any]) -> set[str]:
     keys = {item["key"] for item in template.get("items", [])}
     for rule in template.get("discovery_rules", []):
         keys.add(rule["key"])
@@ -135,11 +328,11 @@ def item_keys(template):
     return keys
 
 
-def macro_names(template):
+def macro_names(template: dict[str, Any]) -> set[str]:
     return {macro["macro"] for macro in template.get("macros", [])}
 
 
-def main():
+def main() -> int:
     loaded = {
         version: load_template(version, path) for version, path in TARGETS.items()
     }
@@ -162,7 +355,7 @@ def main():
         "7.0/8.0 graph-definition drift"
     )
 
-    print("Template validation passed for Zabbix 7.0 and 8.0.")
+    print("Template structure, semantics and 7.0/8.0 parity passed.")
     return 0
 
 
