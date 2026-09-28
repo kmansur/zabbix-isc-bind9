@@ -22,4 +22,4 @@ Itens mestres brutos
 
 O projeto evita scripts externos e caminhos privilegiados de controle. Dados brutos dos endpoints têm retenção curta, enquanto métricas numéricas derivadas mantêm histórico normal.
 
-A primeira candidata utiliza `/json/v1/status`, `server`, `zones`, `mem`, `net` e `traffic`. Parsing adicional somente é incluído após validação entre versões.
+A versão 1.0.0 utiliza `/json/v1/status`, `server`, `zones`, `mem`, `net` e `traffic`, além do caminho version-aware `/json/v1/xfrins` no BIND 9.20. Parsing somente é promovido após validação entre versões.
