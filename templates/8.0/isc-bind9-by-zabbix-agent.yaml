@@ -863,7 +863,7 @@ zabbix_export:
               value: traffic
       discovery_rules:
         - uuid: c8766ef323e8404c9416e47091af90f7
-          name: 'BIND: nsstats discovery'
+          name: 'BIND: nsstats counter discovery'
           type: DEPENDENT
           key: bind.nsstats.discovery
           delay: '0'
@@ -904,7 +904,10 @@ zabbix_export:
                       Requestv6: true,
                       QryDropped: true,
                       QrySERVFAIL: true,
-                      QryRecursion: true
+                      QryRecursion: true,
+                      RecursClients: true,
+                      TCPConnHighWater: true,
+                      RecursHighwater: true
                   };
                   var out = [];
                   Object.keys(counters).forEach(function (name) {
@@ -913,6 +916,51 @@ zabbix_export:
                       }
                   });
                   return JSON.stringify({"data": out});
+        - uuid: 4bda5d7e6c0c470f944c7ed815621aaa
+          name: 'BIND: nsstats gauge discovery'
+          type: DEPENDENT
+          key: bind.nsstats.gauge.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 9d3e70d4a70d46f3910d3bbf41ca0214
+              name: 'BIND nsstats gauge: {#BIND.COUNTER}'
+              type: DEPENDENT
+              key: 'bind.nsstats.gauge[{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.nsstats["{#BIND.COUNTER}"]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: nsstats
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var counters = d.nsstats || {};
+                  var gauges = {
+                      RecursClients: true,
+                      TCPConnHighWater: true,
+                      RecursHighwater: true
+                  };
+                  var out = [];
+                  Object.keys(counters).forEach(function (name) {
+                      if (gauges[name]) {
+                          out.push({"{#BIND.COUNTER}": name});
+                      }
+                  });
+                  return JSON.stringify({"data": out});
+
         - uuid: 1b648b4625424012a66c0947fb8a1ae3
           name: 'BIND: Query type discovery'
           type: DEPENDENT
@@ -996,13 +1044,13 @@ zabbix_export:
                   });
                   return JSON.stringify({"data": out});
         - uuid: 612aa18b27cc486881922c30b26e2baf
-          name: 'BIND: Socket statistics discovery'
+          name: 'BIND: Socket counter discovery'
           type: DEPENDENT
           key: bind.sockstats.discovery
           delay: '0'
           item_prototypes:
             - uuid: 900ea0118a5b4241b94cb993734857da
-              name: 'BIND socket statistic: {#BIND.COUNTER} per second'
+              name: 'BIND socket counter: {#BIND.COUNTER} per second'
               type: DEPENDENT
               key: 'bind.sockstats[{#BIND.COUNTER}]'
               delay: '0'
@@ -1031,19 +1079,81 @@ zabbix_export:
                 - |
                   var d = JSON.parse(value);
                   var counters = d.sockstats || {};
-                  var out = Object.keys(counters).map(function (name) {
-                      return {"{#BIND.COUNTER}": name};
+                  var gauges = {
+                      UDP4Active: true,
+                      UDP6Active: true,
+                      TCP4Active: true,
+                      TCP6Active: true,
+                      UnixActive: true,
+                      RawActive: true,
+                      TCP4Clients: true,
+                      TCP6Clients: true
+                  };
+                  var out = [];
+                  Object.keys(counters).forEach(function (name) {
+                      if (!gauges[name]) {
+                          out.push({"{#BIND.COUNTER}": name});
+                      }
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: e57fef5da8eb4bc4b1cde3722216b3a2
+          name: 'BIND: Socket gauge discovery'
+          type: DEPENDENT
+          key: bind.sockstats.gauge.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 3587433bcd854e5d8ec1d4d7d2ea755b
+              name: 'BIND socket gauge: {#BIND.COUNTER}'
+              type: DEPENDENT
+              key: 'bind.sockstats.gauge[{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.sockstats["{#BIND.COUNTER}"]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: sockets
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var counters = d.sockstats || {};
+                  var gauges = {
+                      UDP4Active: true,
+                      UDP6Active: true,
+                      TCP4Active: true,
+                      TCP6Active: true,
+                      UnixActive: true,
+                      RawActive: true,
+                      TCP4Clients: true,
+                      TCP6Clients: true
+                  };
+                  var out = [];
+                  Object.keys(counters).forEach(function (name) {
+                      if (gauges[name]) {
+                          out.push({"{#BIND.COUNTER}": name});
+                      }
                   });
                   return JSON.stringify({"data": out});
 
         - uuid: 2c61e2343b2d4310bb8dc00565ec4a25
-          name: 'BIND: Resolver statistics discovery'
+          name: 'BIND: Resolver counter discovery'
           type: DEPENDENT
           key: bind.resolver.stats.discovery
           delay: '0'
           item_prototypes:
             - uuid: 2bebe64c25914011a7c07f735b8c376a
-              name: 'BIND resolver [{#BIND.VIEW}] statistic: {#BIND.COUNTER} per second'
+              name: 'BIND resolver [{#BIND.VIEW}] counter: {#BIND.COUNTER} per second'
               type: DEPENDENT
               key: 'bind.resolver.stats[{#BIND.VIEW},{#BIND.COUNTER}]'
               delay: '0'
@@ -1075,18 +1185,81 @@ zabbix_export:
                 - |
                   var d = JSON.parse(value);
                   var views = d.views || {};
+                  var gauges = {
+                      QueryCurUDP: true,
+                      QueryCurTCP: true,
+                      NumFetch: true,
+                      BucketSize: true
+                  };
                   var out = [];
                   Object.keys(views).forEach(function (viewName) {
                       var resolver = views[viewName].resolver || {};
                       var stats = resolver.stats || {};
                       Object.keys(stats).forEach(function (counter) {
-                          out.push({
-                              "{#BIND.VIEW}": viewName,
-                              "{#BIND.COUNTER}": counter
-                          });
+                          if (!gauges[counter]) {
+                              out.push({
+                                  "{#BIND.VIEW}": viewName,
+                                  "{#BIND.COUNTER}": counter
+                              });
+                          }
                       });
                   });
                   return JSON.stringify({"data": out});
+        - uuid: 5a2e47ca01eb4dfaa67c8058465f31a7
+          name: 'BIND: Resolver gauge discovery'
+          type: DEPENDENT
+          key: bind.resolver.gauge.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: 64e3b55adb554447bf6aeaa5772b3677
+              name: 'BIND resolver [{#BIND.VIEW}] gauge: {#BIND.COUNTER}'
+              type: DEPENDENT
+              key: 'bind.resolver.gauge[{#BIND.VIEW},{#BIND.COUNTER}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.stats["{#BIND.COUNTER}"]'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 30m
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var gauges = {
+                      QueryCurUDP: true,
+                      QueryCurTCP: true,
+                      NumFetch: true,
+                      BucketSize: true
+                  };
+                  var out = [];
+                  Object.keys(views).forEach(function (viewName) {
+                      var resolver = views[viewName].resolver || {};
+                      var stats = resolver.stats || {};
+                      Object.keys(stats).forEach(function (counter) {
+                          if (gauges[counter]) {
+                              out.push({
+                                  "{#BIND.VIEW}": viewName,
+                                  "{#BIND.COUNTER}": counter
+                              });
+                          }
+                      });
+                  });
+                  return JSON.stringify({"data": out});
+
         - uuid: e40ca5cc37b04025940eb5cdc2da703c
           name: 'BIND: Resolver query type discovery'
           type: DEPENDENT
@@ -1139,13 +1312,13 @@ zabbix_export:
                   });
                   return JSON.stringify({"data": out});
         - uuid: 4f8b1ed35c494e49a3cfe63ef72bcd96
-          name: 'BIND: Resolver ADB statistics discovery'
+          name: 'BIND: Resolver ADB gauge discovery'
           type: DEPENDENT
           key: bind.resolver.adb.discovery
           delay: '0'
           item_prototypes:
             - uuid: a0095b44738a47d6bd0930a21d6ebea6
-              name: 'BIND resolver [{#BIND.VIEW}] ADB statistic: {#BIND.COUNTER} per second'
+              name: 'BIND resolver [{#BIND.VIEW}] ADB gauge: {#BIND.COUNTER}'
               type: DEPENDENT
               key: 'bind.resolver.adb[{#BIND.VIEW},{#BIND.COUNTER}]'
               delay: '0'
@@ -1155,9 +1328,6 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.adb["{#BIND.COUNTER}"]'
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
                 - type: DISCARD_UNCHANGED_HEARTBEAT
                   parameters:
                     - 30m
@@ -1188,6 +1358,7 @@ zabbix_export:
                       });
                   });
                   return JSON.stringify({"data": out});
+
         - uuid: 88ad3d0c6459482799fcbd352a78609f
           name: 'BIND: Resolver cache discovery'
           type: DEPENDENT
