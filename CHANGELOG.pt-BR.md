@@ -5,6 +5,7 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 ## [Não publicado]
 
 ### Validação
+- Confirmados os checks nativos de disponibilidade DNS UDP/TCP e tempo de resposta com Zabbix agent clássico no Ubuntu 24.04/BIND 9.18.39; os tempos locais ficaram abaixo de 1 ms.
 - Adicionada validação live do statistics-channel contra os containers oficiais do ISC BIND 9.18 e 9.20, incluindo o comportamento version-aware de `/json/v1/xfrins`.
 - Adicionadas fixtures de contrato JSON do BIND 9.18/9.20 e cobertura pytest para as estruturas de endpoint usadas pelo preprocessing e LLD.
 - Adicionado gate de fresh-import do Zabbix 8.0 trunk no CI usando as imagens Docker oficiais de desenvolvimento.
