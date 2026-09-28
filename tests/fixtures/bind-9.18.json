@@ -11,7 +11,10 @@
       "Requestv6": 150,
       "QryDropped": 0,
       "QrySERVFAIL": 3,
-      "QryRecursion": 870
+      "QryRecursion": 870,
+      "TCPConnHighWater": 42,
+      "RecursHighwater": 17,
+      "RecursClients": 3
     },
     "qtypes": {
       "A": 900,
@@ -27,7 +30,11 @@
         "resolver": {
           "stats": {
             "Queryv4": 700,
-            "Queryv6": 80
+            "Queryv6": 80,
+            "QueryCurUDP": 2,
+            "QueryCurTCP": 1,
+            "NumFetch": 4,
+            "BucketSize": 64
           },
           "qtypes": {
             "A": 500,
@@ -57,7 +64,9 @@
           },
           "adb": {
             "nentries": 24,
-            "entriescnt": 24
+            "entriescnt": 20,
+            "nnames": 16,
+            "namescnt": 12
           }
         }
       }
@@ -69,7 +78,13 @@
       "UDP4Open": 12,
       "UDP6Open": 8,
       "TCP4Open": 5,
-      "TCP6Open": 3
+      "TCP6Open": 3,
+      "UDP4Active": 4,
+      "UDP6Active": 2,
+      "TCP4Active": 3,
+      "TCP6Active": 1,
+      "TCP4Clients": 2,
+      "TCP6Clients": 1
     }
   },
   "mem": {
@@ -80,23 +95,65 @@
       "Malloced": 33200000,
       "ContextSize": 4096,
       "Lost": 0,
-      "contexts": {
-        "1": {"name": "main", "total": 12000000},
-        "2": {"name": "resolver", "total": 21000000}
-      }
+      "contexts": [
+        {
+          "id": "0x1",
+          "name": "main",
+          "references": 1,
+          "total": 12000000,
+          "inuse": 11000000,
+          "maxinuse": 12500000,
+          "malloced": 11100000,
+          "maxmalloced": 12600000,
+          "pools": 3,
+          "hiwater": 0,
+          "lowater": 0
+        },
+        {
+          "id": "0x2",
+          "name": "resolver",
+          "references": 1,
+          "total": 21000000,
+          "inuse": 20000000,
+          "maxinuse": 22000000,
+          "malloced": 20100000,
+          "maxmalloced": 22100000,
+          "pools": 5,
+          "hiwater": 0,
+          "lowater": 0
+        }
+      ]
     }
   },
   "traffic": {
     "json-stats-version": "1.7",
     "traffic": {
-      "dns-udp-requests-sizes-received-ipv4": {"0-15": 100, "16-31": 200},
-      "dns-udp-requests-sizes-received-ipv6": {"0-15": 10},
-      "dns-tcp-requests-sizes-received-ipv4": {"0-15": 20},
-      "dns-tcp-requests-sizes-received-ipv6": {"0-15": 2},
-      "dns-udp-responses-sizes-sent-ipv4": {"0-15": 95, "16-31": 190},
-      "dns-udp-responses-sizes-sent-ipv6": {"0-15": 9},
-      "dns-tcp-responses-sizes-sent-ipv4": {"0-15": 18},
-      "dns-tcp-responses-sizes-sent-ipv6": {"0-15": 2}
+      "dns-udp-requests-sizes-received-ipv4": {
+        "0-15": 100,
+        "16-31": 200
+      },
+      "dns-udp-requests-sizes-received-ipv6": {
+        "0-15": 10
+      },
+      "dns-tcp-requests-sizes-received-ipv4": {
+        "0-15": 20
+      },
+      "dns-tcp-requests-sizes-received-ipv6": {
+        "0-15": 2
+      },
+      "dns-udp-responses-sizes-sent-ipv4": {
+        "0-15": 95,
+        "16-31": 190
+      },
+      "dns-udp-responses-sizes-sent-ipv6": {
+        "0-15": 9
+      },
+      "dns-tcp-responses-sizes-sent-ipv4": {
+        "0-15": 18
+      },
+      "dns-tcp-responses-sizes-sent-ipv6": {
+        "0-15": 2
+      }
     }
   },
   "zones": {
