@@ -5,11 +5,11 @@
 The project uses Semantic Versioning.
 
 ```text
-VERSION:        1.0.0
-STABLE_VERSION: 1.0.0
+VERSION:        1.0.1
+STABLE_VERSION: 1.0.1
 ```
 
-`main` contains the current maintained source. `STABLE_VERSION` records the production-supported baseline. Version `1.0.0` is the first stable project baseline.
+`main` contains the current maintained source. `STABLE_VERSION` records the production-supported baseline. Version `1.0.1` is the current stable project baseline.
 
 ## Rules
 
