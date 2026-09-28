@@ -258,15 +258,33 @@ jobs:
           set -euo pipefail
           IMAGE="zabbix/zabbix-agent:alpine-7.0-latest"
           docker pull "$IMAGE"
-          docker run --rm --network container:bind-ci \
-            --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
-            -t 'web.page.get[127.0.0.1,/json/v1/status,8053]' | grep -q '200 OK'
-          docker run --rm --network container:bind-ci \
-            --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
-            -t 'net.dns[127.0.0.1,www.template.test,A,1,2,udp]' | grep -Eq '\[u\|1\]'
-          docker run --rm --network container:bind-ci \
-            --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
-            -t 'net.dns[127.0.0.1,www.template.test,A,1,2,tcp]' | grep -Eq '\[u\|1\]'
+
+          run_agent() {
+            docker run --rm --network container:bind-ci \
+              --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" -t "$1"
+          }
+
+          OUT=$(run_agent 'web.page.get[127.0.0.1,/json/v1/status,8053]')
+          printf '%s\n' "$OUT"
+          grep -q '200 OK' <<<"$OUT"
+
+          for i in $(seq 1 15); do
+            OUT=$(run_agent 'net.dns[127.0.0.1,www.template.test,A,1,2,udp]')
+            printf '%s\n' "$OUT"
+            if grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"; then
+              break
+            fi
+            sleep 1
+          done
+          grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
+
+          OUT=$(run_agent 'net.dns[127.0.0.1,www.template.test,A,1,2,tcp]')
+          printf '%s\n' "$OUT"
+          grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
+
+          OUT=$(run_agent 'net.dns.perf[127.0.0.1,www.template.test,A,1,2,udp]')
+          printf '%s\n' "$OUT"
+          grep -Eq '\[[[:alpha:]]+\|0\.[0-9]+' <<<"$OUT"
 
       - name: Validate Zabbix agent 2 keys
         shell: bash
@@ -275,23 +293,32 @@ jobs:
           IMAGE="zabbix/zabbix-agent2:alpine-7.0-latest"
           docker pull "$IMAGE"
 
-          OUT=$(docker run --rm --network container:bind-ci \
-            --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
-            -t 'web.page.get[127.0.0.1,/json/v1/status,8053]')
+          run_agent() {
+            docker run --rm --network container:bind-ci \
+              --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" -t "$1"
+          }
+
+          OUT=$(run_agent 'web.page.get[127.0.0.1,/json/v1/status,8053]')
           printf '%s\n' "$OUT"
           grep -q '200 OK' <<<"$OUT"
 
-          OUT=$(docker run --rm --network container:bind-ci \
-            --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
-            -t 'net.dns[127.0.0.1,www.template.test,A,1,2,udp]')
+          for i in $(seq 1 15); do
+            OUT=$(run_agent 'net.dns[127.0.0.1,www.template.test,A,1,2,udp]')
+            printf '%s\n' "$OUT"
+            if grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"; then
+              break
+            fi
+            sleep 1
+          done
+          grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
+
+          OUT=$(run_agent 'net.dns[127.0.0.1,www.template.test,A,1,2,tcp]')
           printf '%s\n' "$OUT"
           grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
 
-          OUT=$(docker run --rm --network container:bind-ci \
-            --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
-            -t 'net.dns[127.0.0.1,www.template.test,A,1,2,tcp]')
+          OUT=$(run_agent 'net.dns.perf[127.0.0.1,www.template.test,A,1,2,udp]')
           printf '%s\n' "$OUT"
-          grep -Eq '\[[[:alpha:]]+\|1\]' <<<"$OUT"
+          grep -Eq '\[[[:alpha:]]+\|0\.[0-9]+' <<<"$OUT"
 
       - name: Container diagnostics on failure
         if: failure()
