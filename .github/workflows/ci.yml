@@ -251,6 +251,7 @@ jobs:
           python tools/check_bind_runtime.py
           --version ${{ matrix.bind-version }}
           --wait 120
+          --expected-zone template.test
 
       - name: Validate classic Zabbix agent keys
         shell: bash
