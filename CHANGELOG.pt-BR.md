@@ -8,6 +8,13 @@ Sem alterações não publicadas.
 
 ## [1.0.1] - 2026-09-28
 
+### Corrigido
+
+- Corrigida a semântica de counters/gauges do BIND: `RecursClients`, high-water marks, valores de queries em andamento/fetch/bucket do resolver, tamanhos do ADB e sockets/clientes ativos deixam de ser tratados como taxas.
+- Corrigida a fixture do BIND 9.18 para representar `memory.contexts` como array JSON, conforme o ISC BIND.
+- Reconstruídas as tabelas de macros EN/pt-BR que estavam corrompidas e reforçada a validação da documentação.
+- Corrigidas referências antigas a active checks no troubleshooting e o nome atual do projeto no NOTICE.
+
 ### Alterado
 
 - Removidos todos os widgets `Item navigator` da dashboard após a validação de uso real mostrar que as listas extensas de Query Types, Response Codes, `nsstats`, resolver, sockets e zonas geravam ruído visual sem melhorar a operação diária.
