@@ -2,7 +2,7 @@
 
 [Português (Brasil)](../pt-BR/metrics.md)
 
-Version 1.0.1 separates raw endpoint acquisition from metrics whose semantics have already been validated.
+Version 1.0.2 separates raw endpoint acquisition from metrics whose semantics have already been validated.
 
 ## Parsed in 1.0.x
 
@@ -48,7 +48,7 @@ The base template intentionally avoids discovering SOA serial and loaded age for
 
 ## Counter versus gauge semantics
 
-BIND statistics contain both monotonically increasing event counters and point-in-time gauges. Version 1.0.1 explicitly separates these classes so that gauges are never processed with `CHANGE_PER_SECOND`.
+BIND statistics contain both monotonically increasing event counters and point-in-time gauges. Version 1.0.2 explicitly separates these classes so that gauges are never processed with `CHANGE_PER_SECOND`.
 
 Rate families include cumulative query/request/response/error and socket-event counters. Gauge families include:
 
