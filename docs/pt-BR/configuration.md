@@ -6,13 +6,15 @@
 
 | Macro | Padrão | Finalidade |
 | --- | --- | --- |
+| `{$BIND.DNS.TEST.ENABLED}` | `0` | Habilita os alertas funcionais DNS após validar o nome de teste; use `1` para ativar |
 | `{$BIND.DNS.TEST.SERVER}` | `127.0.0.1` | Endereço DNS consultado pelos checks nativos de saúde do Zabbix |
 | `{$BIND.DNS.TEST.NAME}` | `localhost` | Nome DNS usado nos checks de disponibilidade e tempo de resposta |
 | `{$BIND.DNS.TEST.TYPE}` | `A` | Tipo de registro DNS usado pelos checks nativos |
 | `{$BIND.DNS.TEST.TIMEOUT}` | `1` | Timeout por tentativa de consulta DNS, em segundos |
 | `{$BIND.DNS.TEST.COUNT}` | `2` | Quantidade de tentativas da consulta DNS |
 | `{$BIND.DNS.FAIL.WINDOW}` | `3m` | Janela contínua de falha antes de gerar problema de disponibilidade |
-| `{$BIND.DNS.RESPONSE.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta DNS local, em segundos |
+| `{$BIND.DNS.RESPONSE.UDP.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta DNS UDP, em segundos |
+| `{$BIND.DNS.RESPONSE.TCP.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta DNS TCP, em segundos |
 | `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Limite da taxa média de queries descartadas para warning em 5 minutos |
 | `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Limite da taxa média de SERVFAIL para warning em 5 minutos |
 | `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Janela de aviso antes de uma zona secundária atingir o prazo de expiração |
@@ -38,7 +40,7 @@ O template lê as estatísticas localmente através das keys padrão do Zabbix A
 
 ## Checks nativos de saúde DNS
 
-O template valida o serviço DNS independentemente do statistics-channel usando `net.dns[]` e `net.dns.perf[]` em UDP e TCP.
+O template valida a funcionalidade DNS independentemente do statistics-channel usando `net.dns[]` e `net.dns.perf[]` em UDP e TCP. A coleta fica ativa por padrão, mas os **alertas funcionais DNS ficam desabilitados por padrão** com `{$BIND.DNS.TEST.ENABLED}=0` até que o nome de teste seja revisado.
 
 O teste padrão é:
 
@@ -50,7 +52,7 @@ type:   A
 
 A consulta `localhost/A` foi validada com sucesso no ambiente runtime Ubuntu 24.04/BIND 9.18.39 usado pelo projeto, mas nem toda configuração BIND é obrigada a responder esse nome.
 
-> **Importante:** `localhost` só é um padrão seguro quando a instância BIND monitorada está realmente configurada para responder `localhost/A`. Em servidores exclusivamente autoritativos, essa consulta pode legitimamente não produzir uma resposta utilizável e gerar falsos positivos de indisponibilidade UDP/TCP. Para servidores autoritativos, sobrescreva `{$BIND.DNS.TEST.NAME}` no host ou no template com um registro estável de uma zona servida pela própria instância BIND. Por exemplo, se o servidor é autoritativo por `example.com`, utilize `example.com` ou outro nome estável dessa zona.
+> **Importante:** `localhost` é apenas o padrão de coleta. Antes de habilitar alertas funcionais DNS, configure `{$BIND.DNS.TEST.NAME}` com um nome adequado ao papel do servidor e valide UDP e TCP. Em servidores exclusivamente autoritativos, use um registro estável de uma zona servida pela própria instância BIND. Após a validação, defina `{$BIND.DNS.TEST.ENABLED}=1` no host ou no template.
 
 ### Escolhendo o nome para o teste funcional de DNS
 
@@ -60,7 +62,7 @@ Escolha um nome que represente o papel do servidor monitorado:
 - **resolver recursivo:** utilize um nome externo estável somente quando a recursão estiver intencionalmente habilitada e deva funcionar;
 - **papel misto:** prefira um registro autoritativo estável para testar a disponibilidade local do daemon e use monitoramento externo separado caso também precise medir a recursão fim a fim.
 
-Antes de encaminhar alertas para produção, valide localmente o nome configurado em UDP e TCP usando os mesmos parâmetros de `net.dns[]` do template. Valor `1` significa que a consulta produziu uma resposta utilizável; valor `0` significa que não produziu.
+Antes de encaminhar alertas para produção, valide localmente o nome configurado em UDP e TCP usando os mesmos parâmetros de `net.dns[]` do template. Valor `1` significa que a consulta produziu uma resposta utilizável; valor `0` significa que não produziu. Somente depois defina `{$BIND.DNS.TEST.ENABLED}=1`.
 
 ## Monitoramento por zona
 

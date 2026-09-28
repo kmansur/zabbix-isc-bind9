@@ -8,7 +8,7 @@
 
 A security-focused Zabbix template for monitoring **ISC BIND** through the native BIND HTTP statistics channel. The design is compatible with both **Zabbix Agent** and **Zabbix Agent 2** and intentionally avoids Agent 2-only plugins, external scripts, sudo, `rndc`, `curl` and `jq`.
 
-> **Stable release:** version `1.0.1` is the current production-stable project release.
+> **Stable release:** version `1.0.2` is the current production-stable project release.
 
 ## Design goals
 
@@ -22,7 +22,7 @@ A security-focused Zabbix template for monitoring **ISC BIND** through the nativ
 
 ## Current monitoring coverage
 
-Version 1.0.1 includes:
+Version 1.0.2 includes:
 
 - BIND version and JSON statistics API version;
 - server uptime and time since the last configuration/reload;
@@ -32,7 +32,7 @@ Version 1.0.1 includes:
 - aggregate zone counts (total, primary and secondary), with optional per-zone secondary/DNSSEC discovery;
 - local collection of the `status`, `server`, `zones`, `mem`, `net` and `traffic` JSON endpoints;
 - UDP/TCP traffic-rate aggregation from BIND traffic histograms;
-- native UDP/TCP DNS availability and response-time checks through standard Zabbix agent keys;
+- native UDP/TCP DNS availability and response-time checks through standard Zabbix agent keys, with alerting disabled by default until a valid per-host test name is chosen;
 - availability and operational triggers for the statistics channel and critical DNS counters;
 - nine reusable classic graphs and a native three-page Zabbix dashboard.
 
@@ -58,15 +58,15 @@ No control operation is required by the template.
 | --- | --- |
 | Zabbix Server 7.0 LTS | Primary |
 | Zabbix Server 8.0 | Runtime validated on 8.0.0beta2; compatibility export maintained for the 8.0 line |
-| Zabbix Agent 6.0+ | Supported design target |
-| Zabbix Agent 2 6.0+ | Supported design target |
+| Zabbix Agent 7.0+ | Supported and tested design target |
+| Zabbix Agent 2 7.0+ | Supported and tested design target |
 | FreeBSD | Architecture-compatible with classic Zabbix Agent; runtime validation recommended |
 | Linux | Supported with Zabbix Agent or Agent 2 |
 | ISC BIND 9.20 | Primary supported validation target |
 | ISC BIND 9.18.50 | Legacy compatibility target (EOL upstream) |
 | ISC BIND newer supported branches | Compatibility target |
 
-Older agents may work when they provide the required standard `web.page.get[]` key, but they are not part of the project's maintained test matrix.
+Older agents are outside the maintained test matrix. The current template requires the standard `web.page.get[]`, `net.dns[]` and `net.dns.perf[]` keys; the maintained agent baseline is 7.0+.
 
 See [docs/en/compatibility.md](docs/en/compatibility.md) and [docs/en/dashboard.md](docs/en/dashboard.md).
 
@@ -100,11 +100,11 @@ python tools/validate_docs.py
 The project uses Semantic Versioning.
 
 ```text
-VERSION:        1.0.1
-STABLE_VERSION: 1.0.1
+VERSION:        1.0.2
+STABLE_VERSION: 1.0.2
 ```
 
-`STABLE_VERSION` identifies the production-supported project line. Version `1.0.1` is the current stable baseline.
+`STABLE_VERSION` identifies the production-supported project line. Version `1.0.2` is the current stable baseline.
 
 ## Origin and attribution
 

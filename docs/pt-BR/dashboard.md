@@ -2,7 +2,7 @@
 
 [English](../en/dashboard.md)
 
-A versão 1.0.1 fornece uma dashboard nativa do Zabbix mais enxuta e gráficos clássicos reutilizáveis.
+A versão 1.0.2 fornece uma dashboard nativa do Zabbix mais enxuta e gráficos clássicos reutilizáveis.
 
 ## Dashboard do template
 
@@ -17,6 +17,7 @@ A primeira página foi pensada para operação diária. Ela inclui:
 - quantidade total de zonas, primárias e secundárias;
 - memória em uso;
 - estado DNS UDP/TCP;
+- versão JSON das estatísticas do BIND;
 - gráfico de tempo de resposta DNS local;
 - gráfico de taxa de queries;
 - gráfico de erros de query;

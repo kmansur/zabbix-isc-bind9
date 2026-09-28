@@ -6,6 +6,26 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 
 Sem alterações não publicadas.
 
+## [1.0.2] - 2026-09-28
+
+### Adicionado
+
+- Adicionada a macro `{$BIND.DNS.TEST.ENABLED}`, com padrão `0`, para manter os alertas funcionais DNS silenciosos até que o administrador valide um nome de teste adequado ao servidor.
+- Adicionados limites separados de tempo de resposta para UDP e TCP: `{$BIND.DNS.RESPONSE.UDP.WARN}` e `{$BIND.DNS.RESPONSE.TCP.WARN}`.
+- Adicionada a versão JSON das estatísticas do BIND à dashboard operacional Overview.
+
+### Alterado
+
+- Os nomes dos problemas funcionais DNS agora descrevem falha no teste configurado, sem sugerir automaticamente que o daemon BIND está indisponível.
+- Os eventos e dados operacionais dos problemas DNS passam a incluir o nome/tipo configurado para facilitar o diagnóstico.
+- A documentação de instalação e configuração agora exige validar o nome de teste em UDP e TCP antes de definir `{$BIND.DNS.TEST.ENABLED}=1`.
+- O baseline mantido para Zabbix Agent e Agent 2 passa a ser documentado como 7.0+.
+- Removidas referências antigas a 1.0.0/1.0-0 da documentação atual de compatibilidade.
+
+### Corrigido
+
+- Evitados falsos positivos de DNS funcional causados pelo padrão genérico `localhost/A` em servidores BIND exclusivamente autoritativos.
+
 ## [1.0.1] - 2026-09-28
 
 ### Corrigido
