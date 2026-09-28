@@ -29,7 +29,7 @@ zabbix_export:
         Exports are maintained for Zabbix 7.0 and 8.0.
       vendor:
         name: Net Tech
-        version: 1.0-1
+        version: 1.0-2
       groups:
         - name: Templates/Applications
       items:
@@ -71,11 +71,12 @@ zabbix_export:
               value: availability
           triggers:
             - uuid: c52ae7683e0540ebbb851f7f5e107c0f
-              expression: 'max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],{$BIND.DNS.FAIL.WINDOW})=0'
-              name: 'BIND: DNS service is not answering UDP queries'
+              expression: '{$BIND.DNS.TEST.ENABLED}=1 and max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],{$BIND.DNS.FAIL.WINDOW})=0'
+              name: 'BIND: DNS functional test failed over UDP'
+              event_name: 'BIND: DNS functional test failed over UDP ({$BIND.DNS.TEST.NAME}/{$BIND.DNS.TEST.TYPE})'
               priority: HIGH
-              description: 'The local BIND service has not returned a successful UDP DNS answer for the configured test query during the failure window.'
-              opdata: 'UDP DNS state: {ITEM.LASTVALUE}'
+              description: 'The configured functional DNS query did not produce a usable UDP answer during the failure window. This does not by itself prove that the BIND daemon is down; verify that the configured test name is appropriate for this server role.'
+              opdata: 'Query: {$BIND.DNS.TEST.NAME}/{$BIND.DNS.TEST.TYPE}; UDP state: {ITEM.LASTVALUE}'
               tags:
                 - tag: scope
                   value: availability
@@ -93,11 +94,12 @@ zabbix_export:
               value: availability
           triggers:
             - uuid: 779e5fd8b1ce46c78193b8e32188fdbb
-              expression: 'max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],{$BIND.DNS.FAIL.WINDOW})=0'
-              name: 'BIND: DNS service is not answering TCP queries'
+              expression: '{$BIND.DNS.TEST.ENABLED}=1 and max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],{$BIND.DNS.FAIL.WINDOW})=0'
+              name: 'BIND: DNS functional test failed over TCP'
+              event_name: 'BIND: DNS functional test failed over TCP ({$BIND.DNS.TEST.NAME}/{$BIND.DNS.TEST.TYPE})'
               priority: HIGH
-              description: 'The local BIND service has not returned a successful TCP DNS answer for the configured test query during the failure window.'
-              opdata: 'TCP DNS state: {ITEM.LASTVALUE}'
+              description: 'The configured functional DNS query did not produce a usable TCP answer during the failure window. This does not by itself prove that the BIND daemon is down; verify that the configured test name is appropriate for this server role.'
+              opdata: 'Query: {$BIND.DNS.TEST.NAME}/{$BIND.DNS.TEST.TYPE}; TCP state: {ITEM.LASTVALUE}'
               tags:
                 - tag: scope
                   value: availability
@@ -115,15 +117,15 @@ zabbix_export:
               value: performance
           triggers:
             - uuid: d07fbe65e24c4b7db379a05b01b1226f
-              expression: 'avg(/ISC BIND by Zabbix agent/net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],5m)>{$BIND.DNS.RESPONSE.WARN} and min(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],5m)=1'
+              expression: '{$BIND.DNS.TEST.ENABLED}=1 and avg(/ISC BIND by Zabbix agent/net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],5m)>{$BIND.DNS.RESPONSE.UDP.WARN} and min(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],5m)=1'
               name: 'BIND: DNS UDP response time is high'
-              event_name: 'BIND: DNS UDP response time is high (over {$BIND.DNS.RESPONSE.WARN}s for 5m)'
+              event_name: 'BIND: DNS UDP response time is high (over {$BIND.DNS.RESPONSE.UDP.WARN}s for 5m)'
               priority: WARNING
               description: 'The average response time of the local UDP DNS test query has exceeded the configured warning threshold for five minutes.'
               opdata: 'Response time: {ITEM.LASTVALUE}'
               dependencies:
-                - name: 'BIND: DNS service is not answering UDP queries'
-                  expression: 'max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],{$BIND.DNS.FAIL.WINDOW})=0'
+                - name: 'BIND: DNS functional test failed over UDP'
+                  expression: '{$BIND.DNS.TEST.ENABLED}=1 and max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp],{$BIND.DNS.FAIL.WINDOW})=0'
               tags:
                 - tag: scope
                   value: performance
@@ -141,15 +143,15 @@ zabbix_export:
               value: performance
           triggers:
             - uuid: bdd417fc1d444b97bc30598874b0fba4
-              expression: 'avg(/ISC BIND by Zabbix agent/net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],5m)>{$BIND.DNS.RESPONSE.WARN} and min(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],5m)=1'
+              expression: '{$BIND.DNS.TEST.ENABLED}=1 and avg(/ISC BIND by Zabbix agent/net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],5m)>{$BIND.DNS.RESPONSE.TCP.WARN} and min(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],5m)=1'
               name: 'BIND: DNS TCP response time is high'
-              event_name: 'BIND: DNS TCP response time is high (over {$BIND.DNS.RESPONSE.WARN}s for 5m)'
+              event_name: 'BIND: DNS TCP response time is high (over {$BIND.DNS.RESPONSE.TCP.WARN}s for 5m)'
               priority: WARNING
               description: 'The average response time of the local TCP DNS test query has exceeded the configured warning threshold for five minutes.'
               opdata: 'Response time: {ITEM.LASTVALUE}'
               dependencies:
-                - name: 'BIND: DNS service is not answering TCP queries'
-                  expression: 'max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],{$BIND.DNS.FAIL.WINDOW})=0'
+                - name: 'BIND: DNS functional test failed over TCP'
+                  expression: '{$BIND.DNS.TEST.ENABLED}=1 and max(/ISC BIND by Zabbix agent/net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp],{$BIND.DNS.FAIL.WINDOW})=0'
               tags:
                 - tag: scope
                   value: performance
@@ -1813,12 +1815,15 @@ zabbix_export:
         - tag: target
           value: bind9
       macros:
+        - macro: '{$BIND.DNS.TEST.ENABLED}'
+          value: '0'
+          description: 'Enable functional DNS alerting after choosing a valid test name for this BIND instance. Set to 1 after validation.'
         - macro: '{$BIND.DNS.TEST.SERVER}'
           value: '127.0.0.1'
           description: 'DNS server address used by the native Zabbix DNS health checks.'
         - macro: '{$BIND.DNS.TEST.NAME}'
           value: localhost
-          description: 'DNS name used for service availability and response-time checks. Override on the host if localhost is not answered by the monitored BIND instance.'
+          description: 'DNS name used for service availability and response-time checks. Configure a stable name served by this BIND instance before enabling DNS functional alerts.'
         - macro: '{$BIND.DNS.TEST.TYPE}'
           value: A
           description: 'DNS record type used by the native service health checks.'
@@ -1831,9 +1836,12 @@ zabbix_export:
         - macro: '{$BIND.DNS.FAIL.WINDOW}'
           value: 3m
           description: 'Continuous failure window before UDP or TCP DNS availability raises a problem.'
-        - macro: '{$BIND.DNS.RESPONSE.WARN}'
+        - macro: '{$BIND.DNS.RESPONSE.UDP.WARN}'
           value: '0.1'
-          description: 'Average local DNS response-time warning threshold in seconds.'
+          description: 'Average UDP DNS response-time warning threshold in seconds.'
+        - macro: '{$BIND.DNS.RESPONSE.TCP.WARN}'
+          value: '0.1'
+          description: 'Average TCP DNS response-time warning threshold in seconds.'
         - macro: '{$BIND.QRYDROPPED.RATE.WARN}'
           value: '0'
           description: 'Average dropped-query rate above this value for 5 minutes raises a warning.'
@@ -1988,11 +1996,29 @@ zabbix_export:
                     - type: INTEGER
                       name: show.0
                       value: '2'
-                - type: graph
-                  name: 'DNS response time'
+                - type: item
+                  name: 'JSON stats version'
                   x: '24'
                   'y': '2'
-                  width: '48'
+                  width: '12'
+                  height: '2'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'ISC BIND by Zabbix agent'
+                        key: bind.stats.json.version
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                - type: graph
+                  name: 'DNS response time'
+                  x: '36'
+                  'y': '2'
+                  width: '36'
                   height: '5'
                   fields:
                     - type: GRAPH
