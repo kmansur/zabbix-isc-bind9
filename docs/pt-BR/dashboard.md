@@ -2,7 +2,7 @@
 
 [English](../en/dashboard.md)
 
-A versão 0.4.0 adiciona uma dashboard nativa de template do Zabbix e gráficos clássicos reutilizáveis.
+A versão 1.0.0 adiciona uma dashboard nativa de template do Zabbix e gráficos clássicos reutilizáveis.
 
 ## Dashboard do template
 
@@ -66,5 +66,6 @@ O template também fornece gráficos reutilizáveis fora da dashboard:
 - `BIND: Incoming transfers`
 - `BIND: Incoming transfer rate`
 - `BIND: Server timing`
+- `BIND: DNS query response time`
 
 Os gráficos foram baseados deliberadamente em itens estáveis e de baixa cardinalidade. Famílias dinâmicas de LLD, como query types, response codes, resolver e sockets, são apresentadas através dos navegadores da dashboard em vez de gerar grande quantidade de graph prototypes.
