@@ -26,7 +26,7 @@ Do not expose this listener to untrusted networks.
 
 ## 3. Configure the Zabbix agent
 
-Use either Zabbix Agent or Zabbix Agent 2. Passive checks must work for the host. No custom agent plugin or external parser is required.
+Use Zabbix Agent 7.0+ or Zabbix Agent 2 7.0+. Passive checks must work for the host. The standard keys `web.page.get[]`, `net.dns[]` and `net.dns.perf[]` must be available. No custom agent plugin or external parser is required.
 
 ## 4. Import the template
 
