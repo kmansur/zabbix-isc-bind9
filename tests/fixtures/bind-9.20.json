@@ -5,9 +5,19 @@
     "views": {
       "_default": {
         "resolver": {
-          "stats": {"Queryv4": 10},
-          "qtypes": {"A": 10},
-          "cache": {"A": 1},
+          "stats": {
+            "Queryv4": 10,
+            "QueryCurUDP": 1,
+            "QueryCurTCP": 0,
+            "NumFetch": 2,
+            "BucketSize": 64
+          },
+          "qtypes": {
+            "A": 10
+          },
+          "cache": {
+            "A": 1
+          },
           "cachestats": {
             "CacheHits": 8,
             "CacheMisses": 2,
@@ -22,7 +32,12 @@
             "TreeMemInUse": 16384,
             "HeapMemInUse": 8192
           },
-          "adb": {"nentries": 2}
+          "adb": {
+            "nentries": 8,
+            "entriescnt": 6,
+            "nnames": 5,
+            "namescnt": 4
+          }
         }
       }
     }
