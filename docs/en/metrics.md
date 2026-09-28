@@ -44,3 +44,17 @@ BIND 9.20 exposes the JSON `/json/v1/xfrins` endpoint. The common template polls
 ## Per-zone detail policy
 
 The base template intentionally avoids discovering SOA serial and loaded age for every zone. On authoritative servers with hundreds or thousands of zones, those items add substantial cardinality while providing little standalone health information. Secondary-zone expiry monitoring remains available per-zone because an individual secondary can expire independently, but it is opt-in through `{$BIND.ZONE.SECONDARY.MATCHES}` to keep the default template low-cardinality. Per-zone DNSSEC counters are opt-in through `{$BIND.ZONE.DNSSEC.MATCHES}`; the default `^$` discovers none. Set it to a targeted regular expression, or `.*` only when full per-zone DNSSEC detail is explicitly required.
+
+
+## Counter versus gauge semantics
+
+BIND statistics contain both monotonically increasing event counters and point-in-time gauges. Version 1.0.1 explicitly separates these classes so that gauges are never processed with `CHANGE_PER_SECOND`.
+
+Rate families include cumulative query/request/response/error and socket-event counters. Gauge families include:
+
+- `nsstats`: `RecursClients`, `TCPConnHighWater` and, on BIND 9.20, `RecursHighwater`;
+- resolver statistics: `QueryCurUDP`, `QueryCurTCP`, `NumFetch` and `BucketSize`;
+- resolver ADB: `nentries`, `entriescnt`, `nnames` and `namescnt`;
+- socket statistics: active-socket and currently-connected-client values such as `UDP4Active`, `TCP4Active` and `TCP4Clients`.
+
+The generic rate discovery rules exclude these gauges. Dedicated gauge discovery rules expose their current values directly. This prevents misleading values such as “RecursClients per second”.
