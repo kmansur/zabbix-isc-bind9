@@ -554,20 +554,20 @@ zabbix_export:
             - type: JAVASCRIPT
               parameters:
                 - |
+                  if (!/^HTTP\/\d(?:\.\d)?\s+200\b/m.test(value)) {
+                      throw "BIND xfrins endpoint is not available";
+                  }
                   var p = value.indexOf("{");
                   if (p < 0) {
-                      return 0;
+                      throw "BIND xfrins JSON payload not found";
                   }
-                  try {
-                      var d = JSON.parse(value.substring(p));
-                      var total = 0;
-                      Object.keys(d.views || {}).forEach(function (viewName) {
-                          total += (d.views[viewName].xfrins || []).length;
-                      });
-                      return total;
-                  } catch (e) {
-                      return 0;
-                  }
+                  var d = JSON.parse(value.substring(p));
+                  var total = 0;
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      total += (d.views[viewName].xfrins || []).length;
+                  });
+                  return total;
+              error_handler: DISCARD_VALUE
           master_item:
             key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
           tags:
@@ -583,24 +583,24 @@ zabbix_export:
             - type: JAVASCRIPT
               parameters:
                 - |
+                  if (!/^HTTP\/\d(?:\.\d)?\s+200\b/m.test(value)) {
+                      throw "BIND xfrins endpoint is not available";
+                  }
                   var p = value.indexOf("{");
                   if (p < 0) {
-                      return 0;
+                      throw "BIND xfrins JSON payload not found";
                   }
-                  try {
-                      var d = JSON.parse(value.substring(p));
-                      var total = 0;
-                      Object.keys(d.views || {}).forEach(function (viewName) {
-                          (d.views[viewName].xfrins || []).forEach(function (xfr) {
-                              if (xfr.state === "Deferred") {
-                                  total++;
-                              }
-                          });
+                  var d = JSON.parse(value.substring(p));
+                  var total = 0;
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      (d.views[viewName].xfrins || []).forEach(function (xfr) {
+                          if (xfr.state === "Deferred") {
+                              total++;
+                          }
                       });
-                      return total;
-                  } catch (e) {
-                      return 0;
-                  }
+                  });
+                  return total;
+              error_handler: DISCARD_VALUE
           master_item:
             key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
           tags:
@@ -623,22 +623,22 @@ zabbix_export:
             - type: JAVASCRIPT
               parameters:
                 - |
+                  if (!/^HTTP\/\d(?:\.\d)?\s+200\b/m.test(value)) {
+                      throw "BIND xfrins endpoint is not available";
+                  }
                   var p = value.indexOf("{");
                   if (p < 0) {
-                      return 0;
+                      throw "BIND xfrins JSON payload not found";
                   }
-                  try {
-                      var d = JSON.parse(value.substring(p));
-                      var total = 0;
-                      Object.keys(d.views || {}).forEach(function (viewName) {
-                          (d.views[viewName].xfrins || []).forEach(function (xfr) {
-                              total += Number(xfr.nbytes) || 0;
-                          });
+                  var d = JSON.parse(value.substring(p));
+                  var total = 0;
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      (d.views[viewName].xfrins || []).forEach(function (xfr) {
+                          total += Number(xfr.nbytes) || 0;
                       });
-                      return total;
-                  } catch (e) {
-                      return 0;
-                  }
+                  });
+                  return total;
+              error_handler: DISCARD_VALUE
           master_item:
             key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
           tags:
@@ -655,22 +655,22 @@ zabbix_export:
             - type: JAVASCRIPT
               parameters:
                 - |
+                  if (!/^HTTP\/\d(?:\.\d)?\s+200\b/m.test(value)) {
+                      throw "BIND xfrins endpoint is not available";
+                  }
                   var p = value.indexOf("{");
                   if (p < 0) {
-                      return 0;
+                      throw "BIND xfrins JSON payload not found";
                   }
-                  try {
-                      var d = JSON.parse(value.substring(p));
-                      var total = 0;
-                      Object.keys(d.views || {}).forEach(function (viewName) {
-                          (d.views[viewName].xfrins || []).forEach(function (xfr) {
-                              total += Number(xfr.rate) || 0;
-                          });
+                  var d = JSON.parse(value.substring(p));
+                  var total = 0;
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      (d.views[viewName].xfrins || []).forEach(function (xfr) {
+                          total += Number(xfr.rate) || 0;
                       });
-                      return total;
-                  } catch (e) {
-                      return 0;
-                  }
+                  });
+                  return total;
+              error_handler: DISCARD_VALUE
           master_item:
             key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
           tags:
@@ -1083,6 +1083,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.nsstats["{#BIND.COUNTER}"]'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1137,6 +1139,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.qtypes["{#BIND.COUNTER}"]'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1178,6 +1182,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.rcodes["{#BIND.COUNTER}"]'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1218,6 +1224,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.sockstats["{#BIND.COUNTER}"]'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1271,6 +1279,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.stats["{#BIND.COUNTER}"]'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1433,6 +1443,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.qtypes["{#BIND.COUNTER}"]'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1582,6 +1594,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheHits'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1599,6 +1613,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheMisses'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1616,6 +1632,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.QueryHits'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1633,6 +1651,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.QueryMisses'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1649,6 +1669,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.DeleteLRU'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1665,6 +1687,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.DeleteTTL'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1681,6 +1705,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CoveringNSEC'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1696,6 +1722,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheNodes'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: b1faacf6906f423982c086e9e53f437a
@@ -1708,6 +1736,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheNSECNodes'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: ee4960f9ce834ffb8cd02249d5c97362
@@ -1721,6 +1751,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.TreeMemInUse'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: 17744b66d95b470b98cd0c921155f271
@@ -1734,6 +1766,8 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.HeapMemInUse'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
           graph_prototypes:
@@ -1841,6 +1875,7 @@ zabbix_export:
                           }
                       }
                       throw "zone expiry timestamp not available";
+                  error_handler: DISCARD_VALUE
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
               tags:
@@ -1896,6 +1931,7 @@ zabbix_export:
                           }
                       }
                       throw "zone refresh timestamp not available";
+                  error_handler: DISCARD_VALUE
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
               tags:
@@ -1967,6 +2003,7 @@ zabbix_export:
                           }
                       }
                       throw "DNSSEC zone counter not available";
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
