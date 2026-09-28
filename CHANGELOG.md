@@ -4,43 +4,61 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+No unreleased changes.
+
+## [1.0.0] - 2026-09-28
+
+First production-stable release of **ISC BIND by Zabbix agent**.
+
 ### Validation
-- Confirmed the native UDP/TCP DNS availability and response-time checks with the classic Zabbix agent on Ubuntu 24.04/BIND 9.18.39; local response times were below 1 ms.
-- Added live statistics-channel validation against the official ISC BIND 9.18 and 9.20 containers, including version-aware `/json/v1/xfrins` behavior.
-- Added BIND 9.18/9.20 JSON contract fixtures and pytest coverage for the endpoint structures used by preprocessing and LLD.
-- Added a Zabbix 8.0 trunk fresh-import CI gate using the official development Docker images.
-- Completed a passive-template cleanup audit against the original community template: no active item types, legacy BIND9 macros, legacy LLD macros, legacy port 8653, shared item keys or shared UUIDs remain. The original project name remains only in license attribution.
-- CI validates Python 3.11, 3.13 and 3.14, template structure, bilingual documentation and a fresh import into Zabbix 7.0.
+
+- Real runtime validation on Ubuntu 24.04 with BIND 9.18.39 and the classic Zabbix agent.
+- Native UDP/TCP DNS availability and response-time checks validated in the real environment; local response times were below 1 ms.
+- Live statistics-channel contract validation against the official ISC BIND 9.18.50 and 9.20.29 container images.
+- Version-aware validation confirms that `/json/v1/xfrins` is absent on BIND 9.18 and available on BIND 9.20.
+- Classic Zabbix Agent and Zabbix Agent 2 capability checks run against live BIND instances in CI.
+- Fresh-import gates for Zabbix 7.0 and the official Zabbix 8.0 trunk development images.
+- Python 3.11, 3.13 and 3.14 lint, formatting, pytest, template validation and bilingual-documentation validation.
+- BIND 9.18/9.20 JSON contract fixtures protect preprocessing and LLD assumptions.
+- Full functional parity is enforced between the 7.0 and 8.0 template bodies and graph definitions.
+- Passive-template cleanup audit confirms no legacy active item types, old BIND9 macros, old LLD macros, legacy port 8653, shared item keys or shared UUIDs remain from the community source.
 
 ### Added
-- Added DNS UDP/TCP health cards and local DNS response-time graph to the Overview dashboard.
-- Added native UDP/TCP DNS service availability and response-time checks using `net.dns` and `net.dns.perf`.
-- Added `BIND: DNS query response time` graph and a service-state value map.
-- Added eight reusable classic graphs and the native three-page `ISC BIND: Overview` template dashboard.
-- Added dynamic dashboard navigators for query types, response codes, nsstats, resolver counters, socket statistics and zone-related items.
-- Added resolver-cache graph prototypes per BIND view for hit/miss rates, cache memory and cache nodes.
-- Added graceful BIND 9.20 incoming-transfer monitoring through `/json/v1/xfrins`, with a compatibility indicator and no unsupported items on BIND 9.18.
-- Secondary-zone refresh and expiry timers with trigger prototypes.
-- DNSSEC signing/refresh counter discovery for zones exporting `dnssec-sign`/`dnssec-refresh`.
-- Resolver monitoring by view, including resolver counters, recursive query types and ADB discovery.
-- Resolver cache metrics for hits/misses, evictions, cache nodes and cache memory.
-- BIND memory usage metrics from the native memory statistics endpoint.
-- Aggregate zone counters for total, primary and secondary zones.
+
+- Native UDP/TCP DNS availability and response-time monitoring with `net.dns[]` and `net.dns.perf[]`.
+- BIND version, JSON statistics version, uptime and configuration-age monitoring.
+- IPv4/IPv6 request, recursion, dropped-query and SERVFAIL rates.
+- LLD for `nsstats`, query types, response codes and socket statistics.
+- Resolver statistics, query types, ADB and cache metrics by BIND view.
+- Memory usage, malloced memory and memory-context monitoring.
+- Aggregate total/primary/secondary zone counters.
+- Opt-in secondary-zone refresh/expiry monitoring with trigger prototypes.
+- Opt-in per-zone DNSSEC signing/refresh counters.
+- BIND 9.20 incoming-transfer monitoring via `/json/v1/xfrins`, with graceful BIND 9.18 compatibility.
+- Nine reusable classic graphs.
+- Three resolver-cache graph prototypes per view.
+- Native three-page `ISC BIND: Overview` dashboard with Overview, DNS activity, and Resolver & resources pages.
+- Dynamic dashboard navigators for query types, response codes, nsstats, resolver counters, socket statistics and zone-related items.
+- CI, CodeQL, repository-hygiene tests and bilingual English/pt-BR documentation.
 
 ### Changed
-- Statistics-channel unavailability is now a warning because DNS service availability is monitored independently.
-- SERVFAIL and dropped-query anomalies are warnings and depend on statistics-channel availability.
-- Renamed the template from `ISC BIND 9 by Zabbix Agent` to `ISC BIND by Zabbix agent`. The repository name remains unchanged.
-- Per-zone secondary refresh/expiry discovery is opt-in via `{$BIND.ZONE.SECONDARY.MATCHES}`; the default `^$` creates no per-zone secondary items.
-- Removed default all-zone SOA serial and loaded-age discovery; the base template now uses aggregate total/primary/secondary zone counts.
-- Per-zone DNSSEC discovery is opt-in via `{$BIND.ZONE.DNSSEC.MATCHES}` to control cardinality.
-- Optional zero-valued BIND counters are normalized to zero instead of becoming unsupported.
-- Switched the default master items from active to passive Zabbix agent checks. This removes the `ServerActive` requirement while remaining compatible with Agent 2.
 
-### Fixed
-- Corrected `{$BIND.STATS.HOST}` to use `127.0.0.1` instead of a full URL when `web.page.get[]` also supplies path and port parameters.
-- Socket statistics discovery now uses `/json/v1/net`, matching BIND statistics-channel semantics.
+- Template identity standardized as `ISC BIND by Zabbix agent`.
+- Passive Zabbix agent checks are the default architecture; `ServerActive` is not required.
+- Statistics-channel unavailability is a Warning because DNS service availability is checked independently.
+- SERVFAIL and dropped-query anomalies are Warnings and depend on statistics-channel availability.
+- Per-zone monitoring is opt-in to keep default cardinality low.
+- Optional zero-valued BIND counters are normalized or safely omitted rather than producing unsupported noise.
+- Socket statistics discovery uses `/json/v1/net`, matching BIND semantics.
+- `{$BIND.STATS.HOST}` uses `127.0.0.1` rather than a full URL because path and port are supplied separately to `web.page.get[]`.
+
+### Security
+
+- Read-only architecture.
+- Loopback-only statistics-channel recommended by default.
+- No `sudo`, `rndc`, `system.run[]`, external scripts, `curl`, `jq`, SSH/Telnet items or Agent 2-only plugins required.
+- No BIND write/control permission required.
 
 ## [0.4.0] - 2026-09-27
 
-Dashboard/graph engineering candidate. No production-stable release has been promoted yet.
+Final engineering-candidate line used for runtime, dashboard and CI validation before 1.0.0.
