@@ -5,11 +5,11 @@
 O projeto utiliza Versionamento Semântico.
 
 ```text
-VERSION:        0.4.0
-STABLE_VERSION: 0.0.0
+VERSION:        1.0.0
+STABLE_VERSION: 1.0.0
 ```
 
-A `main` é a branch ativa de desenvolvimento. Uma versão suportada em produção começa somente quando uma release com tag for explicitamente promovida e o `STABLE_VERSION` atualizado.
+A `main` contém o código mantido atual. `STABLE_VERSION` registra o baseline suportado para produção. A versão `1.0.0` é o primeiro baseline estável do projeto.
 
 ## Regras
 
