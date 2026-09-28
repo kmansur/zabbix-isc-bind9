@@ -5,7 +5,7 @@
 | Component | Status |
 | --- | --- |
 | Zabbix 7.0 | Primary export target |
-| Zabbix 8.0 | Compatibility export; continuously fresh-import validated against official trunk images |
+| Zabbix 8.0 | Runtime validated on Zabbix 8.0.0beta2; continuously fresh-import validated against official trunk images |
 | Classic Zabbix Agent 6.0+ | Maintained design target |
 | Zabbix Agent 2 6.0+ | Maintained design target |
 | FreeBSD | Classic agent design path; package availability verified, runtime validation still recommended |
@@ -27,9 +27,15 @@ ISC ended maintenance for BIND 9.18 after 9.18.50 in June 2026. The project keep
 The `status`, `server`, `zones`, `mem`, `net` and `traffic` JSON endpoints were validated on Ubuntu 24.04 with BIND 9.18.39. The tested server exposed resolver blocks containing `stats`, `qtypes`, `cache`, `cachestats` and `adb`, and exported `sockstats` through `/json/v1/net`.
 
 
-## Zabbix 8.0 development validation
+## Zabbix 8.0 validation
 
-The 8.0 export is continuously imported in CI against the official Zabbix trunk Docker images, which are the development line for Zabbix 8.0. This validates schema/import compatibility before a stable 8.0 release exists. Runtime behavior is still considered pre-release until validated against an official stable 8.0 build.
+The 8.0 export is continuously imported in CI against the official Zabbix trunk Docker images.
+
+In addition, template version `1.0-0` was imported successfully into a real **Zabbix 8.0.0beta2** server and linked to the monitored BIND host. Runtime collection was confirmed working, including DNS UDP/TCP availability and response time, IPv4/IPv6 request rates, SERVFAIL/dropped-query rates, transfer metrics, memory metrics, zone counters, raw statistics endpoints and discovered data.
+
+The validated Zabbix 8.0.0beta2 template showed 35 base items, 8 triggers, 9 classic graphs, 1 dashboard and 10 discovery rules, with discovered runtime data being collected normally.
+
+This provides real runtime validation for the Zabbix 8.0 development line. A final stable Zabbix 8.0 build should still be revalidated when available because beta-to-stable schema or frontend behavior can change.
 
 
 ## BIND JSON contract fixtures
