@@ -33,6 +33,9 @@ Version 1.0.2 includes:
 - local collection of the `status`, `server`, `zones`, `mem`, `net` and `traffic` JSON endpoints;
 - UDP/TCP traffic-rate aggregation from BIND traffic histograms;
 - native UDP/TCP DNS availability and response-time checks through standard Zabbix agent keys, with alerting disabled by default until a valid per-host test name is chosen;
+- independent `named` process plus local UDP/TCP listener checks that remain useful when the statistics channel fails;
+- normalized per-zone processing with signed refresh/expiry timers, selected secondary-zone serials and optional DNSSEC detail;
+- resolver capacity signals including dedicated recursive-client monitoring and per-view cache hit ratio;
 - availability and operational triggers for the statistics channel and critical DNS counters;
 - nine reusable classic graphs and a native three-page Zabbix dashboard.
 
