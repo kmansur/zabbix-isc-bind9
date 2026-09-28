@@ -74,17 +74,33 @@ def validate(
         raise RuntimeError("zones endpoint does not contain views")
 
     if expected_zone:
-        zone_names = {
-            zone.get("name")
+        zone_objects = [
+            zone
             for view in zones.get("views", {}).values()
             for zone in view.get("zones", [])
-        }
-        if expected_zone not in zone_names:
+            if zone.get("name") == expected_zone
+        ]
+        if not zone_objects:
+            all_names = sorted(
+                zone.get("name")
+                for view in zones.get("views", {}).values()
+                for zone in view.get("zones", [])
+                if zone.get("name")
+            )
             raise RuntimeError(
                 f"expected test zone {expected_zone!r} not present in zones endpoint; "
-                f"loaded zones: {sorted(name for name in zone_names if name)}"
+                f"loaded zones: {all_names}"
             )
-        print(f"Confirmed loaded authoritative test zone: {expected_zone}")
+
+        zone = zone_objects[0]
+        if "serial" not in zone or "loaded" not in zone:
+            raise RuntimeError(
+                f"test zone {expected_zone!r} is configured but not fully loaded: {zone}"
+            )
+        print(
+            f"Confirmed loaded authoritative test zone: {expected_zone} "
+            f"(serial {zone['serial']})"
+        )
 
     xfrins_url = f"{base_url}/json/v1/xfrins"
     if expected_version == "9.20":
