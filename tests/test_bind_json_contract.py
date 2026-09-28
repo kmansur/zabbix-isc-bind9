@@ -33,6 +33,10 @@ def test_bind_918_contract() -> None:
 
     resolver = server["views"]["_default"]["resolver"]
     assert {"stats", "qtypes", "cache", "cachestats", "adb"} <= resolver.keys()
+    assert {"QueryCurUDP", "QueryCurTCP", "NumFetch", "BucketSize"} <= resolver[
+        "stats"
+    ].keys()
+    assert {"nentries", "entriescnt", "nnames", "namescnt"} <= resolver["adb"].keys()
 
     cache = resolver["cachestats"]
     common_cache_fields = {
@@ -51,8 +55,21 @@ def test_bind_918_contract() -> None:
     }
     assert common_cache_fields <= cache.keys()
 
-    assert data["net"]["sockstats"]
-    assert {"InUse", "Malloced", "contexts"} <= data["mem"]["memory"].keys()
+    sockstats = data["net"]["sockstats"]
+    assert sockstats
+    assert {
+        "UDP4Active",
+        "UDP6Active",
+        "TCP4Active",
+        "TCP6Active",
+        "TCP4Clients",
+        "TCP6Clients",
+    } <= sockstats.keys()
+
+    memory = data["mem"]["memory"]
+    assert {"InUse", "Malloced", "contexts"} <= memory.keys()
+    assert isinstance(memory["contexts"], list)
+    assert len(memory["contexts"]) >= 1
 
     traffic = data["traffic"]["traffic"]
     expected_traffic = {
@@ -83,6 +100,10 @@ def test_bind_920_transfer_contract() -> None:
     assert data["bind_version"].startswith("9.20.")
     resolver = data["server"]["views"]["_default"]["resolver"]
     assert {"stats", "qtypes", "cache", "cachestats", "adb"} <= resolver.keys()
+    assert {"QueryCurUDP", "QueryCurTCP", "NumFetch", "BucketSize"} <= resolver[
+        "stats"
+    ].keys()
+    assert {"nentries", "entriescnt", "nnames", "namescnt"} <= resolver["adb"].keys()
 
     xfrins = data["xfrins"]["views"]["_default"]["xfrins"]
     assert len(xfrins) == 2
