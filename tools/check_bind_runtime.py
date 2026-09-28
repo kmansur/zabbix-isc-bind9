@@ -31,7 +31,12 @@ def wait_json(url: str, timeout: int) -> dict[str, Any]:
     raise RuntimeError(f"{url}: endpoint did not become ready: {last_error}")
 
 
-def validate(base_url: str, expected_version: str, timeout: int) -> None:
+def validate(
+    base_url: str,
+    expected_version: str,
+    timeout: int,
+    expected_zone: str | None = None,
+) -> None:
     status = wait_json(f"{base_url}/json/v1/status", timeout)
     actual_version = str(status.get("version", ""))
     if not actual_version.startswith(expected_version + "."):
@@ -68,6 +73,19 @@ def validate(base_url: str, expected_version: str, timeout: int) -> None:
     if "views" not in zones:
         raise RuntimeError("zones endpoint does not contain views")
 
+    if expected_zone:
+        zone_names = {
+            zone.get("name")
+            for view in zones.get("views", {}).values()
+            for zone in view.get("zones", [])
+        }
+        if expected_zone not in zone_names:
+            raise RuntimeError(
+                f"expected test zone {expected_zone!r} not present in zones endpoint; "
+                f"loaded zones: {sorted(name for name in zone_names if name)}"
+            )
+        print(f"Confirmed loaded authoritative test zone: {expected_zone}")
+
     xfrins_url = f"{base_url}/json/v1/xfrins"
     if expected_version == "9.20":
         xfrins = get_json(xfrins_url)
@@ -94,8 +112,14 @@ def main() -> None:
     parser.add_argument("--base-url", default="http://127.0.0.1:18053")
     parser.add_argument("--version", required=True, choices=("9.18", "9.20"))
     parser.add_argument("--wait", type=int, default=120)
+    parser.add_argument("--expected-zone")
     args = parser.parse_args()
-    validate(args.base_url.rstrip("/"), args.version, args.wait)
+    validate(
+        args.base_url.rstrip("/"),
+        args.version,
+        args.wait,
+        expected_zone=args.expected_zone,
+    )
 
 
 if __name__ == "__main__":
