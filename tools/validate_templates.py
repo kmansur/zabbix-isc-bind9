@@ -133,12 +133,8 @@ def load_template(version, path):
     assert all(item.get("delay") == "{$BIND.DNS.TEST.INTERVAL}" for item in dns_items)
 
     zone_rule = discovery_rule(template, "bind.zones.secondary.discovery")
-    expires = prototype(
-        zone_rule, "bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}]"
-    )
-    refresh = prototype(
-        zone_rule, "bind.zone.refresh.in[{#BIND.VIEW},{#BIND.ZONE}]"
-    )
+    expires = prototype(zone_rule, "bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}]")
+    refresh = prototype(zone_rule, "bind.zone.refresh.in[{#BIND.VIEW},{#BIND.ZONE}]")
     serial = prototype(zone_rule, "bind.zone.serial[{#BIND.VIEW},{#BIND.ZONE}]")
     assert expires.get("value_type") == "FLOAT"
     assert refresh.get("value_type") == "FLOAT"
@@ -150,7 +146,9 @@ def load_template(version, path):
     )
 
     # Every LLD rule gets an explicit retention policy.
-    assert all(rule.get("lifetime") == "7d" for rule in template.get("discovery_rules", []))
+    assert all(
+        rule.get("lifetime") == "7d" for rule in template.get("discovery_rules", [])
+    )
 
     view_filtered_rules = {
         "bind.zones.secondary.discovery",
@@ -168,7 +166,9 @@ def load_template(version, path):
             assert "{$BIND.VIEW.NOT_MATCHES}" in filter_text
 
         for proto in rule.get("item_prototypes", []):
-            assert proto.get("tags"), f"item prototype is missing tags: {proto.get('key')}"
+            assert proto.get("tags"), (
+                f"item prototype is missing tags: {proto.get('key')}"
+            )
             for step in proto.get("preprocessing", []):
                 if step.get("type") == "JSONPATH":
                     assert step.get("error_handler") == "DISCARD_VALUE", (
