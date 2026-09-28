@@ -50,6 +50,8 @@ type:   A
 
 The `localhost/A` query was validated successfully in the project's Ubuntu 24.04/BIND 9.18.39 runtime environment, but not every BIND configuration is required to answer that name.
 
+> **Important:** `localhost` is only a safe default when the monitored BIND instance is actually configured to answer `localhost/A`. On authoritative-only servers this may legitimately return no usable answer and cause false-positive UDP/TCP availability alerts. For authoritative servers, override `{$BIND.DNS.TEST.NAME}` at the host or template level with a stable record from a zone served by that same BIND instance. For example, if the server is authoritative for `example.com`, use a record such as `example.com` or another stable host name from that zone.
+
 ### Choosing the functional DNS test name
 
 Choose a name that represents the role of the monitored server:
