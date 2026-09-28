@@ -1707,6 +1707,15 @@ zabbix_export:
                   value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              trigger_prototypes:
+                - uuid: a81c3d9d119a4f23a8890a0000000016
+                  expression: '{$BIND.CACHE.DELETELRU.WARN}>0 and avg(/ISC BIND by Zabbix agent/bind.cache.deletelru[{#BIND.VIEW}],10m)>{$BIND.CACHE.DELETELRU.WARN}'
+                  name: 'BIND cache [{#BIND.VIEW}]: LRU deletion rate is high'
+                  priority: WARNING
+                  description: 'Cache entries are being evicted by LRU above the configured sustained-rate threshold. The trigger is disabled while {$BIND.CACHE.DELETELRU.WARN}=0.'
+                  tags:
+                    - tag: scope
+                      value: capacity
             - uuid: 175f32fb616447399339f12e86a2c804
               name: 'BIND cache [{#BIND.VIEW}]: TTL deletions per second'
               type: DEPENDENT
