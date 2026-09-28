@@ -22,57 +22,9 @@
 | `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Limite da taxa média de SERVFAIL para warning em 5 minutos |
 | `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Janela de aviso antes de uma zona secundária atingir o prazo de expiração |
 | `{$BIND.ZONE.SECONDARY.MATCHES}` | `^$` | Regex que seleciona zonas secundárias para refresh/expiry por zona; o padrão não descobre nenhuma |
-| `{$BIND.ZONE.DNSSEC.MATCHES}` | `^# Configuração
-
-[English](../en/configuration.md)
-
-## Macros do template
-
-| Macro | Padrão | Finalidade |
-| --- | --- | --- |
-| `{$BIND.DNS.TEST.ENABLED}` | `0` | Habilita os alertas funcionais DNS após validar o nome de teste; use `1` para ativar |
-| `{$BIND.DNS.TEST.INTERVAL}` | `30s` | Intervalo de coleta dos checks nativos DNS UDP/TCP de disponibilidade e tempo de resposta |
-| `{$BIND.DNS.PORT}` | `53` | Porta local do serviço DNS usada pelos checks independentes de listener TCP/UDP |
-| `{$BIND.PROCESS.NAME}` | `named` | Nome do processo usado pelo check independente do daemon via `proc.num[]` |
-| `{$BIND.DNS.TEST.SERVER}` | `127.0.0.1` | Endereço DNS consultado pelos checks nativos de saúde do Zabbix |
-| `{$BIND.DNS.TEST.NAME}` | `localhost` | Nome DNS usado nos checks de disponibilidade e tempo de resposta |
-| `{$BIND.DNS.TEST.TYPE}` | `A` | Tipo de registro DNS usado pelos checks nativos |
-| `{$BIND.DNS.TEST.TIMEOUT}` | `1` | Timeout por tentativa de consulta DNS, em segundos |
-| `{$BIND.DNS.TEST.COUNT}` | `2` | Quantidade de tentativas da consulta DNS |
-| `{$BIND.DNS.FAIL.WINDOW}` | `3m` | Janela contínua de falha antes de gerar problema de disponibilidade |
-| `{$BIND.DNS.RESPONSE.UDP.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta DNS UDP, em segundos |
-| `{$BIND.DNS.RESPONSE.TCP.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta DNS TCP, em segundos |
-| `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Limite da taxa média de queries descartadas para warning em 5 minutos |
-| `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Limite da taxa média de SERVFAIL para warning em 5 minutos |
-| `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Janela de aviso antes de uma zona secundária atingir o prazo de expiração |
-| `{$BIND.ZONE.SECONDARY.MATCHES}` | `^$` | Regex que seleciona zonas secundárias para refresh/expiry por zona; o padrão não descobre nenhuma |
- | Regex que seleciona zonas para monitoramento DNSSEC por zona; o padrão não descobre nenhuma |
+| `{$BIND.ZONE.DNSSEC.MATCHES}` | `^$` | Regex que seleciona zonas para monitoramento DNSSEC por zona; o padrão não descobre nenhuma |
 | `{$BIND.VIEW.MATCHES}` | `.*` | Regex que seleciona views do BIND elegíveis para discovery por view |
-| `{$BIND.VIEW.NOT_MATCHES}` | `^_bind# Configuração
-
-[English](../en/configuration.md)
-
-## Macros do template
-
-| Macro | Padrão | Finalidade |
-| --- | --- | --- |
-| `{$BIND.DNS.TEST.ENABLED}` | `0` | Habilita os alertas funcionais DNS após validar o nome de teste; use `1` para ativar |
-| `{$BIND.DNS.TEST.INTERVAL}` | `30s` | Intervalo de coleta dos checks nativos DNS UDP/TCP de disponibilidade e tempo de resposta |
-| `{$BIND.DNS.PORT}` | `53` | Porta local do serviço DNS usada pelos checks independentes de listener TCP/UDP |
-| `{$BIND.PROCESS.NAME}` | `named` | Nome do processo usado pelo check independente do daemon via `proc.num[]` |
-| `{$BIND.DNS.TEST.SERVER}` | `127.0.0.1` | Endereço DNS consultado pelos checks nativos de saúde do Zabbix |
-| `{$BIND.DNS.TEST.NAME}` | `localhost` | Nome DNS usado nos checks de disponibilidade e tempo de resposta |
-| `{$BIND.DNS.TEST.TYPE}` | `A` | Tipo de registro DNS usado pelos checks nativos |
-| `{$BIND.DNS.TEST.TIMEOUT}` | `1` | Timeout por tentativa de consulta DNS, em segundos |
-| `{$BIND.DNS.TEST.COUNT}` | `2` | Quantidade de tentativas da consulta DNS |
-| `{$BIND.DNS.FAIL.WINDOW}` | `3m` | Janela contínua de falha antes de gerar problema de disponibilidade |
-| `{$BIND.DNS.RESPONSE.UDP.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta DNS UDP, em segundos |
-| `{$BIND.DNS.RESPONSE.TCP.WARN}` | `0.1` | Limite de warning para o tempo médio de resposta DNS TCP, em segundos |
-| `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Limite da taxa média de queries descartadas para warning em 5 minutos |
-| `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Limite da taxa média de SERVFAIL para warning em 5 minutos |
-| `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Janela de aviso antes de uma zona secundária atingir o prazo de expiração |
-| `{$BIND.ZONE.SECONDARY.MATCHES}` | `^$` | Regex que seleciona zonas secundárias para refresh/expiry por zona; o padrão não descobre nenhuma |
- | Regex que exclui views internas/indesejadas das discoveries por view |
+| `{$BIND.VIEW.NOT_MATCHES}` | `^_bind$` | Regex que exclui views internas/indesejadas das discoveries por view |
 | `{$BIND.RECURSCLIENTS.WARN}` | `0` | Limite de clientes recursivos; `0` mantém o trigger opcional de saturação desabilitado |
 | `{$BIND.CACHE.DELETELRU.WARN}` | `0` | Limite sustentado de DeleteLRU em 10 minutos; `0` mantém o trigger desabilitado |
 | `{$BIND.STATS.HOST}` | `127.0.0.1` | Host usado pelo `web.page.get[]` para o statistics-channel do BIND |
