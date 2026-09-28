@@ -4,7 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-No unreleased changes.
+### Added
+
+- Independent `named` process and UDP/TCP listener monitoring using standard Zabbix agent keys.
+- Configurable DNS-test interval, view discovery filters, recursive-client threshold and DeleteLRU threshold.
+- Dedicated `RecursClients` gauge, per-view cache hit ratio and local SOA serial for selected secondary zones.
+- Optional documented `AllowKey`/`DenyKey` hardening for the statistics-channel `web.page.get[]` path.
+- CI regression coverage for expired secondary zones and metric classification allowlists.
+
+### Changed
+
+- Added a normalized zone dataset so large `/json/v1/zones` payloads are parsed once before per-zone LLD/prototypes.
+- Dynamic LLD JSONPath prototypes discard temporarily absent values instead of becoming unsupported or synthesizing zero.
+- Resolver/cache/zone discoveries use explicit view filters and all LLD rules use an explicit 7-day lost-resource lifetime.
+- Raw HTTP/JSON master items no longer store history; derived dependent items continue to keep normal history.
+- Cache item prototypes now carry consistent component/view tags.
+
+### Fixed
+
+- Secondary-zone expiry and refresh timers are explicitly signed numeric values, allowing expired zones to remain supported and the existing expired-zone trigger to fire correctly.
+- Added a restart trigger based on decreasing BIND uptime.
 
 ## [1.0.2] - 2026-09-28
 
