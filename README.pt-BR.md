@@ -31,14 +31,14 @@ statistics-channels {
 | --- | --- |
 | Zabbix Server 7.0 LTS | Principal |
 | Zabbix Server 8.0 | Validado em runtime no 8.0.0beta2; export mantido para a linha 8.0 |
-| Zabbix Agent 6.0+ | Suportado pelo projeto |
-| Zabbix Agent 2 6.0+ | Suportado pelo projeto |
+| Zabbix Agent 7.0+ | Alvo suportado e testado |
+| Zabbix Agent 2 7.0+ | Alvo suportado e testado |
 | FreeBSD | Compatível por arquitetura com Agent clássico; validação runtime recomendada |
 | Linux | Agent clássico ou Agent 2 |
 | ISC BIND 9.20 | Alvo principal suportado |
 | ISC BIND 9.18.50 | Compatibilidade legado (EOL upstream) |
 
-Agents mais antigos podem funcionar se fornecerem as chaves padrão utilizadas pelo template, mas não fazem parte da matriz mantida de testes.
+Agents mais antigos ficam fora da matriz mantida de testes. O template requer as keys padrão `web.page.get[]`, `net.dns[]` e `net.dns.perf[]`; em particular, a linha do Zabbix Agent clássico 6.0 não fornece `net.dns.perf[]` e, portanto, não é um baseline suportado.
 
 A versão 1.0.0 inclui nove gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
 
