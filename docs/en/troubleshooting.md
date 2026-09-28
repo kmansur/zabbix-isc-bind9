@@ -7,7 +7,7 @@
 1. Confirm that BIND loaded the `statistics-channels` configuration.
 2. Test `/json/v1/status` locally on the monitored host.
 3. Confirm `{$BIND.STATS.HOST}` and `{$BIND.STATS.PORT}`.
-4. Confirm Zabbix active checks are working for the host.
+4. Confirm the passive Zabbix agent interface is available to the Zabbix Server/Proxy and that a standard agent item can be polled.
 5. Confirm the BIND build provides JSON statistics support.
 
 ## Ubuntu 24.04: named works but systemd remains in activating state
@@ -56,7 +56,7 @@ The template preprocessing keeps the JSON object beginning at the first `{`. If 
 
 ## A counter is missing
 
-Counter sets can vary by workload, build and BIND version. Discovery rules adapt to the counters actually exported by BIND. Do not create synthetic zero-valued counters for fields that are not exported.
+Counter sets can vary by workload, build and BIND version. Dynamic discovery rules adapt to the counters actually exported by BIND. Selected fixed counters whose absence represents a zero value are normalized to zero by preprocessing; dynamically discovered families are not synthesized when they are absent.
 
 ## Zone prototype becomes unsupported
 
