@@ -55,6 +55,25 @@ def test_bind_918_contract() -> None:
     assert {"InUse", "Malloced", "contexts"} <= data["mem"]["memory"].keys()
     assert isinstance(data["mem"]["memory"]["contexts"], list)
 
+    ns_gauges = {"RecursClients", "TCPConnHighWater"}
+    assert ns_gauges <= server["nsstats"].keys()
+
+    resolver_gauges = {"QueryCurUDP", "QueryCurTCP", "NumFetch", "BucketSize"}
+    assert resolver_gauges <= resolver["stats"].keys()
+
+    adb_gauges = {"nentries", "entriescnt", "nnames", "namescnt"}
+    assert adb_gauges <= resolver["adb"].keys()
+
+    socket_gauges = {
+        "UDP4Active",
+        "UDP6Active",
+        "TCP4Active",
+        "TCP6Active",
+        "TCP4Clients",
+        "TCP6Clients",
+    }
+    assert socket_gauges <= data["net"]["sockstats"].keys()
+
     traffic = data["traffic"]["traffic"]
     expected_traffic = {
         "dns-udp-requests-sizes-received-ipv4",
@@ -82,8 +101,21 @@ def test_bind_920_transfer_contract() -> None:
     data = load("bind-9.20.json")
 
     assert data["bind_version"].startswith("9.20.")
+    assert {"RecursClients", "RecursHighwater", "TCPConnHighWater"} <= data[
+        "server"
+    ]["nsstats"].keys()
+
     resolver = data["server"]["views"]["_default"]["resolver"]
     assert {"stats", "qtypes", "cache", "cachestats", "adb"} <= resolver.keys()
+    assert {"QueryCurUDP", "QueryCurTCP", "NumFetch", "BucketSize"} <= resolver[
+        "stats"
+    ].keys()
+    assert {"nentries", "entriescnt", "nnames", "namescnt"} <= resolver[
+        "adb"
+    ].keys()
+    assert {"UDP4Active", "TCP4Active", "TCP4Clients"} <= data["net"][
+        "sockstats"
+    ].keys()
 
     xfrins = data["xfrins"]["views"]["_default"]["xfrins"]
     assert len(xfrins) == 2
