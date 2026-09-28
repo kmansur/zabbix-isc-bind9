@@ -237,6 +237,38 @@ jobs:
           --version ${{ matrix.bind-version }}
           --wait 120
 
+      - name: Validate classic Zabbix agent keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE="zabbix/zabbix-agent:alpine-7.0-latest"
+          docker pull "$IMAGE"
+          docker run --rm --network container:bind-ci \
+            --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
+            -t 'web.page.get[127.0.0.1,/json/v1/status,8053]' | grep -q '200 OK'
+          docker run --rm --network container:bind-ci \
+            --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
+            -t 'net.dns[127.0.0.1,localhost,A,1,2,udp]' | grep -Eq '\[u\|1\]'
+          docker run --rm --network container:bind-ci \
+            --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
+            -t 'net.dns[127.0.0.1,localhost,A,1,2,tcp]' | grep -Eq '\[u\|1\]'
+
+      - name: Validate Zabbix agent 2 keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE="zabbix/zabbix-agent2:alpine-7.0-latest"
+          docker pull "$IMAGE"
+          docker run --rm --network container:bind-ci \
+            --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
+            -t 'web.page.get[127.0.0.1,/json/v1/status,8053]' | grep -q '200 OK'
+          docker run --rm --network container:bind-ci \
+            --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
+            -t 'net.dns[127.0.0.1,localhost,A,1,2,udp]' | grep -Eq '\[u\|1\]'
+          docker run --rm --network container:bind-ci \
+            --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
+            -t 'net.dns[127.0.0.1,localhost,A,1,2,tcp]' | grep -Eq '\[u\|1\]'
+
       - name: Container diagnostics on failure
         if: failure()
         shell: bash
