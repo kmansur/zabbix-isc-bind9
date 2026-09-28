@@ -30,7 +30,7 @@ statistics-channels {
 | Componente | Alvo |
 | --- | --- |
 | Zabbix Server 7.0 LTS | Principal |
-| Zabbix Server 8.0 | Compatibilidade |
+| Zabbix Server 8.0 | Validado em runtime no 8.0.0beta2; export mantido para a linha 8.0 |
 | Zabbix Agent 6.0+ | Suportado pelo projeto |
 | Zabbix Agent 2 6.0+ | Suportado pelo projeto |
 | FreeBSD | Compatível por arquitetura com Agent clássico; validação runtime recomendada |
