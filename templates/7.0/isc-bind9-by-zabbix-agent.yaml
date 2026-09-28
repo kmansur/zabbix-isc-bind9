@@ -612,6 +612,9 @@ zabbix_export:
               name: 'BIND: Incoming zone transfer has remained deferred'
               priority: WARNING
               description: 'At least one incoming zone transfer has remained in Deferred state for five minutes.'
+              tags:
+                - tag: scope
+                  value: availability
         - uuid: 8b491d2b6a9d4108b4b494b1f2aaa92c
           name: 'BIND: Incoming transfer bytes'
           type: DEPENDENT
@@ -1888,7 +1891,7 @@ zabbix_export:
               trigger_prototypes:
                 - uuid: 5570c281b4a646b58e65a46d0b7f6444
                   expression: 'last(/ISC BIND by Zabbix agent/bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}])<0'
-                  name: 'BIND: Secondary zone {#BIND.ZONE} has expired'
+                  name: 'BIND: Secondary zone [{#BIND.VIEW}] {#BIND.ZONE} has expired'
                   priority: HIGH
                   description: 'The secondary zone expiry timer is already in the past.'
                   tags:
@@ -1896,7 +1899,7 @@ zabbix_export:
                       value: availability
                 - uuid: ef14e21ced6b48169491a33cfa656c72
                   expression: 'last(/ISC BIND by Zabbix agent/bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}])>=0 and last(/ISC BIND by Zabbix agent/bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}])<{$BIND.ZONE.EXPIRES.WARN}'
-                  name: 'BIND: Secondary zone {#BIND.ZONE} is approaching expiry'
+                  name: 'BIND: Secondary zone [{#BIND.VIEW}] {#BIND.ZONE} is approaching expiry'
                   priority: WARNING
                   description: 'The secondary zone is approaching its SOA expiry deadline.'
                   tags:
@@ -2724,6 +2727,16 @@ zabbix_export:
           item:
             host: 'ISC BIND by Zabbix agent'
             key: bind.zones.secondary
+        - sortorder: '3'
+          color: 6C59DC
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.zones.builtin
+        - sortorder: '4'
+          color: 9E9E9E
+          item:
+            host: 'ISC BIND by Zabbix agent'
+            key: bind.zones.other
     - uuid: 18e780fc8c9e4d50844131600bc3f22e
       name: 'BIND: Incoming transfers'
       graph_items:
