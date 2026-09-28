@@ -5,10 +5,10 @@
 | Component | Status |
 | --- | --- |
 | Zabbix 7.0 | Primary export target |
-| Zabbix 8.0 | Compatibility export; runtime/import validation required |
+| Zabbix 8.0 | Compatibility export; continuously fresh-import validated against official trunk images |
 | Classic Zabbix Agent 6.0+ | Maintained design target |
 | Zabbix Agent 2 6.0+ | Maintained design target |
-| FreeBSD | Classic agent path |
+| FreeBSD | Classic agent design path; package availability verified, runtime validation still recommended |
 | Linux | Classic agent or Agent 2 |
 | ISC BIND 9.20 | Primary supported BIND validation target |
 | ISC BIND 9.18.50 | Legacy compatibility target; upstream EOL |
@@ -52,3 +52,8 @@ Runtime validation on Ubuntu 24.04 with BIND 9.18.39 and the classic Zabbix agen
 - TCP response time: approximately `0.000616 s` (0.62 ms)
 
 The checks used `127.0.0.1`, query name `localhost`, record type `A`, one-second timeout and two attempts. This confirms that `net.dns[]` and `net.dns.perf[]` work as designed with the passive classic Zabbix agent in the real BIND 9.18.39 test environment.
+
+
+## FreeBSD note
+
+The template intentionally uses standard classic-agent keys and has no Linux-only helper scripts or privileged commands. The FreeBSD Ports Collection provides the Zabbix 7 classic agent (`net-mgmt/zabbix7-agent`), which supports the intended deployment path. The project's real runtime validation has been performed on Linux; therefore FreeBSD is considered architecture-compatible rather than a separately runtime-certified platform in version 1.0.
