@@ -5,9 +5,19 @@
     "views": {
       "_default": {
         "resolver": {
-          "stats": {"Queryv4": 10},
-          "qtypes": {"A": 10},
-          "cache": {"A": 1},
+          "stats": {
+            "Queryv4": 10,
+            "QueryCurUDP": 1,
+            "QueryCurTCP": 0,
+            "NumFetch": 3,
+            "BucketSize": 64
+          },
+          "qtypes": {
+            "A": 10
+          },
+          "cache": {
+            "A": 1
+          },
           "cachestats": {
             "CacheHits": 8,
             "CacheMisses": 2,
@@ -22,9 +32,20 @@
             "TreeMemInUse": 16384,
             "HeapMemInUse": 8192
           },
-          "adb": {"nentries": 2}
+          "adb": {
+            "nentries": 2,
+            "entriescnt": 2,
+            "nnames": 8,
+            "namescnt": 3
+          }
         }
       }
+    },
+    "nsstats": {
+      "Requestv4": 100,
+      "RecursClients": 2,
+      "RecursHighwater": 7,
+      "TCPConnHighWater": 12
     }
   },
   "xfrins": {
@@ -54,6 +75,19 @@
           }
         ]
       }
+    }
+  },
+  "net": {
+    "json-stats-version": "1.8",
+    "sockstats": {
+      "UDP4Open": 10,
+      "TCP4Open": 4,
+      "UDP4Active": 3,
+      "UDP6Active": 0,
+      "TCP4Active": 2,
+      "TCP6Active": 0,
+      "TCP4Clients": 1,
+      "TCP6Clients": 0
     }
   }
 }
