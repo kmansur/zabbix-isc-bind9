@@ -150,6 +150,17 @@ def main():
     assert macro_names(loaded["7.0"]) == macro_names(loaded["8.0"]), (
         "7.0/8.0 macro drift"
     )
+    assert loaded["7.0"] == loaded["8.0"], "7.0/8.0 template-body drift"
+
+    export_7 = yaml.safe_load(TARGETS["7.0"].read_text(encoding="utf-8"))[
+        "zabbix_export"
+    ]
+    export_8 = yaml.safe_load(TARGETS["8.0"].read_text(encoding="utf-8"))[
+        "zabbix_export"
+    ]
+    assert export_7.get("graphs", []) == export_8.get("graphs", []), (
+        "7.0/8.0 graph-definition drift"
+    )
 
     print("Template validation passed for Zabbix 7.0 and 8.0.")
     return 0
