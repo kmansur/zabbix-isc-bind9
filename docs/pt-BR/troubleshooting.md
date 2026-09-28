@@ -7,7 +7,7 @@
 1. Confirme que o BIND carregou a configuração `statistics-channels`.
 2. Teste `/json/v1/status` localmente no host monitorado.
 3. Confirme `{$BIND.STATS.HOST}` e `{$BIND.STATS.PORT}`.
-4. Confirme o funcionamento dos active checks do Zabbix no host.
+4. Confirme que a interface passiva do Zabbix Agent está acessível ao Zabbix Server/Proxy e que um item padrão do agent pode ser consultado.
 5. Confirme que o build do BIND possui suporte às estatísticas JSON.
 
 ## Ubuntu 24.04: named funciona, mas o systemd permanece em activating
@@ -56,7 +56,7 @@ O preprocessing mantém o objeto JSON iniciado no primeiro `{`. Se isso falhar, 
 
 ## Um contador está ausente
 
-O conjunto de contadores pode variar por workload, build e versão do BIND. As regras de descoberta se adaptam aos contadores realmente exportados pelo BIND. Não crie contadores artificiais com valor zero para campos que não são exportados.
+O conjunto de contadores pode variar por workload, build e versão do BIND. As regras de descoberta dinâmica se adaptam aos contadores realmente exportados. Alguns contadores fixos cuja ausência representa valor zero são normalizados para zero pelo preprocessing; famílias descobertas dinamicamente não são sintetizadas quando estão ausentes.
 
 ## Protótipo de zona fica unsupported
 
