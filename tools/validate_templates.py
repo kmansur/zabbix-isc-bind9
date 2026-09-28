@@ -102,7 +102,9 @@ def assert_optional_jsonpath_is_safe(item: dict[str, Any]) -> None:
 
 
 def rule_by_key(template: dict[str, Any], key: str) -> dict[str, Any]:
-    return next(rule for rule in template.get("discovery_rules", []) if rule["key"] == key)
+    return next(
+        rule for rule in template.get("discovery_rules", []) if rule["key"] == key
+    )
 
 
 def item_by_key(template: dict[str, Any], key: str) -> dict[str, Any]:
@@ -154,7 +156,9 @@ def validate_semantics(template: dict[str, Any]) -> None:
 
     ns_script = javascript(rule_by_key(template, "bind.nsstats.discovery"))
     for gauge in ("TCPConnHighWater", "RecursHighwater", "RecursClients"):
-        assert gauge in ns_script, f"nsstats gauge is not excluded from rate LLD: {gauge}"
+        assert gauge in ns_script, (
+            f"nsstats gauge is not excluded from rate LLD: {gauge}"
+        )
 
     socket_script = javascript(rule_by_key(template, "bind.sockstats.discovery"))
     for gauge in (
@@ -225,7 +229,9 @@ def validate_semantics(template: dict[str, Any]) -> None:
         "bind.zones.builtin",
         "bind.zones.other",
     }
-    assert zone_keys <= item_map.keys(), "zone inventory cannot reconcile all zone types"
+    assert zone_keys <= item_map.keys(), (
+        "zone inventory cannot reconcile all zone types"
+    )
 
 
 def load_template(version: str, path: Path) -> dict[str, Any]:
