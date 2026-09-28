@@ -80,23 +80,47 @@
       "Malloced": 33200000,
       "ContextSize": 4096,
       "Lost": 0,
-      "contexts": {
-        "1": {"name": "main", "total": 12000000},
-        "2": {"name": "resolver", "total": 21000000}
-      }
+      "contexts": [
+        {
+          "name": "main",
+          "total": 12000000
+        },
+        {
+          "name": "resolver",
+          "total": 21000000
+        }
+      ]
     }
   },
   "traffic": {
     "json-stats-version": "1.7",
     "traffic": {
-      "dns-udp-requests-sizes-received-ipv4": {"0-15": 100, "16-31": 200},
-      "dns-udp-requests-sizes-received-ipv6": {"0-15": 10},
-      "dns-tcp-requests-sizes-received-ipv4": {"0-15": 20},
-      "dns-tcp-requests-sizes-received-ipv6": {"0-15": 2},
-      "dns-udp-responses-sizes-sent-ipv4": {"0-15": 95, "16-31": 190},
-      "dns-udp-responses-sizes-sent-ipv6": {"0-15": 9},
-      "dns-tcp-responses-sizes-sent-ipv4": {"0-15": 18},
-      "dns-tcp-responses-sizes-sent-ipv6": {"0-15": 2}
+      "dns-udp-requests-sizes-received-ipv4": {
+        "0-15": 100,
+        "16-31": 200
+      },
+      "dns-udp-requests-sizes-received-ipv6": {
+        "0-15": 10
+      },
+      "dns-tcp-requests-sizes-received-ipv4": {
+        "0-15": 20
+      },
+      "dns-tcp-requests-sizes-received-ipv6": {
+        "0-15": 2
+      },
+      "dns-udp-responses-sizes-sent-ipv4": {
+        "0-15": 95,
+        "16-31": 190
+      },
+      "dns-udp-responses-sizes-sent-ipv6": {
+        "0-15": 9
+      },
+      "dns-tcp-responses-sizes-sent-ipv4": {
+        "0-15": 18
+      },
+      "dns-tcp-responses-sizes-sent-ipv6": {
+        "0-15": 2
+      }
     }
   },
   "zones": {
