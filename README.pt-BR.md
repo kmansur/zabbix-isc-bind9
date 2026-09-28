@@ -4,7 +4,7 @@
 
 Template Zabbix com foco em segurança para monitoramento do **ISC BIND** através do canal HTTP nativo de estatísticas do BIND. O projeto é compatível com **Zabbix Agent** e **Zabbix Agent 2** e evita dependências exclusivas do Agent 2 ou scripts externos.
 
-> **Release estável:** a versão `1.0.0` é a primeira release estável do projeto para produção.
+> **Release estável:** a versão `1.0.1` é a release estável atual do projeto para produção.
 
 ## Objetivos
 
@@ -15,7 +15,7 @@ Template Zabbix com foco em segurança para monitoramento do **ISC BIND** atrav�
 - documentação em inglês com versão equivalente em português do Brasil;
 - Zabbix 7.0 como baseline principal e Zabbix 8.0 como alvo de compatibilidade.
 
-A versão 1.0.0 também monitora disponibilidade DNS UDP/TCP e tempo de resposta usando as keys nativas `net.dns` e `net.dns.perf` do Zabbix Agent.
+A versão 1.0.1 também monitora disponibilidade DNS UDP/TCP e tempo de resposta usando as keys nativas `net.dns` e `net.dns.perf` do Zabbix Agent.
 
 ## Configuração recomendada
 
@@ -40,16 +40,16 @@ statistics-channels {
 
 Agents mais antigos podem funcionar se fornecerem as chaves padrão utilizadas pelo template, mas não fazem parte da matriz mantida de testes.
 
-A versão 1.0.0 inclui nove gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
+A versão 1.0.1 inclui nove gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
 
 ## Versionamento
 
 ```text
-VERSION:        1.0.0
-STABLE_VERSION: 1.0.0
+VERSION:        1.0.1
+STABLE_VERSION: 1.0.1
 ```
 
-`STABLE_VERSION` identifica a linha suportada para produção. A versão `1.0.0` é o primeiro baseline estável.
+`STABLE_VERSION` identifica a linha suportada para produção. A versão `1.0.1` é o baseline estável atual.
 
 ## Origem
 
