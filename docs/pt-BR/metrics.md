@@ -44,3 +44,17 @@ O BIND 9.20 expõe o endpoint JSON `/json/v1/xfrins`. O template comum consulta 
 ## Política de detalhamento por zona
 
 O template base evita deliberadamente descobrir serial SOA e idade de carregamento para todas as zonas. Em servidores autoritativos com centenas ou milhares de zonas, isso aumenta muito a cardinalidade sem oferecer informação de saúde suficiente isoladamente. A expiração de zonas secundárias continua disponível por zona porque cada secundária pode expirar de forma independente, mas passa a ser opt-in através de `{$BIND.ZONE.SECONDARY.MATCHES}` para manter baixa a cardinalidade padrão do template. Os contadores DNSSEC por zona são opt-in através de `{$BIND.ZONE.DNSSEC.MATCHES}`; o padrão `^$` não descobre nenhuma zona. Use uma expressão regular direcionada ou `.*` apenas quando o detalhamento DNSSEC completo for realmente necessário.
+
+
+## Semântica de counters e gauges
+
+As estatísticas do BIND misturam contadores cumulativos de eventos e gauges que representam valores instantâneos. A versão 1.0.1 separa explicitamente essas classes para que gauges nunca sejam processados com `CHANGE_PER_SECOND`.
+
+As famílias de taxa incluem contadores cumulativos de queries/requests/responses/erros e eventos de sockets. Entre os gauges estão:
+
+- `nsstats`: `RecursClients`, `TCPConnHighWater` e, no BIND 9.20, `RecursHighwater`;
+- estatísticas do resolver: `QueryCurUDP`, `QueryCurTCP`, `NumFetch` e `BucketSize`;
+- ADB do resolver: `nentries`, `entriescnt`, `nnames` e `namescnt`;
+- sockets: valores de sockets ativos e clientes atualmente conectados, como `UDP4Active`, `TCP4Active` e `TCP4Clients`.
+
+As discoveries genéricas de taxa excluem esses gauges. Discoveries específicas de gauge expõem diretamente o valor atual. Isso evita valores enganosos como “RecursClients per second”.
