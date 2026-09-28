@@ -33,6 +33,6 @@ Use either Zabbix Agent or Zabbix Agent 2. Passive checks must work for the host
 Import the file matching the target Zabbix Server:
 
 - `templates/7.0/isc-bind9-by-zabbix-agent.yaml`
-- `templates/8.0/isc-bind9-by-zabbix-agent.yaml` for compatibility validation
+- `templates/8.0/isc-bind9-by-zabbix-agent.yaml` for Zabbix 8.0; runtime validated on Zabbix 8.0.0beta2
 
 Link **ISC BIND by Zabbix agent** to the host and review Latest data before routing alerts to production.
