@@ -2,9 +2,9 @@
 
 [English](../en/metrics.md)
 
-A versão 0.4.0 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
+A versão 1.0.0 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
 
-## Interpretado na 0.4.0
+## Interpretado na 1.0.0
 
 - versão do BIND e versão JSON das estatísticas;
 - uptime do servidor e tempo desde a última configuração;
