@@ -8,7 +8,7 @@
 
 A security-focused Zabbix template for monitoring **ISC BIND** through the native BIND HTTP statistics channel. The design is compatible with both **Zabbix Agent** and **Zabbix Agent 2** and intentionally avoids Agent 2-only plugins, external scripts, sudo, `rndc`, `curl` and `jq`.
 
-> **Development status:** version `0.4.0` is an initial engineering candidate and is not yet a production-stable release.
+> **Stable release:** version `1.0.0` is the first production-stable project release.
 
 ## Design goals
 
@@ -22,7 +22,7 @@ A security-focused Zabbix template for monitoring **ISC BIND** through the nativ
 
 ## Current monitoring coverage
 
-The initial candidate includes:
+Version 1.0.0 includes:
 
 - BIND version and JSON statistics API version;
 - server uptime and time since the last configuration/reload;
@@ -60,7 +60,7 @@ No control operation is required by the template.
 | Zabbix Server 8.0 | Compatibility export / validation target |
 | Zabbix Agent 6.0+ | Supported design target |
 | Zabbix Agent 2 6.0+ | Supported design target |
-| FreeBSD | Supported with classic Zabbix Agent |
+| FreeBSD | Architecture-compatible with classic Zabbix Agent; runtime validation recommended |
 | Linux | Supported with Zabbix Agent or Agent 2 |
 | ISC BIND 9.20 | Primary supported validation target |
 | ISC BIND 9.18.50 | Legacy compatibility target (EOL upstream) |
@@ -100,11 +100,11 @@ python tools/validate_docs.py
 The project uses Semantic Versioning.
 
 ```text
-VERSION:        0.4.0
-STABLE_VERSION: 0.0.0
+VERSION:        1.0.0
+STABLE_VERSION: 1.0.0
 ```
 
-`0.0.0` means that no production-stable release has been promoted yet. Production use should wait for a tagged release unless the operator is intentionally participating in validation.
+`STABLE_VERSION` identifies the production-supported project line. Version `1.0.0` is the first stable baseline.
 
 ## Origin and attribution
 
