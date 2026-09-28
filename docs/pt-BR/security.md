@@ -8,7 +8,7 @@ Os padrões do projeto seguem estes princípios:
 
 - associar o statistics-channel ao loopback;
 - permitir apenas localhost;
-- utilizar active checks do Zabbix para aquisição local;
+- utilizar checks passivos padrão do Zabbix agent para aquisição local;
 - não exigir permissões privilegiadas de controle do BIND;
 - não realizar operações de escrita ou configuração;
 - evitar programas externos de parsing.
