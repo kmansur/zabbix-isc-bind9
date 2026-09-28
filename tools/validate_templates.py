@@ -35,7 +35,7 @@ def load_template(version, path):
     assert template["template"] == EXPECTED_NAME
     assert template["name"] == EXPECTED_NAME
     assert template["vendor"]["name"] == "Net Tech"
-    assert template["vendor"]["version"] == "1.0-1"
+    assert template["vendor"]["version"] == "1.0-2"
 
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
@@ -88,9 +88,23 @@ def load_template(version, path):
     assert macros["{$BIND.STATS.PORT}"] == "8053"
     assert macros["{$BIND.ZONE.SECONDARY.MATCHES}"] == "^$"
     assert macros["{$BIND.ZONE.DNSSEC.MATCHES}"] == "^$"
+    assert macros["{$BIND.DNS.TEST.ENABLED}"] == "0"
     assert macros["{$BIND.DNS.TEST.SERVER}"] == "127.0.0.1"
     assert macros["{$BIND.DNS.TEST.NAME}"] == "localhost"
     assert macros["{$BIND.DNS.TEST.TYPE}"] == "A"
+    assert macros["{$BIND.DNS.RESPONSE.UDP.WARN}"] == "0.1"
+    assert macros["{$BIND.DNS.RESPONSE.TCP.WARN}"] == "0.1"
+    assert "{$BIND.DNS.RESPONSE.WARN}" not in macros
+
+    dns_trigger_text = "\n".join(
+        str(trigger)
+        for item in items
+        for trigger in item.get("triggers", [])
+        if "DNS" in trigger.get("name", "")
+    )
+    assert "{$BIND.DNS.TEST.ENABLED}=1" in dns_trigger_text
+    assert "DNS functional test failed over UDP" in dns_trigger_text
+    assert "DNS functional test failed over TCP" in dns_trigger_text
 
     dashboards = template.get("dashboards", [])
     assert len(dashboards) == 1, "expected exactly one template dashboard"
@@ -100,6 +114,7 @@ def load_template(version, path):
     assert "itemnavigator" not in text, (
         "dashboard must not contain item navigator widgets"
     )
+    assert "JSON stats version" in text
 
     graph_names = {graph["name"] for graph in export.get("graphs", [])}
     expected_graphs = {
