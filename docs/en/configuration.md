@@ -22,57 +22,9 @@
 | `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Average SERVFAIL rate threshold for the 5-minute warning |
 | `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Warning window before a secondary zone reaches its expiry deadline |
 | `{$BIND.ZONE.SECONDARY.MATCHES}` | `^$` | Regex selecting secondary zones for per-zone refresh/expiry monitoring; the default discovers none |
-| `{$BIND.ZONE.DNSSEC.MATCHES}` | `^# Configuration
-
-[Português (Brasil)](../pt-BR/configuration.md)
-
-## Template macros
-
-| Macro | Default | Purpose |
-| --- | --- | --- |
-| `{$BIND.DNS.TEST.ENABLED}` | `0` | Enables functional DNS alerting after the test name has been validated; set to `1` to enable alerts |
-| `{$BIND.DNS.TEST.INTERVAL}` | `30s` | Polling interval for native UDP/TCP DNS availability and response-time checks |
-| `{$BIND.DNS.PORT}` | `53` | Local DNS service port used by independent TCP/UDP listener checks |
-| `{$BIND.PROCESS.NAME}` | `named` | Process name used by the independent `proc.num[]` daemon check |
-| `{$BIND.DNS.TEST.SERVER}` | `127.0.0.1` | DNS server address queried by the native Zabbix DNS health checks |
-| `{$BIND.DNS.TEST.NAME}` | `localhost` | DNS name used for service availability and response-time checks |
-| `{$BIND.DNS.TEST.TYPE}` | `A` | DNS record type used by the native health checks |
-| `{$BIND.DNS.TEST.TIMEOUT}` | `1` | Per-attempt DNS query timeout in seconds |
-| `{$BIND.DNS.TEST.COUNT}` | `2` | Number of DNS query attempts |
-| `{$BIND.DNS.FAIL.WINDOW}` | `3m` | Continuous failure window before a DNS availability problem |
-| `{$BIND.DNS.RESPONSE.UDP.WARN}` | `0.1` | Average UDP DNS response-time warning threshold in seconds |
-| `{$BIND.DNS.RESPONSE.TCP.WARN}` | `0.1` | Average TCP DNS response-time warning threshold in seconds |
-| `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Average dropped-query rate threshold for the 5-minute warning |
-| `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Average SERVFAIL rate threshold for the 5-minute warning |
-| `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Warning window before a secondary zone reaches its expiry deadline |
-| `{$BIND.ZONE.SECONDARY.MATCHES}` | `^$` | Regex selecting secondary zones for per-zone refresh/expiry monitoring; the default discovers none |
- | Regex selecting zones for per-zone DNSSEC monitoring; the default discovers none |
+| `{$BIND.ZONE.DNSSEC.MATCHES}` | `^$` | Regex selecting zones for per-zone DNSSEC monitoring; the default discovers none |
 | `{$BIND.VIEW.MATCHES}` | `.*` | Regex selecting BIND views eligible for view-based discovery |
-| `{$BIND.VIEW.NOT_MATCHES}` | `^_bind# Configuration
-
-[Português (Brasil)](../pt-BR/configuration.md)
-
-## Template macros
-
-| Macro | Default | Purpose |
-| --- | --- | --- |
-| `{$BIND.DNS.TEST.ENABLED}` | `0` | Enables functional DNS alerting after the test name has been validated; set to `1` to enable alerts |
-| `{$BIND.DNS.TEST.INTERVAL}` | `30s` | Polling interval for native UDP/TCP DNS availability and response-time checks |
-| `{$BIND.DNS.PORT}` | `53` | Local DNS service port used by independent TCP/UDP listener checks |
-| `{$BIND.PROCESS.NAME}` | `named` | Process name used by the independent `proc.num[]` daemon check |
-| `{$BIND.DNS.TEST.SERVER}` | `127.0.0.1` | DNS server address queried by the native Zabbix DNS health checks |
-| `{$BIND.DNS.TEST.NAME}` | `localhost` | DNS name used for service availability and response-time checks |
-| `{$BIND.DNS.TEST.TYPE}` | `A` | DNS record type used by the native health checks |
-| `{$BIND.DNS.TEST.TIMEOUT}` | `1` | Per-attempt DNS query timeout in seconds |
-| `{$BIND.DNS.TEST.COUNT}` | `2` | Number of DNS query attempts |
-| `{$BIND.DNS.FAIL.WINDOW}` | `3m` | Continuous failure window before a DNS availability problem |
-| `{$BIND.DNS.RESPONSE.UDP.WARN}` | `0.1` | Average UDP DNS response-time warning threshold in seconds |
-| `{$BIND.DNS.RESPONSE.TCP.WARN}` | `0.1` | Average TCP DNS response-time warning threshold in seconds |
-| `{$BIND.QRYDROPPED.RATE.WARN}` | `0` | Average dropped-query rate threshold for the 5-minute warning |
-| `{$BIND.SERVFAIL.RATE.WARN}` | `5` | Average SERVFAIL rate threshold for the 5-minute warning |
-| `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Warning window before a secondary zone reaches its expiry deadline |
-| `{$BIND.ZONE.SECONDARY.MATCHES}` | `^$` | Regex selecting secondary zones for per-zone refresh/expiry monitoring; the default discovers none |
- | Regex excluding internal/unwanted BIND views from view-based discovery |
+| `{$BIND.VIEW.NOT_MATCHES}` | `^_bind$` | Regex excluding internal/unwanted BIND views from view-based discovery |
 | `{$BIND.RECURSCLIENTS.WARN}` | `0` | Recursive-client threshold; `0` keeps the optional saturation trigger disabled |
 | `{$BIND.CACHE.DELETELRU.WARN}` | `0` | Sustained DeleteLRU rate threshold over 10 minutes; `0` keeps the trigger disabled |
 | `{$BIND.STATS.HOST}` | `127.0.0.1` | Host used by `web.page.get[]` for the BIND statistics channel |
