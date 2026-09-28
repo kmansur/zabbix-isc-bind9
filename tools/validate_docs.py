@@ -55,9 +55,7 @@ def validate_internal_links():
         text = path.read_text(encoding="utf-8")
         for match in LINK_RE.finditer(text):
             target = match.group(1).strip().strip("<>")
-            if not target or target.startswith(
-                ("#", "https://", "http://", "mailto:")
-            ):
+            if not target or target.startswith(("#", "https://", "http://", "mailto:")):
                 continue
 
             target = unquote(target.split("#", 1)[0].split("?", 1)[0])
