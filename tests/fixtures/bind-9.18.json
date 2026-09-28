@@ -11,7 +11,9 @@
       "Requestv6": 150,
       "QryDropped": 0,
       "QrySERVFAIL": 3,
-      "QryRecursion": 870
+      "QryRecursion": 870,
+      "TCPConnHighWater": 41,
+      "RecursClients": 3
     },
     "qtypes": {
       "A": 900,
@@ -27,7 +29,11 @@
         "resolver": {
           "stats": {
             "Queryv4": 700,
-            "Queryv6": 80
+            "Queryv6": 80,
+            "QueryCurUDP": 2,
+            "QueryCurTCP": 1,
+            "NumFetch": 4,
+            "BucketSize": 64
           },
           "qtypes": {
             "A": 500,
@@ -57,7 +63,9 @@
           },
           "adb": {
             "nentries": 24,
-            "entriescnt": 24
+            "entriescnt": 24,
+            "nnames": 32,
+            "namescnt": 12
           }
         }
       }
@@ -69,7 +77,13 @@
       "UDP4Open": 12,
       "UDP6Open": 8,
       "TCP4Open": 5,
-      "TCP6Open": 3
+      "TCP6Open": 3,
+      "UDP4Active": 4,
+      "UDP6Active": 2,
+      "TCP4Active": 3,
+      "TCP6Active": 1,
+      "TCP4Clients": 2,
+      "TCP6Clients": 0
     }
   },
   "mem": {
