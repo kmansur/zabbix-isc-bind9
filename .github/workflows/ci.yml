@@ -290,6 +290,46 @@ jobs:
           grep -q '^net.dns' <<<"$METRICS"
           grep -q '^net.dns.perf' <<<"$METRICS"
 
+      - name: Validate restricted web.page.get policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bind-ci)
+
+          for agent in zabbix-agent zabbix-agent2; do
+            if [ "$agent" = "zabbix-agent" ]; then
+              IMAGE="zabbix/zabbix-agent:alpine-7.0-latest"
+              BIN="/usr/sbin/zabbix_agentd"
+            else
+              IMAGE="zabbix/zabbix-agent2:alpine-7.0-latest"
+              BIN="/usr/sbin/zabbix_agent2"
+            fi
+
+            CONF="${RUNNER_TEMP}/${agent}.conf"
+            cat > "$CONF" <<EOF
+          Server=127.0.0.1
+          Hostname=bind-template-ci
+          AllowKey=web.page.get[$BIND_IP,/json/v1/*,8053]
+          DenyKey=web.page.get[*]
+          EOF
+
+            ALLOWED=$(docker run --rm --network bind-runtime-ci \
+              -v "$CONF:/tmp/zabbix-agent.conf:ro" \
+              --entrypoint "$BIN" "$IMAGE" \
+              -c /tmp/zabbix-agent.conf \
+              -t "web.page.get[$BIND_IP,/json/v1/status,8053]")
+            printf '%s\n' "$ALLOWED"
+            grep -q '200 OK' <<<"$ALLOWED"
+
+            DENIED=$(docker run --rm --network bind-runtime-ci \
+              -v "$CONF:/tmp/zabbix-agent.conf:ro" \
+              --entrypoint "$BIN" "$IMAGE" \
+              -c /tmp/zabbix-agent.conf \
+              -t "web.page.get[example.com,/,80]" 2>&1 || true)
+            printf '%s\n' "$DENIED"
+            grep -Eq 'ZBX_NOTSUPPORTED|Unsupported item key|not allowed' <<<"$DENIED"
+          done
+
       - name: Container diagnostics on failure
         if: failure()
         shell: bash
