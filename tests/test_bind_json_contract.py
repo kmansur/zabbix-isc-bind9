@@ -53,6 +53,7 @@ def test_bind_918_contract() -> None:
 
     assert data["net"]["sockstats"]
     assert {"InUse", "Malloced", "contexts"} <= data["mem"]["memory"].keys()
+    assert isinstance(data["mem"]["memory"]["contexts"], list)
 
     traffic = data["traffic"]["traffic"]
     expected_traffic = {
