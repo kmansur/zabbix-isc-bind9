@@ -2,7 +2,7 @@
 
 [English](../en/dashboard.md)
 
-A versão 1.0.0 adiciona uma dashboard nativa de template do Zabbix e gráficos clássicos reutilizáveis.
+A versão 1.0.1 fornece uma dashboard nativa do Zabbix mais enxuta e gráficos clássicos reutilizáveis.
 
 ## Dashboard do template
 
@@ -33,26 +33,21 @@ Esta página concentra o comportamento das consultas e os resultados do protocol
 - taxas IPv4, IPv6 e recursivas;
 - taxas de SERVFAIL e queries descartadas;
 - requests e responses UDP/TCP;
-- navegador dinâmico de Query Types;
-- navegador dinâmico de Response Codes;
-- navegador dinâmico dos contadores `nsstats`.
+- gráfico de tempo de resposta DNS local.
 
-Os navegadores usam as tags dos itens do template. Assim, novos contadores descobertos por LLD aparecem automaticamente sem necessidade de alterar a dashboard.
+Os detalhes de Query Types, Response Codes e `nsstats` continuam disponíveis em Latest data, mas deixam de ser listados em navegadores na dashboard para manter a visão operacional mais limpa.
 
 ### Resolver & resources
 
 Esta página concentra o resolver recursivo e diagnósticos de recursos:
 
-- contadores do resolver agrupados por view do BIND;
 - graph prototypes do cache por view para hits/misses, memória e quantidade de nós;
-- estatísticas de sockets;
 - gráfico de memória;
 - inventário de zonas;
 - transferências recebidas;
-- taxa de transferência;
-- navegador de itens relacionados a zonas.
+- taxa de transferência.
 
-Os itens individuais de zonas secundárias e DNSSEC continuam opt-in. Quando habilitados pelas macros correspondentes, eles passam a aparecer automaticamente no navegador de zonas.
+Os detalhes de resolver, sockets e itens por zona continuam disponíveis em Latest data. Os itens individuais de zonas secundárias e DNSSEC continuam opt-in pelas macros correspondentes.
 
 ## Gráficos clássicos
 
@@ -68,4 +63,4 @@ O template também fornece gráficos reutilizáveis fora da dashboard:
 - `BIND: Server timing`
 - `BIND: DNS query response time`
 
-Os gráficos foram baseados deliberadamente em itens estáveis e de baixa cardinalidade. Famílias dinâmicas de LLD, como query types, response codes, resolver e sockets, são apresentadas através dos navegadores da dashboard em vez de gerar grande quantidade de graph prototypes.
+Os gráficos foram baseados deliberadamente em itens estáveis e de baixa cardinalidade. Famílias dinâmicas de LLD, como query types, response codes, resolver e sockets, continuam disponíveis em Latest data sem poluir a dashboard.
