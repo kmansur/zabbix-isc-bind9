@@ -2,39 +2,136 @@
 
 [English](../en/metrics.md)
 
-A versão 1.0.0 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
+O template separa a aquisição bruta dos endpoints das métricas derivadas e diferencia explicitamente **contadores monotônicos** de **gauges de valor atual**.
 
-## Interpretado na 1.0.0
+## Serviço e identificação
 
 - versão do BIND e versão JSON das estatísticas;
-- uptime do servidor e tempo desde a última configuração;
-- taxas de requests IPv4 e IPv6;
-- taxas de queries descartadas, SERVFAIL e recursão;
-- low-level discovery de `nsstats`, `qtypes` autoritativos, `rcodes` e `sockstats` de rede;
-- descoberta do resolver por view para estatísticas, tipos de query recursiva e contadores ADB;
-- métricas de cache do resolver por view: hits/misses, query hits/misses, remoções LRU/TTL, covering NSEC, nós e memória do cache;
-- memória em uso pelo BIND, memória malloced e quantidade de contextos de memória;
-- contadores agregados de zonas (total, primárias e secundárias), sem criar item para cada zona;
-- timers de refresh/expire de zonas secundárias, com prototypes de alerta para proximidade de expiração e zona expirada;
-- contadores DNSSEC de assinatura e refresh descobertos somente nas zonas que realmente exportam `dnssec-sign`/`dnssec-refresh`;
-- taxas agregadas UDP/TCP de requests e responses derivadas dos histogramas de tráfego do BIND.
+- uptime e tempo desde a última configuração;
+- disponibilidade funcional DNS UDP/TCP através de `net.dns[]`;
+- tempo de resposta DNS UDP/TCP através de `net.dns.perf[]`.
+
+## Queries e estatísticas do servidor
+
+Os itens fixos de taxa incluem:
+
+- requests IPv4 e IPv6 por segundo;
+- queries descartadas por segundo;
+- respostas SERVFAIL por segundo;
+- queries recursivas por segundo.
+
+A descoberta genérica de `nsstats` converte contadores monotônicos de eventos em taxas. Valores que não são contadores são excluídos da conversão e coletados separadamente como gauges:
+
+- high-water de conexões TCP;
+- high-water de clientes recursivos;
+- clientes recursivos atuais.
+
+## Métricas do resolver por view
+
+O monitoramento do resolver é sensível à view.
+
+Contadores monotônicos do resolver e tipos de query recursiva são descobertos e convertidos em taxas. Gauges de estado atual são coletados separadamente:
+
+- queries UDP em andamento;
+- queries TCP em andamento;
+- fetches ativos;
+- tamanho de bucket.
+
+Os valores ADB são gauges, e não contadores de eventos. O template expõe:
+
+- tamanho da hash table de endereços;
+- endereços presentes na hash table;
+- tamanho da hash table de nomes;
+- nomes presentes na hash table.
+
+## Cache do resolver
+
+As métricas de cache por view incluem:
+
+**Taxas**
+
+- cache hits e misses;
+- query hits e misses;
+- remoções LRU;
+- remoções por TTL;
+- resultados covering NSEC.
+
+**Gauges**
+
+- nós do cache;
+- nós auxiliares NSEC;
+- memória em uso na árvore do cache;
+- memória em uso no heap do cache.
+
+Graph prototypes fornecem visões de hit/miss, memória e nós para cada view descoberta.
+
+## Estatísticas de sockets
+
+A descoberta genérica de sockets converte eventos monotônicos, como opens, closes, falhas, connects, accepts e erros de envio/recepção, em taxas.
+
+O estado atual dos sockets é coletado separadamente como gauge:
+
+- sockets UDP/IPv4 e UDP/IPv6 ativos;
+- sockets TCP/IPv4 e TCP/IPv6 ativos;
+- clientes TCP/IPv4 e TCP/IPv6 conectados atualmente.
+
+## Memória
+
+As métricas comuns são:
+
+- memória em uso;
+- memória malloced;
+- quantidade de contextos de memória ativos.
+
+O membro `contexts` é validado como array JSON tanto nas fixtures quanto nos checks live de contrato do BIND.
+
+## Inventário de zonas
+
+O template base não cria um item para cada zona. O inventário agregado é dividido em:
+
+- todas as zonas;
+- zonas primárias;
+- zonas secundárias;
+- zonas built-in;
+- outros tipos de zona, como mirror, stub, static-stub, DLZ ou redirect quando existentes.
+
+Assim o total pode ser reconciliado sem aumentar a cardinalidade por zona.
+
+## Monitoramento opcional por zona
+
+Refresh/expiry de zonas secundárias é opt-in através de `{$BIND.ZONE.SECONDARY.MATCHES}`.
+
+Contadores DNSSEC de assinatura/refresh são opt-in através de `{$BIND.ZONE.DNSSEC.MATCHES}` e dependem de o BIND exportar as estatísticas correspondentes. Se um valor por zona desaparecer temporariamente, o preprocessing descarta a amostra em vez de deixar o item unsupported.
+
+## Tráfego
+
+Taxas agregadas de requests e responses UDP/TCP são derivadas dos histogramas de tráfego do BIND para IPv4 e IPv6.
+
+## Transferências recebidas
+
+O BIND 9.20 expõe `/json/v1/xfrins`. O template coleta:
+
+- quantidade de transferências recebidas ativas/em fila;
+- transferências deferred;
+- bytes atuais transferidos;
+- taxa agregada de transferência.
+
+`bind.xfrins.supported` informa se o endpoint está disponível. No BIND 9.18, onde esse endpoint não existe, as métricas de transferência são descartadas em vez de informar falsos valores zero.
 
 ## Retenção dos endpoints brutos
 
-Os payloads `/json/v1/mem` e `/json/v1/net` continuam disponíveis como itens mestres de retenção curta. Campos comuns estáveis são convertidos em dependent items, enquanto campos específicos de versão não são promovidos sem evidência de compatibilidade.
+As seguintes aquisições brutas usam histórico curto e sem trends:
 
-## Modelo de retenção
+- `/json/v1/status`;
+- `/json/v1/server`;
+- `/json/v1/zones`;
+- `/json/v1/mem`;
+- `/json/v1/net`;
+- `/json/v1/traffic`;
+- `/json/v1/xfrins` quando disponível.
 
-Itens mestres JSON brutos possuem histórico curto e sem trends. Métricas numéricas derivadas mantêm histórico/trends normais para evitar crescimento desnecessário do banco do Zabbix.
+Itens numéricos derivados mantêm histórico/trends normais para evitar que payloads JSON brutos aumentem desnecessariamente o banco do Zabbix.
 
-## Nível de estatísticas por zona
+## Política de cardinalidade
 
-Identidade da zona, serial e timers básicos não exigem contadores completos por zona. Os contadores DNSSEC por zona exigem `zone-statistics full` no BIND para as zonas relevantes. Quando esses blocos não existem, a descoberta DNSSEC fica vazia e o template comum não cria itens DNSSEC unsupported.
-
-## Monitoramento de transferências recebidas
-
-O BIND 9.20 expõe o endpoint JSON `/json/v1/xfrins`. O template comum consulta esse endpoint sem transformar hosts 9.18 em unsupported. Em versões sem o endpoint, `bind.xfrins.supported` retorna `0` e as métricas de transferência permanecem em zero. No BIND 9.20, o template coleta quantidade de transferências ativas/em fila, transferências deferred, bytes atuais e taxa agregada.
-
-## Política de detalhamento por zona
-
-O template base evita deliberadamente descobrir serial SOA e idade de carregamento para todas as zonas. Em servidores autoritativos com centenas ou milhares de zonas, isso aumenta muito a cardinalidade sem oferecer informação de saúde suficiente isoladamente. A expiração de zonas secundárias continua disponível por zona porque cada secundária pode expirar de forma independente, mas passa a ser opt-in através de `{$BIND.ZONE.SECONDARY.MATCHES}` para manter baixa a cardinalidade padrão do template. Os contadores DNSSEC por zona são opt-in através de `{$BIND.ZONE.DNSSEC.MATCHES}`; o padrão `^$` não descobre nenhuma zona. Use uma expressão regular direcionada ou `.*` apenas quando o detalhamento DNSSEC completo for realmente necessário.
+Dados de alta cardinalidade são opt-in. O padrão prioriza saúde global, comportamento do protocolo e métricas por view com cardinalidade limitada. Detalhes por zona somente são ativados quando o operador seleciona explicitamente as zonas.
