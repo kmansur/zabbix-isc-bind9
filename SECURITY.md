@@ -26,4 +26,4 @@ A sanitized public issue may be used when the problem can be reproduced without 
 
 ## Supported versions
 
-Version `0.4.0` is the current engineering candidate. No production-stable release has been promoted yet; `STABLE_VERSION` remains `0.0.0`.
+Version `1.0.0` is the current production-stable baseline and is the supported security-maintenance line.
