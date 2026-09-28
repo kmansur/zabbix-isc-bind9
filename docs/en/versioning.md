@@ -5,11 +5,11 @@
 The project uses Semantic Versioning.
 
 ```text
-VERSION:        0.4.0
-STABLE_VERSION: 0.0.0
+VERSION:        1.0.0
+STABLE_VERSION: 1.0.0
 ```
 
-`main` is the active development branch. A production-supported version begins only when a tagged release is explicitly promoted and `STABLE_VERSION` is updated.
+`main` contains the current maintained source. `STABLE_VERSION` records the production-supported baseline. Version `1.0.0` is the first stable project baseline.
 
 ## Rules
 
