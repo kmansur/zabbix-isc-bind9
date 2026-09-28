@@ -2,9 +2,9 @@
 
 [Português (Brasil)](../pt-BR/metrics.md)
 
-Version 1.0.0 separates raw endpoint acquisition from metrics whose semantics have already been validated.
+Version 1.0.1 separates raw endpoint acquisition from metrics whose semantics have already been validated.
 
-## Parsed in 1.0.0
+## Parsed in 1.0.x
 
 - BIND version and JSON statistics version;
 - server uptime and time since the last configuration;
@@ -29,7 +29,7 @@ Raw JSON master items use short history and no trends. Derived numeric items kee
 
 ## Zone statistics level
 
-Basic zone identity, serial and timer data are available without enabling full per-zone counters. DNSSEC per-zone counters require BIND zone statistics at the `full` level for the relevant zones. The DNSSEC discovery rule remains empty when those blocks are absent, so the common template does not create unsupported DNSSEC items.
+The BIND zones endpoint can expose zone identity, serial and timer fields, but the base template intentionally keeps only aggregate zone counts. Per-secondary refresh/expiry items are opt-in. DNSSEC per-zone counters require BIND zone statistics at the `full` level for the relevant zones. The DNSSEC discovery rule remains empty when those blocks are absent, so the common template does not create unsupported DNSSEC items.
 
 ## Incoming transfer monitoring
 
