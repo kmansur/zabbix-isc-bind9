@@ -1107,7 +1107,10 @@ zabbix_export:
                       Requestv6: true,
                       QryDropped: true,
                       QrySERVFAIL: true,
-                      QryRecursion: true
+                      QryRecursion: true,
+                      TCPConnHighWater: true,
+                      RecursHighwater: true,
+                      RecursClients: true
                   };
                   var out = [];
                   Object.keys(counters).forEach(function (name) {
@@ -1234,8 +1237,19 @@ zabbix_export:
                 - |
                   var d = JSON.parse(value);
                   var counters = d.sockstats || {};
-                  var out = Object.keys(counters).map(function (name) {
-                      return {"{#BIND.COUNTER}": name};
+                  var gauges = {
+                      UDP4Active: true,
+                      UDP6Active: true,
+                      TCP4Active: true,
+                      TCP6Active: true,
+                      TCP4Clients: true,
+                      TCP6Clients: true
+                  };
+                  var out = [];
+                  Object.keys(counters).forEach(function (name) {
+                      if (!gauges[name]) {
+                          out.push({"{#BIND.COUNTER}": name});
+                      }
                   });
                   return JSON.stringify({"data": out});
 
@@ -1278,16 +1292,127 @@ zabbix_export:
                 - |
                   var d = JSON.parse(value);
                   var views = d.views || {};
+                  var gauges = {
+                      QueryCurUDP: true,
+                      QueryCurTCP: true,
+                      NumFetch: true,
+                      BucketSize: true
+                  };
                   var out = [];
                   Object.keys(views).forEach(function (viewName) {
                       var resolver = views[viewName].resolver || {};
                       var stats = resolver.stats || {};
                       Object.keys(stats).forEach(function (counter) {
-                          out.push({
-                              "{#BIND.VIEW}": viewName,
-                              "{#BIND.COUNTER}": counter
-                          });
+                          if (!gauges[counter]) {
+                              out.push({
+                                  "{#BIND.VIEW}": viewName,
+                                  "{#BIND.COUNTER}": counter
+                              });
+                          }
                       });
+                  });
+                  return JSON.stringify({"data": out});
+        - uuid: c85a41281d5c43b1a1bb450fc188ee8d
+          name: 'BIND: Resolver gauge discovery'
+          type: DEPENDENT
+          key: bind.resolver.gauges.discovery
+          delay: '0'
+          item_prototypes:
+            - uuid: a71b18017f83441baaed2b2a6cdf0fe1
+              name: 'BIND resolver [{#BIND.VIEW}]: UDP queries in progress'
+              type: DEPENDENT
+              key: 'bind.resolver.query.current.udp[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.stats.QueryCurUDP'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+            - uuid: 4fd6547ec5db4600ac9452fa8d84d628
+              name: 'BIND resolver [{#BIND.VIEW}]: TCP queries in progress'
+              type: DEPENDENT
+              key: 'bind.resolver.query.current.tcp[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.stats.QueryCurTCP'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+            - uuid: 3624fb82dccb4be0a52e40ea7798f155
+              name: 'BIND resolver [{#BIND.VIEW}]: Active fetches'
+              type: DEPENDENT
+              key: 'bind.resolver.fetches.current[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.stats.NumFetch'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+            - uuid: 8c534f3ae7cc416db59b9b1ed0445b52
+              name: 'BIND resolver [{#BIND.VIEW}]: Bucket size'
+              type: DEPENDENT
+              key: 'bind.resolver.bucket.size[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.stats.BucketSize'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var views = d.views || {};
+                  var gaugeNames = ["QueryCurUDP", "QueryCurTCP", "NumFetch", "BucketSize"];
+                  var out = [];
+                  Object.keys(views).forEach(function (viewName) {
+                      var resolver = views[viewName].resolver || {};
+                      var stats = resolver.stats || {};
+                      var present = gaugeNames.some(function (name) {
+                          return stats[name] !== undefined;
+                      });
+                      if (present) {
+                          out.push({"{#BIND.VIEW}": viewName});
+                      }
                   });
                   return JSON.stringify({"data": out});
         - uuid: e40ca5cc37b04025940eb5cdc2da703c
@@ -1342,28 +1467,80 @@ zabbix_export:
                   });
                   return JSON.stringify({"data": out});
         - uuid: 4f8b1ed35c494e49a3cfe63ef72bcd96
-          name: 'BIND: Resolver ADB statistics discovery'
+          name: 'BIND: Resolver ADB gauge discovery'
           type: DEPENDENT
           key: bind.resolver.adb.discovery
           delay: '0'
           item_prototypes:
-            - uuid: a0095b44738a47d6bd0930a21d6ebea6
-              name: 'BIND resolver [{#BIND.VIEW}] ADB statistic: {#BIND.COUNTER} per second'
+            - uuid: 0c31516fab5f4db588a5d14c24207216
+              name: 'BIND resolver [{#BIND.VIEW}] ADB: Address hash table size'
               type: DEPENDENT
-              key: 'bind.resolver.adb[{#BIND.VIEW},{#BIND.COUNTER}]'
+              key: 'bind.resolver.adb.nentries[{#BIND.VIEW}]'
               delay: '0'
               history: 30d
-              value_type: FLOAT
               preprocessing:
                 - type: JSONPATH
                   parameters:
-                    - '$.views["{#BIND.VIEW}"].resolver.adb["{#BIND.COUNTER}"]'
-                - type: CHANGE_PER_SECOND
+                    - '$.views["{#BIND.VIEW}"].resolver.adb.nentries'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+            - uuid: 0d39065afed84334a40884001e61cc89
+              name: 'BIND resolver [{#BIND.VIEW}] ADB: Addresses in hash table'
+              type: DEPENDENT
+              key: 'bind.resolver.adb.entries[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
                   parameters:
-                    - ''
-                - type: DISCARD_UNCHANGED_HEARTBEAT
+                    - '$.views["{#BIND.VIEW}"].resolver.adb.entriescnt'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+            - uuid: 28e627c3ce684eb8b7fc8665dc47b623
+              name: 'BIND resolver [{#BIND.VIEW}] ADB: Name hash table size'
+              type: DEPENDENT
+              key: 'bind.resolver.adb.nnames[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
                   parameters:
-                    - 30m
+                    - '$.views["{#BIND.VIEW}"].resolver.adb.nnames'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: resolver
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+            - uuid: 77d7c1d42c0d49099f746916a8a400e1
+              name: 'BIND resolver [{#BIND.VIEW}] ADB: Names in hash table'
+              type: DEPENDENT
+              key: 'bind.resolver.adb.names[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].resolver.adb.namescnt'
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '0'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
               tags:
@@ -1382,13 +1559,9 @@ zabbix_export:
                   var out = [];
                   Object.keys(views).forEach(function (viewName) {
                       var resolver = views[viewName].resolver || {};
-                      var adb = resolver.adb || {};
-                      Object.keys(adb).forEach(function (counter) {
-                          out.push({
-                              "{#BIND.VIEW}": viewName,
-                              "{#BIND.COUNTER}": counter
-                          });
-                      });
+                      if (resolver.adb) {
+                          out.push({"{#BIND.VIEW}": viewName});
+                      }
                   });
                   return JSON.stringify({"data": out});
         - uuid: 88ad3d0c6459482799fcbd352a78609f
