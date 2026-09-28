@@ -8,6 +8,13 @@ No unreleased changes.
 
 ## [1.0.1] - 2026-09-28
 
+### Fixed
+
+- Corrected BIND counter/gauge semantics: `RecursClients`, high-water marks, resolver in-progress/fetch/bucket values, ADB sizes and active/current socket values are no longer treated as rates.
+- Corrected the BIND 9.18 memory fixture to model `memory.contexts` as a JSON array, matching ISC BIND.
+- Rebuilt corrupted EN/pt-BR configuration macro tables and strengthened documentation validation.
+- Corrected stale passive/active troubleshooting references and the current project name in NOTICE.
+
 ### Changed
 
 - Removed all `Item navigator` widgets from the template dashboard after real-use validation showed that the long Query Type, Response Code, `nsstats`, resolver, socket and zone lists added visual noise without improving day-to-day operations.
