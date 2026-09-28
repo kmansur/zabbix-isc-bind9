@@ -113,6 +113,62 @@ def load_template(version, path):
     }
     assert graph_names == expected_graphs, "unexpected graph set"
 
+    # Counters and gauges must not share rate preprocessing.
+    ns_rate = discovery_rule(template, "bind.nsstats.discovery")
+    ns_gauge = discovery_rule(template, "bind.nsstats.gauge.discovery")
+    assert "CHANGE_PER_SECOND" in preprocessing_types(
+        prototype(ns_rate, "bind.nsstats[{#BIND.COUNTER}]")
+    )
+    assert "CHANGE_PER_SECOND" not in preprocessing_types(
+        prototype(ns_gauge, "bind.nsstats.gauge[{#BIND.COUNTER}]")
+    )
+    for name in ("RecursClients", "TCPConnHighWater", "RecursHighwater"):
+        assert name in preprocessing_script(ns_rate)
+        assert name in preprocessing_script(ns_gauge)
+
+    socket_rate = discovery_rule(template, "bind.sockstats.discovery")
+    socket_gauge = discovery_rule(template, "bind.sockstats.gauge.discovery")
+    assert "CHANGE_PER_SECOND" in preprocessing_types(
+        prototype(socket_rate, "bind.sockstats[{#BIND.COUNTER}]")
+    )
+    assert "CHANGE_PER_SECOND" not in preprocessing_types(
+        prototype(socket_gauge, "bind.sockstats.gauge[{#BIND.COUNTER}]")
+    )
+    for name in (
+        "UDP4Active",
+        "UDP6Active",
+        "TCP4Active",
+        "TCP6Active",
+        "TCP4Clients",
+        "TCP6Clients",
+    ):
+        assert name in preprocessing_script(socket_rate)
+        assert name in preprocessing_script(socket_gauge)
+
+    resolver_rate = discovery_rule(template, "bind.resolver.stats.discovery")
+    resolver_gauge = discovery_rule(template, "bind.resolver.gauge.discovery")
+    assert "CHANGE_PER_SECOND" in preprocessing_types(
+        prototype(
+            resolver_rate,
+            "bind.resolver.stats[{#BIND.VIEW},{#BIND.COUNTER}]",
+        )
+    )
+    assert "CHANGE_PER_SECOND" not in preprocessing_types(
+        prototype(
+            resolver_gauge,
+            "bind.resolver.gauge[{#BIND.VIEW},{#BIND.COUNTER}]",
+        )
+    )
+    for name in ("QueryCurUDP", "QueryCurTCP", "NumFetch", "BucketSize"):
+        assert name in preprocessing_script(resolver_rate)
+        assert name in preprocessing_script(resolver_gauge)
+
+    adb_rule = discovery_rule(template, "bind.resolver.adb.discovery")
+    adb_item = prototype(
+        adb_rule, "bind.resolver.adb[{#BIND.VIEW},{#BIND.COUNTER}]"
+    )
+    assert "CHANGE_PER_SECOND" not in preprocessing_types(adb_item)
+
     cache_rule = next(
         rule
         for rule in template.get("discovery_rules", [])
@@ -138,6 +194,30 @@ def item_keys(template):
 
 def macro_names(template):
     return {macro["macro"] for macro in template.get("macros", [])}
+
+
+def discovery_rule(template, key):
+    return next(
+        rule for rule in template.get("discovery_rules", []) if rule.get("key") == key
+    )
+
+
+def prototype(rule, key):
+    return next(
+        item for item in rule.get("item_prototypes", []) if item.get("key") == key
+    )
+
+
+def preprocessing_types(item):
+    return {step.get("type") for step in item.get("preprocessing", [])}
+
+
+def preprocessing_script(rule):
+    for step in rule.get("preprocessing", []):
+        if step.get("type") == "JAVASCRIPT":
+            params = step.get("parameters", [])
+            return params[0] if params else ""
+    return ""
 
 
 def main():
