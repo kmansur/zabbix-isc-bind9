@@ -21,7 +21,7 @@ Version 1.1.0 separates raw endpoint acquisition from metrics whose semantics ha
 
 ## Raw endpoint retention
 
-Raw HTTP/JSON endpoint items are preprocessing masters and use `history: 0`. Dependent items still receive the current master value, while the large raw payload itself is not written to history. This is particularly important for `/json/v1/zones` on servers with large zone inventories.
+Raw HTTP/JSON endpoint items are preprocessing masters and use `history: 0`. Dependent items still receive the current master value, while the large raw payload itself is not written to history. This is particularly important for `/json/v1/zones` on servers with large zone inventories. The exception in purpose, not storage policy, is availability detection: `bind.stats.heartbeat` is a small stored dependent item derived from `/json/v1/status` and is the target of the statistics-channel `nodata()` trigger.
 
 ## Retention model
 
@@ -57,7 +57,7 @@ Rate families include cumulative query/request/response/error and socket-event c
 - resolver ADB: `nentries`, `entriescnt`, `nnames` and `namescnt`;
 - socket statistics: active-socket and currently-connected-client values such as `UDP4Active`, `TCP4Active` and `TCP4Clients`.
 
-The generic rate discovery rules exclude these gauges. Dedicated gauge discovery rules expose their current values directly. This prevents misleading values such as “RecursClients per second”.
+The generic rate discovery rules exclude these gauges. `RecursClients` is exposed only through its dedicated gauge item, while the remaining generic gauges are exposed by gauge discovery. This prevents duplicate recursive-client metrics and misleading values such as “RecursClients per second”.
 
 
 ## Independent service and capacity signals
