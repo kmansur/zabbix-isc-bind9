@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ## [1.1.0] - 2026-09-29
 
+### Validation
+
+- Manual template import confirmed successfully on both Zabbix 7 and Zabbix 8 environments.
+- Automated fresh-import gates, BIND 9.18/9.20 live contracts, Python 3.11/3.13/3.14 validation and CodeQL passed before promotion to `main`.
+
 ### Added
 
 - Independent `named` process and UDP/TCP listener monitoring using standard Zabbix agent keys.
