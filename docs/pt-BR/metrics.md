@@ -2,7 +2,7 @@
 
 [English](../en/metrics.md)
 
-A versão 1.0.2 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
+A versão 1.1.0 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
 
 ## Interpretado na 1.0.x
 
@@ -48,7 +48,7 @@ O template base evita deliberadamente descobrir serial SOA e idade de carregamen
 
 ## Semântica de counters e gauges
 
-As estatísticas do BIND misturam contadores cumulativos de eventos e gauges que representam valores instantâneos. A versão 1.0.2 separa explicitamente essas classes para que gauges nunca sejam processados com `CHANGE_PER_SECOND`.
+As estatísticas do BIND misturam contadores cumulativos de eventos e gauges que representam valores instantâneos. A versão 1.1.0 separa explicitamente essas classes para que gauges nunca sejam processados com `CHANGE_PER_SECOND`.
 
 As famílias de taxa incluem contadores cumulativos de queries/requests/responses/erros e eventos de sockets. Entre os gauges estão:
 
