@@ -22,7 +22,7 @@ Itens mestres brutos
 
 O projeto evita scripts externos e caminhos privilegiados de controle. Os payloads brutos dos endpoints são itens mestres apenas para preprocessing, com histórico desabilitado, enquanto as métricas numéricas derivadas mantêm histórico normal.
 
-A versão 1.0.2 utiliza `/json/v1/status`, `server`, `zones`, `mem`, `net` e `traffic`, além do caminho version-aware `/json/v1/xfrins` no BIND 9.20. Parsing somente é promovido após validação entre versões.
+A versão 1.1.0 utiliza `/json/v1/status`, `server`, `zones`, `mem`, `net` e `traffic`, além do caminho version-aware `/json/v1/xfrins` no BIND 9.20. Parsing somente é promovido após validação entre versões.
 
 O caminho de zonas possui uma etapa adicional de normalização:
 
