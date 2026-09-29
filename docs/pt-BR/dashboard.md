@@ -2,7 +2,7 @@
 
 [English](../en/dashboard.md)
 
-A versão 1.0.2 fornece uma dashboard nativa do Zabbix mais enxuta e gráficos clássicos reutilizáveis.
+A versão 1.1.0 fornece uma dashboard nativa do Zabbix mais enxuta e gráficos clássicos reutilizáveis.
 
 ## Dashboard do template
 
