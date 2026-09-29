@@ -4,6 +4,8 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 
 ## [Não publicado]
 
+## [1.1.0] - 2026-09-29
+
 ### Adicionado
 
 - Monitoramento independente do processo `named` e dos listeners UDP/TCP usando keys padrão do Zabbix agent.
@@ -18,12 +20,14 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 - Prototypes JSONPath dinâmicos passam a descartar valores temporariamente ausentes em vez de ficar unsupported ou inventar zero.
 - Discoveries de resolver/cache/zonas usam filtros explícitos de view e todas as regras LLD usam lifetime explícito de 7 dias.
 - Itens mestres HTTP/JSON brutos deixam de armazenar histórico; dependent items derivados continuam com histórico normal.
+- A disponibilidade do statistics-channel passa a usar um heartbeat leve e armazenado derivado de `/json/v1/status`, preservando a avaliação do `nodata()` sem reter o JSON bruto.
 - Item prototypes de cache passam a usar tags consistentes de componente/view.
 
 ### Corrigido
 
 - Timers de expiração e refresh de zonas secundárias passam a ser explicitamente numéricos com sinal, permitindo manter zonas expiradas supported e acionar corretamente o trigger já existente.
 - Adicionado trigger de restart baseado na redução do uptime do BIND.
+- Removida a descoberta duplicada de `RecursClients`, que agora é exposto somente como item gauge dedicado.
 
 ## [1.0.2] - 2026-09-28
 
