@@ -4,7 +4,7 @@
 
 This file defines maintenance rules for the `zabbix-isc-bind9` repository.
 
-The current stable baseline is **v1.1.0**. Changes must preserve production safety, compatibility, attribution and the existing monitoring model unless a deliberate versioned redesign is approved.
+The current stable baseline is **v1.1.1**. Changes must preserve production safety, compatibility, attribution and the existing monitoring model unless a deliberate versioned redesign is approved.
 
 ## Project goals
 
