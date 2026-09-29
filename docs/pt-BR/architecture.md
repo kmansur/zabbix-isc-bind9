@@ -20,7 +20,7 @@ Itens mestres brutos
    +--> triggers
 ```
 
-O projeto evita scripts externos e caminhos privilegiados de controle. Os payloads brutos dos endpoints são itens mestres apenas para preprocessing, com histórico desabilitado, enquanto as métricas numéricas derivadas mantêm histórico normal.
+O projeto evita scripts externos e caminhos privilegiados de controle. Os payloads brutos dos endpoints são itens mestres apenas para preprocessing, com histórico desabilitado, enquanto as métricas numéricas derivadas mantêm histórico normal. A disponibilidade do statistics-channel é avaliada pelo dependent item leve e armazenado `bind.stats.heartbeat`, mantendo o `nodata()` confiável sem reter o payload bruto de `/json/v1/status`.
 
 A versão 1.1.0 utiliza `/json/v1/status`, `server`, `zones`, `mem`, `net` e `traffic`, além do caminho version-aware `/json/v1/xfrins` no BIND 9.20. Parsing somente é promovido após validação entre versões.
 
