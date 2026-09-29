@@ -20,7 +20,7 @@ Raw master items
    +--> triggers
 ```
 
-The design avoids external scripts and privileged control paths. Raw endpoint payloads are preprocessing-only masters with history disabled, while derived numeric metrics keep normal history.
+The design avoids external scripts and privileged control paths. Raw endpoint payloads are preprocessing-only masters with history disabled, while derived numeric metrics keep normal history. Statistics-channel availability is evaluated through the lightweight stored dependent item `bind.stats.heartbeat`, so `nodata()` remains reliable without retaining the raw `/json/v1/status` payload.
 
 Version 1.1.0 uses `/json/v1/status`, `server`, `zones`, `mem`, `net` and `traffic`, plus the version-aware `/json/v1/xfrins` path on BIND 9.20. Parsing is promoted only after cross-version validation.
 
