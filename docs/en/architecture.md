@@ -22,7 +22,7 @@ Raw master items
 
 The design avoids external scripts and privileged control paths. Raw endpoint payloads are preprocessing-only masters with history disabled, while derived numeric metrics keep normal history.
 
-Version 1.0.2 uses `/json/v1/status`, `server`, `zones`, `mem`, `net` and `traffic`, plus the version-aware `/json/v1/xfrins` path on BIND 9.20. Parsing is promoted only after cross-version validation.
+Version 1.1.0 uses `/json/v1/status`, `server`, `zones`, `mem`, `net` and `traffic`, plus the version-aware `/json/v1/xfrins` path on BIND 9.20. Parsing is promoted only after cross-version validation.
 
 The zones path has an additional normalization stage:
 
