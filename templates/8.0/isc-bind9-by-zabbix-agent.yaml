@@ -187,6 +187,44 @@ zabbix_export:
               tags:
                 - tag: scope
                   value: availability
+        - uuid: f1d4b9c8a72e4a66a6f8e7e8d7c6b5a4
+          name: 'BIND: DNS UDP availability display'
+          type: DEPENDENT
+          key: bind.dns.udp.availability.display
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return Number(value) === 1 ? "Up" : "Down";'
+          master_item:
+            key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
+          tags:
+            - tag: component
+              value: dns
+            - tag: scope
+              value: availability
+        - uuid: a2e5c0d9b83f4b77b7a9f8f9e8d7c6b5
+          name: 'BIND: DNS TCP availability display'
+          type: DEPENDENT
+          key: bind.dns.tcp.availability.display
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return Number(value) === 1 ? "Up" : "Down";'
+          master_item:
+            key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp]'
+          tags:
+            - tag: component
+              value: dns
+            - tag: scope
+              value: availability
         - uuid: 99f17316072342ceb59d9f7a81973ee8
           name: 'BIND: DNS UDP response time'
           key: 'net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
@@ -2268,6 +2306,9 @@ zabbix_export:
                     - type: INTEGER
                       name: show.0
                       value: '2'
+                    - type: INTEGER
+                      name: value_size
+                      value: '32'
                 - type: item
                   name: 'Zones total'
                   x: '24'
@@ -2334,7 +2375,7 @@ zabbix_export:
                       name: itemid.0
                       value:
                         host: 'ISC BIND by Zabbix agent'
-                        key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
+                        key: bind.dns.udp.availability.display
                     - type: INTEGER
                       name: show.0
                       value: '2'
@@ -2349,7 +2390,7 @@ zabbix_export:
                       name: itemid.0
                       value:
                         host: 'ISC BIND by Zabbix agent'
-                        key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp]'
+                        key: bind.dns.tcp.availability.display
                     - type: INTEGER
                       name: show.0
                       value: '2'
