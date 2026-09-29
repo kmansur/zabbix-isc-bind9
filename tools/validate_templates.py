@@ -119,14 +119,17 @@ def load_template(version, path):
 
     keys = {item.get("key") for item in items}
     assert "bind.stats.heartbeat" in keys
-    heartbeat = next(item for item in items if item.get("key") == "bind.stats.heartbeat")
+    heartbeat = next(
+        item for item in items if item.get("key") == "bind.stats.heartbeat"
+    )
     assert str(heartbeat.get("history")) != "0", (
         "statistics heartbeat must retain history for nodata() evaluation"
     )
     heartbeat_triggers = heartbeat.get("triggers", [])
     assert heartbeat_triggers, "statistics heartbeat trigger missing"
     assert any(
-        "nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat" in trigger.get("expression", "")
+        "nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat"
+        in trigger.get("expression", "")
         for trigger in heartbeat_triggers
     ), "statistics nodata trigger must use the stored heartbeat item"
 
