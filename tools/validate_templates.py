@@ -118,6 +118,19 @@ def load_template(version, path):
     )
 
     keys = {item.get("key") for item in items}
+    assert "bind.stats.heartbeat" in keys
+    heartbeat = next(item for item in items if item.get("key") == "bind.stats.heartbeat")
+    assert str(heartbeat.get("history")) != "0", (
+        "statistics heartbeat must retain history for nodata() evaluation"
+    )
+    heartbeat_triggers = heartbeat.get("triggers", [])
+    assert heartbeat_triggers, "statistics heartbeat trigger missing"
+    assert any(
+        "nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat" in trigger.get("expression", "")
+        for trigger in heartbeat_triggers
+    ), "statistics nodata trigger must use the stored heartbeat item"
+
+    keys = {item.get("key") for item in items}
     assert "bind.zones.normalized" in keys
     assert "bind.nsstats.recursclients" in keys
     assert "proc.num[{$BIND.PROCESS.NAME}]" in keys
@@ -220,6 +233,10 @@ def load_template(version, path):
     )
     for name in ("RecursClients", "TCPConnHighWater", "RecursHighwater"):
         assert name in preprocessing_script(ns_rate)
+    assert "RecursClients" not in preprocessing_script(ns_gauge), (
+        "RecursClients is a dedicated item and must not be duplicated by gauge LLD"
+    )
+    for name in ("TCPConnHighWater", "RecursHighwater"):
         assert name in preprocessing_script(ns_gauge)
 
     socket_rate = discovery_rule(template, "bind.sockstats.discovery")
