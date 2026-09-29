@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-29
+
 ### Added
 
 - Independent `named` process and UDP/TCP listener monitoring using standard Zabbix agent keys.
@@ -18,12 +20,14 @@ All notable changes to this project will be documented in this file.
 - Dynamic LLD JSONPath prototypes discard temporarily absent values instead of becoming unsupported or synthesizing zero.
 - Resolver/cache/zone discoveries use explicit view filters and all LLD rules use an explicit 7-day lost-resource lifetime.
 - Raw HTTP/JSON master items no longer store history; derived dependent items continue to keep normal history.
+- Statistics-channel availability now uses a lightweight stored heartbeat derived from `/json/v1/status`, preserving `nodata()` trigger evaluation while keeping raw JSON history disabled.
 - Cache item prototypes now carry consistent component/view tags.
 
 ### Fixed
 
 - Secondary-zone expiry and refresh timers are explicitly signed numeric values, allowing expired zones to remain supported and the existing expired-zone trigger to fire correctly.
 - Added a restart trigger based on decreasing BIND uptime.
+- Removed duplicate `RecursClients` discovery now that it is exposed as a dedicated gauge item.
 
 ## [1.0.2] - 2026-09-28
 
