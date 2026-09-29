@@ -2517,6 +2517,9 @@ zabbix_export:
                     - type: STRING
                       name: reference
                       value: BNDOG
+                    - type: STRING
+                      name: problem
+                      value: 'BIND:'
                     - type: INTEGER
                       name: show
                       value: '3'
