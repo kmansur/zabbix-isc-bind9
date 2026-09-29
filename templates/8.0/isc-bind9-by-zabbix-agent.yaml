@@ -48,12 +48,29 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
+        - uuid: 5fb194ee3c944cb99e13a0d58d98b836
+          name: 'BIND: Statistics channel heartbeat'
+          type: DEPENDENT
+          key: bind.stats.heartbeat
+          delay: '0'
+          history: 7d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return 1;'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: internal
+            - tag: scope
+              value: availability
           triggers:
             - uuid: d48429e64c854d9b99cfb8aaba9fee7e
-              expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+              expression: 'nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat,{$BIND.STATS.NODATA})=1'
               name: 'BIND: Statistics channel is unavailable'
               priority: WARNING
-              description: 'No data has been received from the local BIND statistics channel within the configured interval. This indicates monitoring degradation; DNS service availability is checked independently.'
+              description: 'No heartbeat has been derived from the local BIND statistics channel within the configured interval. This indicates monitoring degradation; DNS service availability is checked independently.'
               tags:
                 - tag: scope
                   value: availability
@@ -817,7 +834,7 @@ zabbix_export:
               opdata: '{ITEM.LASTVALUE}'
               dependencies:
                 - name: 'BIND: Statistics channel is unavailable'
-                  expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+                  expression: 'nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat,{$BIND.STATS.NODATA})=1'
               tags:
                 - tag: scope
                   value: performance
@@ -852,7 +869,7 @@ zabbix_export:
               opdata: '{ITEM.LASTVALUE}'
               dependencies:
                 - name: 'BIND: Statistics channel is unavailable'
-                  expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+                  expression: 'nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat,{$BIND.STATS.NODATA})=1'
               tags:
                 - tag: scope
                   value: performance
@@ -908,7 +925,7 @@ zabbix_export:
               description: 'The current number of recursive clients exceeded the configured threshold. The trigger is disabled while {$BIND.RECURSCLIENTS.WARN}=0.'
               dependencies:
                 - name: 'BIND: Statistics channel is unavailable'
-                  expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+                  expression: 'nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat,{$BIND.STATS.NODATA})=1'
               tags:
                 - tag: scope
                   value: capacity
@@ -1120,7 +1137,6 @@ zabbix_export:
                   var d = JSON.parse(value);
                   var counters = d.nsstats || {};
                   var gauges = {
-                      RecursClients: true,
                       TCPConnHighWater: true,
                       RecursHighwater: true
                   };
