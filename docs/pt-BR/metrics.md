@@ -2,7 +2,7 @@
 
 [English](../en/metrics.md)
 
-A versão 1.0.2 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
+A versão 1.1.0 separa a aquisição bruta dos endpoints das métricas cuja semântica já foi validada.
 
 ## Interpretado na 1.0.x
 
@@ -12,20 +12,20 @@ A versão 1.0.2 separa a aquisição bruta dos endpoints das métricas cuja sem�
 - taxas de queries descartadas, SERVFAIL e recursão;
 - low-level discovery de `nsstats`, `qtypes` de queries recebidas pelo servidor, `rcodes` e `sockstats` de rede;
 - descoberta do resolver por view para estatísticas, tipos de query recursiva e contadores ADB;
-- métricas de cache do resolver por view: hits/misses, query hits/misses, remoções LRU/TTL, covering NSEC, nós e memória do cache;
+- métricas de cache do resolver por view: hits/misses, hit ratio, query hits/misses, remoções LRU/TTL, covering NSEC, nós e memória do cache;
 - memória em uso pelo BIND, memória malloced e quantidade de contextos de memória;
 - contadores agregados de zonas (total, primárias e secundárias), sem criar item para cada zona;
-- timers de refresh/expire de zonas secundárias, com prototypes de alerta para proximidade de expiração e zona expirada;
+- timers de refresh/expire de zonas secundárias, serial SOA local e prototypes de alerta para proximidade de expiração e zona expirada;
 - contadores DNSSEC de assinatura e refresh descobertos somente nas zonas que realmente exportam `dnssec-sign`/`dnssec-refresh`;
 - taxas agregadas UDP/TCP de requests e responses derivadas dos histogramas de tráfego do BIND.
 
 ## Retenção dos endpoints brutos
 
-Os payloads `/json/v1/mem` e `/json/v1/net` continuam disponíveis como itens mestres de retenção curta. Campos comuns estáveis são convertidos em dependent items, enquanto campos específicos de versão não são promovidos sem evidência de compatibilidade.
+Os itens HTTP/JSON brutos são mestres somente para preprocessing e utilizam `history: 0`. Os dependent items continuam recebendo o valor atual do master, enquanto o payload bruto grande deixa de ser gravado no histórico. Isso é especialmente importante para `/json/v1/zones` em servidores com muitas zonas. Para detecção de disponibilidade, `bind.stats.heartbeat` é um dependent item pequeno e armazenado, derivado de `/json/v1/status`, e é o alvo do trigger `nodata()` do statistics-channel.
 
 ## Modelo de retenção
 
-Itens mestres JSON brutos possuem histórico curto e sem trends. Métricas numéricas derivadas mantêm histórico/trends normais para evitar crescimento desnecessário do banco do Zabbix.
+Os masters JSON brutos e o dataset normalizado de zonas não armazenam histórico. As métricas numéricas derivadas mantêm histórico/trends normais, reduzindo crescimento do banco sem remover dados operacionais.
 
 ## Semântica dos contadores agregados de zonas
 
@@ -35,7 +35,7 @@ Uma futura release minor pode adicionar um contador "other zones" ou detalhament
 
 ## Nível de estatísticas por zona
 
-O endpoint de zonas do BIND pode expor identidade, serial e timers, mas o template base mantém deliberadamente apenas contadores agregados de zonas. Itens de refresh/expiry de secundárias são opt-in. Os contadores DNSSEC por zona exigem `zone-statistics full` no BIND para as zonas relevantes. Quando esses blocos não existem, a descoberta DNSSEC fica vazia e o template comum não cria itens DNSSEC unsupported.
+O endpoint de zonas do BIND pode expor identidade, serial e timers. Os contadores agregados permanecem sempre disponíveis, enquanto refresh/expiry e o serial local por secundária são opt-in. Os contadores DNSSEC por zona exigem `zone-statistics full` no BIND para as zonas relevantes. Quando esses blocos não existem, a descoberta DNSSEC fica vazia e o template comum não cria itens DNSSEC unsupported.
 
 ## Monitoramento de transferências recebidas
 
@@ -43,12 +43,12 @@ O BIND 9.20 expõe o endpoint JSON `/json/v1/xfrins`. O template comum consulta 
 
 ## Política de detalhamento por zona
 
-O template base evita deliberadamente descobrir serial SOA e idade de carregamento para todas as zonas. Em servidores autoritativos com centenas ou milhares de zonas, isso aumenta muito a cardinalidade sem oferecer informação de saúde suficiente isoladamente. A expiração de zonas secundárias continua disponível por zona porque cada secundária pode expirar de forma independente, mas passa a ser opt-in através de `{$BIND.ZONE.SECONDARY.MATCHES}` para manter baixa a cardinalidade padrão do template. Os contadores DNSSEC por zona são opt-in através de `{$BIND.ZONE.DNSSEC.MATCHES}`; o padrão `^$` não descobre nenhuma zona. Use uma expressão regular direcionada ou `.*` apenas quando o detalhamento DNSSEC completo for realmente necessário.
+O template base evita deliberadamente descobrir serial SOA e idade de carregamento para todas as zonas. O serial local é exposto apenas para zonas secundárias selecionadas por `{$BIND.ZONE.SECONDARY.MATCHES}`. Em servidores autoritativos com centenas ou milhares de zonas, isso aumenta muito a cardinalidade sem oferecer informação de saúde suficiente isoladamente. A expiração de zonas secundárias continua disponível por zona porque cada secundária pode expirar de forma independente, mas passa a ser opt-in através de `{$BIND.ZONE.SECONDARY.MATCHES}` para manter baixa a cardinalidade padrão do template. Os contadores DNSSEC por zona são opt-in através de `{$BIND.ZONE.DNSSEC.MATCHES}`; o padrão `^$` não descobre nenhuma zona. Use uma expressão regular direcionada ou `.*` apenas quando o detalhamento DNSSEC completo for realmente necessário.
 
 
 ## Semântica de counters e gauges
 
-As estatísticas do BIND misturam contadores cumulativos de eventos e gauges que representam valores instantâneos. A versão 1.0.2 separa explicitamente essas classes para que gauges nunca sejam processados com `CHANGE_PER_SECOND`.
+As estatísticas do BIND misturam contadores cumulativos de eventos e gauges que representam valores instantâneos. A versão 1.1.0 separa explicitamente essas classes para que gauges nunca sejam processados com `CHANGE_PER_SECOND`.
 
 As famílias de taxa incluem contadores cumulativos de queries/requests/responses/erros e eventos de sockets. Entre os gauges estão:
 
@@ -57,4 +57,11 @@ As famílias de taxa incluem contadores cumulativos de queries/requests/response
 - ADB do resolver: `nentries`, `entriescnt`, `nnames` e `namescnt`;
 - sockets: valores de sockets ativos e clientes atualmente conectados, como `UDP4Active`, `TCP4Active` e `TCP4Clients`.
 
-As discoveries genéricas de taxa excluem esses gauges. Discoveries específicas de gauge expõem diretamente o valor atual. Isso evita valores enganosos como “RecursClients per second”.
+As discoveries genéricas de taxa excluem esses gauges. `RecursClients` é exposto somente pelo item gauge dedicado; os demais gauges genéricos são expostos pela discovery de gauges. Isso evita duplicidade de clientes recursivos e valores enganosos como “RecursClients per second”.
+
+
+## Sinais independentes de serviço e capacidade
+
+O template passa a separar a saúde do statistics-channel da saúde local do daemon/listeners usando `proc.num[{$BIND.PROCESS.NAME}]`, `net.tcp.listen[{$BIND.DNS.PORT}]` e `net.udp.listen[{$BIND.DNS.PORT}]`. Também promove `RecursClients` para um gauge dedicado e expõe hit ratio do cache por view.
+
+Os triggers opcionais de saturação de clientes recursivos e DeleteLRU ficam desabilitados por padrão através do valor de limite `0`; o administrador os habilita escolhendo limites positivos adequados ao ambiente.

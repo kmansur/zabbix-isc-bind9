@@ -20,6 +20,22 @@ Raw master items
    +--> triggers
 ```
 
-The design avoids external scripts and privileged control paths. Raw endpoint data is retained briefly, while derived numeric metrics keep normal history.
+The design avoids external scripts and privileged control paths. Raw endpoint payloads are preprocessing-only masters with history disabled, while derived numeric metrics keep normal history. Statistics-channel availability is evaluated through the lightweight stored dependent item `bind.stats.heartbeat`, so `nodata()` remains reliable without retaining the raw `/json/v1/status` payload.
 
-Version 1.0.2 uses `/json/v1/status`, `server`, `zones`, `mem`, `net` and `traffic`, plus the version-aware `/json/v1/xfrins` path on BIND 9.20. Parsing is promoted only after cross-version validation.
+Version 1.1.0 uses `/json/v1/status`, `server`, `zones`, `mem`, `net` and `traffic`, plus the version-aware `/json/v1/xfrins` path on BIND 9.20. Parsing is promoted only after cross-version validation.
+
+The zones path has an additional normalization stage:
+
+```text
+/json/v1/zones raw
+       |
+       v
+bind.zones.normalized  (history disabled)
+       |
+       +--> secondary-zone discovery
+       +--> signed refresh/expiry timers
+       +--> local SOA serial
+       +--> optional per-zone DNSSEC counters
+```
+
+This stage parses the large zones payload once and feeds compact dependent data to per-zone prototypes, avoiding repeated full-payload scans as zone count grows. Independent `proc.num[]`, `net.tcp.listen[]` and `net.udp.listen[]` checks provide daemon/listener health even when the statistics channel itself is unavailable.

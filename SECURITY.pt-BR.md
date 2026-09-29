@@ -26,4 +26,4 @@ Uma issue pública sanitizada pode ser utilizada quando o problema puder ser rep
 
 ## Versões suportadas
 
-A versão `1.0.2` é o baseline estável atual para produção e a linha suportada para manutenção de segurança.
+A versão `1.1.0` é o baseline estável atual para produção e a linha suportada para manutenção de segurança.

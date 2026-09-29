@@ -7,6 +7,9 @@
 | Macro | Padrão | Finalidade |
 | --- | --- | --- |
 | `{$BIND.DNS.TEST.ENABLED}` | `0` | Habilita os alertas funcionais DNS após validar o nome de teste; use `1` para ativar |
+| `{$BIND.DNS.TEST.INTERVAL}` | `30s` | Intervalo de coleta dos checks nativos DNS UDP/TCP de disponibilidade e tempo de resposta |
+| `{$BIND.DNS.PORT}` | `53` | Porta local do serviço DNS usada pelos checks independentes de listener TCP/UDP |
+| `{$BIND.PROCESS.NAME}` | `named` | Nome do processo usado pelo check independente do daemon via `proc.num[]` |
 | `{$BIND.DNS.TEST.SERVER}` | `127.0.0.1` | Endereço DNS consultado pelos checks nativos de saúde do Zabbix |
 | `{$BIND.DNS.TEST.NAME}` | `localhost` | Nome DNS usado nos checks de disponibilidade e tempo de resposta |
 | `{$BIND.DNS.TEST.TYPE}` | `A` | Tipo de registro DNS usado pelos checks nativos |
@@ -20,6 +23,10 @@
 | `{$BIND.ZONE.EXPIRES.WARN}` | `1h` | Janela de aviso antes de uma zona secundária atingir o prazo de expiração |
 | `{$BIND.ZONE.SECONDARY.MATCHES}` | `^$` | Regex que seleciona zonas secundárias para refresh/expiry por zona; o padrão não descobre nenhuma |
 | `{$BIND.ZONE.DNSSEC.MATCHES}` | `^$` | Regex que seleciona zonas para monitoramento DNSSEC por zona; o padrão não descobre nenhuma |
+| `{$BIND.VIEW.MATCHES}` | `.*` | Regex que seleciona views do BIND elegíveis para discovery por view |
+| `{$BIND.VIEW.NOT_MATCHES}` | `^_bind$` | Regex que exclui views internas/indesejadas das discoveries por view |
+| `{$BIND.RECURSCLIENTS.WARN}` | `0` | Limite de clientes recursivos; `0` mantém o trigger opcional de saturação desabilitado |
+| `{$BIND.CACHE.DELETELRU.WARN}` | `0` | Limite sustentado de DeleteLRU em 10 minutos; `0` mantém o trigger desabilitado |
 | `{$BIND.STATS.HOST}` | `127.0.0.1` | Host usado pelo `web.page.get[]` para o statistics-channel do BIND |
 | `{$BIND.STATS.NODATA}` | `10m` | Intervalo máximo sem estatísticas antes de gerar warning de monitoramento |
 | `{$BIND.STATS.PORT}` | `8053` | Porta TCP local do statistics-channel do BIND |
@@ -64,6 +71,10 @@ Escolha um nome que represente o papel do servidor monitorado:
 
 Antes de encaminhar alertas para produção, valide localmente o nome configurado em UDP e TCP usando os mesmos parâmetros de `net.dns[]` do template. Valor `1` significa que a consulta produziu uma resposta utilizável; valor `0` significa que não produziu. Somente depois defina `{$BIND.DNS.TEST.ENABLED}=1`.
 
+### Validação DNS externa fim a fim
+
+O padrão `{$BIND.DNS.TEST.SERVER}=127.0.0.1` valida o daemon localmente. Ele não valida firewall externo, endereço público do serviço, VIP, NAT ou caminho anycast. Nesses casos, faça um segundo teste DNS a partir de outro host monitorado ou Zabbix proxy, apontando para o endereço real do serviço. Mantenha o teste local como sinal do daemon e use o teste externo como sinal do caminho visto pelo cliente.
+
 ## Monitoramento por zona
 
 O detalhamento por zona é deliberadamente opt-in para controlar a cardinalidade.
@@ -80,4 +91,8 @@ Para habilitar contadores DNSSEC em todas as zonas que os exportam:
 {$BIND.ZONE.DNSSEC.MATCHES}=.*
 ```
 
-Prefira uma regex direcionada quando apenas zonas críticas selecionadas precisarem de detalhamento individual.
+Prefira uma regex direcionada quando apenas zonas críticas selecionadas precisarem de detalhamento individual. As zonas secundárias selecionadas também passam a expor o serial SOA local.
+
+As discoveries de resolver/cache por view utilizam `{$BIND.VIEW.MATCHES}` e `{$BIND.VIEW.NOT_MATCHES}`. O padrão exclui a view interna `_bind`.
+
+Todas as regras de low-level discovery possuem lifetime explícito de 7 dias para recursos perdidos. Isso evita depender silenciosamente do padrão do Zabbix e reduz churn quando uma métrica dinâmica desaparece temporariamente.

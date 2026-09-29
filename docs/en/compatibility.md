@@ -50,16 +50,16 @@ CI starts the official ISC Docker images for BIND 9.18 and 9.20 with a minimal s
 
 ## Real native DNS health-check validation
 
-Runtime validation on Ubuntu 24.04 with BIND 9.18.39 and the classic Zabbix agent confirmed all native service checks used by template version 1.0.2:
+Runtime validation on Ubuntu 24.04 with BIND 9.18.39 and the classic Zabbix agent confirmed all native service checks used by template version 1.1.0:
 
 - UDP DNS availability: `1`
 - TCP DNS availability: `1`
 - UDP response time: approximately `0.000480 s` (0.48 ms)
 - TCP response time: approximately `0.000616 s` (0.62 ms)
 
-The original runtime validation used `127.0.0.1`, query name `localhost`, record type `A`, one-second timeout and two attempts. Version 1.0.2 keeps `localhost` only as a collection default and disables functional DNS alerting until a server-appropriate test name is explicitly validated and `{$BIND.DNS.TEST.ENABLED}=1` is set.
+The original runtime validation used `127.0.0.1`, query name `localhost`, record type `A`, one-second timeout and two attempts. Version 1.1.0 keeps `localhost` only as a collection default and disables functional DNS alerting until a server-appropriate test name is explicitly validated and `{$BIND.DNS.TEST.ENABLED}=1` is set.
 
 
 ## FreeBSD note
 
-The template intentionally uses standard classic-agent keys and has no Linux-only helper scripts or privileged commands. The FreeBSD Ports Collection provides the Zabbix 7 classic agent (`net-mgmt/zabbix7-agent`), which supports the intended deployment path. The project's real runtime validation has been performed on Linux; therefore FreeBSD is considered architecture-compatible rather than a separately runtime-certified platform in version 1.0.2.
+The template intentionally uses standard classic-agent keys and has no Linux-only helper scripts or privileged commands. The FreeBSD Ports Collection provides the Zabbix 7 classic agent (`net-mgmt/zabbix7-agent`), which supports the intended deployment path. The project's real runtime validation has been performed on Linux; therefore FreeBSD is considered architecture-compatible rather than a separately runtime-certified platform in version 1.1.0.

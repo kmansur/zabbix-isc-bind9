@@ -3,9 +3,69 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 FIXTURES = Path(__file__).parent / "fixtures"
+
+KNOWN_NSSTATS = {
+    "Requestv4",
+    "Requestv6",
+    "QryDropped",
+    "QrySERVFAIL",
+    "QryRecursion",
+    "RecursClients",
+    "RecursHighwater",
+    "TCPConnHighWater",
+}
+
+KNOWN_SOCKSTATS = {
+    "UDP4Active",
+    "UDP6Active",
+    "UDP4Open",
+    "UDP6Open",
+    "TCP4Active",
+    "TCP6Active",
+    "TCP4Clients",
+    "TCP6Clients",
+    "TCP4Open",
+    "TCP6Open",
+}
+
+KNOWN_RESOLVER_STATS = {
+    "QueryCurUDP",
+    "QueryCurTCP",
+    "NumFetch",
+    "BucketSize",
+    "Queryv4",
+    "Queryv6",
+}
+
+KNOWN_RESOLVER_ADB = {
+    "nentries",
+    "entriescnt",
+    "nnames",
+    "namescnt",
+}
+
+KNOWN_CACHE_STATS = {
+    "CacheBuckets",
+    "CacheHits",
+    "CacheMisses",
+    "QueryHits",
+    "QueryMisses",
+    "DeleteLRU",
+    "DeleteTTL",
+    "CoveringNSEC",
+    "CacheNodes",
+    "CacheNSECNodes",
+    "TreeMemInUse",
+    "TreeMemMax",
+    "TreeMemTotal",
+    "HeapMemInUse",
+    "HeapMemMax",
+    "HeapMemTotal",
+}
 
 
 def load(name: str) -> dict:
@@ -124,3 +184,42 @@ def test_bind_920_transfer_contract() -> None:
     aggregate_rate = sum(int(xfr.get("rate", 0)) for xfr in xfrins)
     assert total_bytes == 24576
     assert aggregate_rate == 8192
+
+
+def test_metric_classification_allowlists_cover_supported_fixtures() -> None:
+    """Fail loudly when supported fixtures introduce an unclassified metric."""
+
+    for fixture in ("bind-9.18.json", "bind-9.20.json"):
+        data = load(fixture)
+        server = data["server"]
+        assert set(server.get("nsstats", {})) <= KNOWN_NSSTATS
+        assert set(data.get("net", {}).get("sockstats", {})) <= KNOWN_SOCKSTATS
+
+        for view in server.get("views", {}).values():
+            resolver = view.get("resolver", {})
+            assert set(resolver.get("stats", {})) <= KNOWN_RESOLVER_STATS
+            assert set(resolver.get("adb", {})) <= KNOWN_RESOLVER_ADB
+            assert set(resolver.get("cachestats", {})) <= KNOWN_CACHE_STATS
+
+
+def test_secondary_zone_expiry_fixture_can_be_negative() -> None:
+    """Expired-zone fixtures must remain representable as a signed delta."""
+
+    data = load("bind-9.18.json")
+    zones = data["zones"]
+    now = datetime.fromisoformat(zones["current-time"].replace("Z", "+00:00"))
+
+    secondary = next(
+        zone
+        for zone in zones["views"]["_default"]["zones"]
+        if zone.get("type") == "secondary"
+    )
+    expired = dict(secondary)
+    expired["expires"] = "2026-09-24T18:36:26.000Z"
+
+    expires_at = datetime.fromisoformat(expired["expires"].replace("Z", "+00:00"))
+    expires_in = int((expires_at - now).total_seconds())
+
+    assert now.tzinfo == timezone.utc
+    assert expires_in < 0
+    assert expired["serial"] > 0

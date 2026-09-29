@@ -29,7 +29,7 @@ zabbix_export:
         Exports are maintained for Zabbix 7.0 and 8.0.
       vendor:
         name: Net Tech
-        version: 1.0-2
+        version: 1.1-0
       groups:
         - name: Templates/Applications
       items:
@@ -37,7 +37,7 @@ zabbix_export:
           name: 'BIND: Statistics status raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
           delay: 30s
-          history: 1h
+          history: '0'
           value_type: TEXT
           trends: '0'
           preprocessing:
@@ -48,19 +48,103 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
+        - uuid: 5fb194ee3c944cb99e13a0d58d98b836
+          name: 'BIND: Statistics channel heartbeat'
+          type: DEPENDENT
+          key: bind.stats.heartbeat
+          delay: '0'
+          history: 7d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return 1;'
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: internal
+            - tag: scope
+              value: availability
           triggers:
             - uuid: d48429e64c854d9b99cfb8aaba9fee7e
-              expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+              expression: 'nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat,{$BIND.STATS.NODATA})=1'
               name: 'BIND: Statistics channel is unavailable'
               priority: WARNING
-              description: 'No data has been received from the local BIND statistics channel within the configured interval. This indicates monitoring degradation; DNS service availability is checked independently.'
+              description: 'No heartbeat has been derived from the local BIND statistics channel within the configured interval. This indicates monitoring degradation; DNS service availability is checked independently.'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: a81c3d9d119a4f23a8890a0000000001
+          name: 'BIND: named processes'
+          key: 'proc.num[{$BIND.PROCESS.NAME}]'
+          delay: 30s
+          history: 30d
+          tags:
+            - tag: component
+              value: service
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: a81c3d9d119a4f23a8890a0000000011
+              expression: 'max(/ISC BIND by Zabbix agent/proc.num[{$BIND.PROCESS.NAME}],3m)=0'
+              name: 'BIND: named process is not running'
+              priority: HIGH
+              description: 'No process matching {$BIND.PROCESS.NAME} has been detected for three minutes. This check is independent of the BIND statistics channel.'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: a81c3d9d119a4f23a8890a0000000002
+          name: 'BIND: TCP listener state'
+          key: 'net.tcp.listen[{$BIND.DNS.PORT}]'
+          delay: 30s
+          history: 30d
+          valuemap:
+            name: 'BIND service state'
+          tags:
+            - tag: component
+              value: service
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: a81c3d9d119a4f23a8890a0000000012
+              expression: 'max(/ISC BIND by Zabbix agent/net.tcp.listen[{$BIND.DNS.PORT}],3m)=0'
+              name: 'BIND: TCP DNS listener is unavailable'
+              priority: HIGH
+              description: 'The local TCP DNS listener on port {$BIND.DNS.PORT} has not been detected for three minutes.'
+              dependencies:
+                - name: 'BIND: named process is not running'
+                  expression: 'max(/ISC BIND by Zabbix agent/proc.num[{$BIND.PROCESS.NAME}],3m)=0'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: a81c3d9d119a4f23a8890a0000000003
+          name: 'BIND: UDP listener state'
+          key: 'net.udp.listen[{$BIND.DNS.PORT}]'
+          delay: 30s
+          history: 30d
+          valuemap:
+            name: 'BIND service state'
+          tags:
+            - tag: component
+              value: service
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: a81c3d9d119a4f23a8890a0000000013
+              expression: 'max(/ISC BIND by Zabbix agent/net.udp.listen[{$BIND.DNS.PORT}],3m)=0'
+              name: 'BIND: UDP DNS listener is unavailable'
+              priority: HIGH
+              description: 'The local UDP DNS listener on port {$BIND.DNS.PORT} has not been detected for three minutes.'
+              dependencies:
+                - name: 'BIND: named process is not running'
+                  expression: 'max(/ISC BIND by Zabbix agent/proc.num[{$BIND.PROCESS.NAME}],3m)=0'
               tags:
                 - tag: scope
                   value: availability
         - uuid: 9c65ecaa51804a66922a6296d6bc1bb1
           name: 'BIND: DNS UDP availability'
           key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
-          delay: 30s
+          delay: '{$BIND.DNS.TEST.INTERVAL}'
           history: 30d
           valuemap:
             name: 'BIND service state'
@@ -83,7 +167,7 @@ zabbix_export:
         - uuid: 8ad961fe0ff74eada45a2db93edbf9e4
           name: 'BIND: DNS TCP availability'
           key: 'net.dns[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp]'
-          delay: 30s
+          delay: '{$BIND.DNS.TEST.INTERVAL}'
           history: 30d
           valuemap:
             name: 'BIND service state'
@@ -106,7 +190,7 @@ zabbix_export:
         - uuid: 99f17316072342ceb59d9f7a81973ee8
           name: 'BIND: DNS UDP response time'
           key: 'net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},udp]'
-          delay: 30s
+          delay: '{$BIND.DNS.TEST.INTERVAL}'
           history: 30d
           value_type: FLOAT
           units: s
@@ -132,7 +216,7 @@ zabbix_export:
         - uuid: e92db09808e0414a9068ea00f299fb19
           name: 'BIND: DNS TCP response time'
           key: 'net.dns.perf[{$BIND.DNS.TEST.SERVER},{$BIND.DNS.TEST.NAME},{$BIND.DNS.TEST.TYPE},{$BIND.DNS.TEST.TIMEOUT},{$BIND.DNS.TEST.COUNT},tcp]'
-          delay: 30s
+          delay: '{$BIND.DNS.TEST.INTERVAL}'
           history: 30d
           value_type: FLOAT
           units: s
@@ -159,7 +243,7 @@ zabbix_export:
           name: 'BIND: Server statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
           delay: 30s
-          history: 1h
+          history: '0'
           value_type: TEXT
           trends: '0'
           preprocessing:
@@ -174,7 +258,7 @@ zabbix_export:
           name: 'BIND: Zone statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
           delay: 5m
-          history: 1h
+          history: '0'
           value_type: TEXT
           trends: '0'
           preprocessing:
@@ -185,6 +269,61 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
+        - uuid: a81c3d9d119a4f23a8890a0000000005
+          name: 'BIND: Normalized zone dataset'
+          type: DEPENDENT
+          key: bind.zones.normalized
+          delay: '0'
+          history: '0'
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var d = JSON.parse(value);
+                  var now = Date.parse(d["current-time"]);
+                  if (isNaN(now)) {
+                      throw "invalid BIND zone current-time";
+                  }
+                  var out = {"views": {}};
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      var dst = {"zones": {}};
+                      (d.views[viewName].zones || []).forEach(function (zone) {
+                          if (!zone || !zone.name) {
+                              return;
+                          }
+                          var z = {"type": zone.type || ""};
+                          if (zone.serial !== undefined) {
+                              z.serial = zone.serial;
+                          }
+                          if (zone.expires) {
+                              var expires = Date.parse(zone.expires);
+                              if (!isNaN(expires)) {
+                                  z.expires_in = Math.floor((expires - now) / 1000);
+                              }
+                          }
+                          if (zone.refresh) {
+                              var refresh = Date.parse(zone.refresh);
+                              if (!isNaN(refresh)) {
+                                  z.refresh_in = Math.floor((refresh - now) / 1000);
+                              }
+                          }
+                          ["dnssec-sign", "dnssec-refresh"].forEach(function (block) {
+                              if (zone[block] && typeof zone[block] === "object") {
+                                  z[block] = zone[block];
+                              }
+                          });
+                          dst.zones[zone.name] = z;
+                      });
+                      out.views[viewName] = dst;
+                  });
+                  return JSON.stringify(out);
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: internal
         - uuid: 81f8e78c7a0544b787e5c5a12fce5140
           name: 'BIND: Zones total'
           type: DEPENDENT
@@ -260,7 +399,7 @@ zabbix_export:
           name: 'BIND: Memory statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/mem","{$BIND.STATS.PORT}"]'
           delay: 1m
-          history: 1h
+          history: '0'
           value_type: TEXT
           trends: '0'
           preprocessing:
@@ -275,7 +414,7 @@ zabbix_export:
           name: 'BIND: Network statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/net","{$BIND.STATS.PORT}"]'
           delay: 1m
-          history: 1h
+          history: '0'
           value_type: TEXT
           trends: '0'
           preprocessing:
@@ -290,7 +429,7 @@ zabbix_export:
           name: 'BIND: Traffic statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/traffic","{$BIND.STATS.PORT}"]'
           delay: 1m
-          history: 1h
+          history: '0'
           value_type: TEXT
           trends: '0'
           preprocessing:
@@ -306,7 +445,7 @@ zabbix_export:
           name: 'BIND: Transfer statistics raw'
           key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/xfrins","{$BIND.STATS.PORT}"]'
           delay: 1m
-          history: 1h
+          history: '0'
           value_type: TEXT
           trends: '0'
           tags:
@@ -588,6 +727,15 @@ zabbix_export:
           tags:
             - tag: component
               value: status
+          triggers:
+            - uuid: a81c3d9d119a4f23a8890a0000000014
+              expression: 'change(/ISC BIND by Zabbix agent/bind.uptime)<0'
+              name: 'BIND: named has restarted'
+              priority: INFO
+              description: 'BIND uptime decreased, which indicates that the named process restarted.'
+              tags:
+                - tag: scope
+                  value: notice
         - uuid: cf7d83b36e1749e58177e08dc4d8c95c
           name: 'BIND: Time since last configuration'
           type: DEPENDENT
@@ -686,7 +834,7 @@ zabbix_export:
               opdata: '{ITEM.LASTVALUE}'
               dependencies:
                 - name: 'BIND: Statistics channel is unavailable'
-                  expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+                  expression: 'nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat,{$BIND.STATS.NODATA})=1'
               tags:
                 - tag: scope
                   value: performance
@@ -721,7 +869,7 @@ zabbix_export:
               opdata: '{ITEM.LASTVALUE}'
               dependencies:
                 - name: 'BIND: Statistics channel is unavailable'
-                  expression: 'nodata(/ISC BIND by Zabbix agent/web.page.get["{$BIND.STATS.HOST}","/json/v1/status","{$BIND.STATS.PORT}"],{$BIND.STATS.NODATA})=1'
+                  expression: 'nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat,{$BIND.STATS.NODATA})=1'
               tags:
                 - tag: scope
                   value: performance
@@ -747,6 +895,40 @@ zabbix_export:
           tags:
             - tag: component
               value: resolver
+        - uuid: a81c3d9d119a4f23a8890a0000000004
+          name: 'BIND: Recursive clients'
+          type: DEPENDENT
+          key: bind.nsstats.recursclients
+          delay: '0'
+          history: 30d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.nsstats.RecursClients
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 30m
+          master_item:
+            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+          tags:
+            - tag: component
+              value: resolver
+            - tag: scope
+              value: capacity
+          triggers:
+            - uuid: a81c3d9d119a4f23a8890a0000000015
+              expression: '{$BIND.RECURSCLIENTS.WARN}>0 and last(/ISC BIND by Zabbix agent/bind.nsstats.recursclients)>{$BIND.RECURSCLIENTS.WARN}'
+              name: 'BIND: Recursive client usage is high'
+              priority: WARNING
+              description: 'The current number of recursive clients exceeded the configured threshold. The trigger is disabled while {$BIND.RECURSCLIENTS.WARN}=0.'
+              dependencies:
+                - name: 'BIND: Statistics channel is unavailable'
+                  expression: 'nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat,{$BIND.STATS.NODATA})=1'
+              tags:
+                - tag: scope
+                  value: capacity
         - uuid: b1f3d20f869d46ce8d2d7c6bbd1bf3d6
           name: 'BIND: UDP requests per second'
           type: DEPENDENT
@@ -869,6 +1051,7 @@ zabbix_export:
           type: DEPENDENT
           key: bind.nsstats.discovery
           delay: '0'
+          lifetime: 7d
           item_prototypes:
             - uuid: 068d1638f0e74ef0aaea4a9a92a7e95a
               name: 'BIND nsstats: {#BIND.COUNTER} per second'
@@ -882,6 +1065,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.nsstats["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -923,6 +1107,7 @@ zabbix_export:
           type: DEPENDENT
           key: bind.nsstats.gauge.discovery
           delay: '0'
+          lifetime: 7d
           item_prototypes:
             - uuid: 9d3e70d4a70d46f3910d3bbf41ca0214
               name: 'BIND nsstats gauge: {#BIND.COUNTER}'
@@ -934,6 +1119,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.nsstats["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: DISCARD_UNCHANGED_HEARTBEAT
                   parameters:
                     - 30m
@@ -951,7 +1137,6 @@ zabbix_export:
                   var d = JSON.parse(value);
                   var counters = d.nsstats || {};
                   var gauges = {
-                      RecursClients: true,
                       TCPConnHighWater: true,
                       RecursHighwater: true
                   };
@@ -968,6 +1153,7 @@ zabbix_export:
           type: DEPENDENT
           key: bind.qtypes.discovery
           delay: '0'
+          lifetime: 7d
           item_prototypes:
             - uuid: 781a26aeab6041f18e1e194407a478d6
               name: 'BIND query type: {#BIND.COUNTER} per second'
@@ -981,6 +1167,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.qtypes["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1009,6 +1196,7 @@ zabbix_export:
           type: DEPENDENT
           key: bind.rcodes.discovery
           delay: '0'
+          lifetime: 7d
           item_prototypes:
             - uuid: a5791ef0e1214e68bacedd678e414d80
               name: 'BIND response code: {#BIND.COUNTER} per second'
@@ -1022,6 +1210,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.rcodes["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1050,6 +1239,7 @@ zabbix_export:
           type: DEPENDENT
           key: bind.sockstats.discovery
           delay: '0'
+          lifetime: 7d
           item_prototypes:
             - uuid: 900ea0118a5b4241b94cb993734857da
               name: 'BIND socket counter: {#BIND.COUNTER} per second'
@@ -1062,6 +1252,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.sockstats["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1103,6 +1294,7 @@ zabbix_export:
           type: DEPENDENT
           key: bind.sockstats.gauge.discovery
           delay: '0'
+          lifetime: 7d
           item_prototypes:
             - uuid: 3587433bcd854e5d8ec1d4d7d2ea755b
               name: 'BIND socket gauge: {#BIND.COUNTER}'
@@ -1114,6 +1306,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.sockstats["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: DISCARD_UNCHANGED_HEARTBEAT
                   parameters:
                     - 30m
@@ -1153,6 +1346,15 @@ zabbix_export:
           type: DEPENDENT
           key: bind.resolver.stats.discovery
           delay: '0'
+          lifetime: 7d
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.MATCHES}'
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.NOT_MATCHES}'
+                operator: NOT_MATCHES_REGEX
           item_prototypes:
             - uuid: 2bebe64c25914011a7c07f735b8c376a
               name: 'BIND resolver [{#BIND.VIEW}] counter: {#BIND.COUNTER} per second'
@@ -1166,6 +1368,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.stats["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1212,6 +1415,15 @@ zabbix_export:
           type: DEPENDENT
           key: bind.resolver.gauge.discovery
           delay: '0'
+          lifetime: 7d
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.MATCHES}'
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.NOT_MATCHES}'
+                operator: NOT_MATCHES_REGEX
           item_prototypes:
             - uuid: 64e3b55adb554447bf6aeaa5772b3677
               name: 'BIND resolver [{#BIND.VIEW}] gauge: {#BIND.COUNTER}'
@@ -1223,6 +1435,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.stats["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: DISCARD_UNCHANGED_HEARTBEAT
                   parameters:
                     - 30m
@@ -1267,6 +1480,15 @@ zabbix_export:
           type: DEPENDENT
           key: bind.resolver.qtypes.discovery
           delay: '0'
+          lifetime: 7d
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.MATCHES}'
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.NOT_MATCHES}'
+                operator: NOT_MATCHES_REGEX
           item_prototypes:
             - uuid: 3860b069909f4d0faccb27d12640abfc
               name: 'BIND resolver [{#BIND.VIEW}] query type: {#BIND.COUNTER} per second'
@@ -1280,6 +1502,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.qtypes["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1318,6 +1541,15 @@ zabbix_export:
           type: DEPENDENT
           key: bind.resolver.adb.discovery
           delay: '0'
+          lifetime: 7d
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.MATCHES}'
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.NOT_MATCHES}'
+                operator: NOT_MATCHES_REGEX
           item_prototypes:
             - uuid: a0095b44738a47d6bd0930a21d6ebea6
               name: 'BIND resolver [{#BIND.VIEW}] ADB gauge: {#BIND.COUNTER}'
@@ -1330,6 +1562,7 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.adb["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: DISCARD_UNCHANGED_HEARTBEAT
                   parameters:
                     - 30m
@@ -1366,6 +1599,15 @@ zabbix_export:
           type: DEPENDENT
           key: bind.resolver.cache.discovery
           delay: '0'
+          lifetime: 7d
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.MATCHES}'
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.NOT_MATCHES}'
+                operator: NOT_MATCHES_REGEX
           item_prototypes:
             - uuid: dc6f23c23dff4df99a81137edee0597b
               name: 'BIND cache [{#BIND.VIEW}]: Hits per second'
@@ -1379,9 +1621,15 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheHits'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: 6869e7d625644129808feb96bfb349b3
@@ -1396,9 +1644,15 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheMisses'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: 1d69c57f671543699c0207e739a85ac9
@@ -1413,9 +1667,15 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.QueryHits'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: 1d096cab8761404a811f1469e22edc5b
@@ -1430,9 +1690,15 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.QueryMisses'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: 6799dc986e254e3085564273e8aa55e5
@@ -1446,11 +1712,26 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.DeleteLRU'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              trigger_prototypes:
+                - uuid: a81c3d9d119a4f23a8890a0000000016
+                  expression: '{$BIND.CACHE.DELETELRU.WARN}>0 and avg(/ISC BIND by Zabbix agent/bind.cache.deletelru[{#BIND.VIEW}],10m)>{$BIND.CACHE.DELETELRU.WARN}'
+                  name: 'BIND cache [{#BIND.VIEW}]: LRU deletion rate is high'
+                  priority: WARNING
+                  description: 'Cache entries are being evicted by LRU above the configured sustained-rate threshold. The trigger is disabled while {$BIND.CACHE.DELETELRU.WARN}=0.'
+                  tags:
+                    - tag: scope
+                      value: capacity
             - uuid: 175f32fb616447399339f12e86a2c804
               name: 'BIND cache [{#BIND.VIEW}]: TTL deletions per second'
               type: DEPENDENT
@@ -1462,9 +1743,15 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.DeleteTTL'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: 2655856022054d7f935f5ef9f91304e6
@@ -1478,9 +1765,15 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CoveringNSEC'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: 889f1746660349108dbc2b165151f78f
@@ -1493,6 +1786,12 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheNodes'
+                  error_handler: DISCARD_VALUE
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: b1faacf6906f423982c086e9e53f437a
@@ -1505,6 +1804,12 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.CacheNSECNodes'
+                  error_handler: DISCARD_VALUE
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: ee4960f9ce834ffb8cd02249d5c97362
@@ -1518,6 +1823,12 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.TreeMemInUse'
+                  error_handler: DISCARD_VALUE
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
             - uuid: 17744b66d95b470b98cd0c921155f271
@@ -1531,8 +1842,47 @@ zabbix_export:
                 - type: JSONPATH
                   parameters:
                     - '$.views["{#BIND.VIEW}"].resolver.cachestats.HeapMemInUse'
+                  error_handler: DISCARD_VALUE
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
               master_item:
                 key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+            - uuid: a81c3d9d119a4f23a8890a0000000007
+              name: 'BIND cache [{#BIND.VIEW}]: Hit ratio'
+              type: DEPENDENT
+              key: 'bind.cache.hitratio[{#BIND.VIEW}]'
+              delay: '0'
+              history: 30d
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var d = JSON.parse(value);
+                      var view = "{#BIND.VIEW}";
+                      var resolver = d.views && d.views[view] ? d.views[view].resolver : null;
+                      var c = resolver ? resolver.cachestats : null;
+                      if (!c) {
+                          throw "BIND cache statistics not available";
+                      }
+                      var hits = Number(c.CacheHits) || 0;
+                      var misses = Number(c.CacheMisses) || 0;
+                      var total = hits + misses;
+                      if (total === 0) {
+                          return 0;
+                      }
+                      return (hits * 100) / total;
+              master_item:
+                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/server","{$BIND.STATS.PORT}"]'
+              tags:
+                - tag: component
+                  value: cache
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
           graph_prototypes:
             - uuid: a65af25619194da5829684f766645d0c
               name: 'BIND cache [{#BIND.VIEW}]: Hit and miss rates'
@@ -1603,9 +1953,15 @@ zabbix_export:
           type: DEPENDENT
           key: bind.zones.secondary.discovery
           delay: '0'
+          lifetime: 7d
           filter:
             evaltype: AND
             conditions:
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.MATCHES}'
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.NOT_MATCHES}'
+                operator: NOT_MATCHES_REGEX
               - macro: '{#BIND.ZONE}'
                 value: '{$BIND.ZONE.SECONDARY.MATCHES}'
           item_prototypes:
@@ -1615,31 +1971,15 @@ zabbix_export:
               key: 'bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}]'
               delay: '0'
               history: 30d
+              value_type: FLOAT
               units: s
               preprocessing:
-                - type: JAVASCRIPT
+                - type: JSONPATH
                   parameters:
-                    - |
-                      var d = JSON.parse(value);
-                      var view = "{#BIND.VIEW}";
-                      var name = "{#BIND.ZONE}";
-                      var now = Date.parse(d["current-time"]);
-                      var zones = d.views && d.views[view] ? d.views[view].zones : null;
-                      if (!zones || isNaN(now)) {
-                          throw "BIND zone timing data not available";
-                      }
-                      for (var i = 0; i < zones.length; i++) {
-                          if (zones[i].name === name && zones[i].expires) {
-                              var expires = Date.parse(zones[i].expires);
-                              if (isNaN(expires)) {
-                                  throw "invalid zone expiry timestamp";
-                              }
-                              return Math.floor((expires - now) / 1000);
-                          }
-                      }
-                      throw "zone expiry timestamp not available";
+                    - '$.views["{#BIND.VIEW}"].zones["{#BIND.ZONE}"].expires_in'
+                  error_handler: DISCARD_VALUE
               master_item:
-                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+                key: bind.zones.normalized
               tags:
                 - tag: component
                   value: zones
@@ -1670,31 +2010,38 @@ zabbix_export:
               key: 'bind.zone.refresh.in[{#BIND.VIEW},{#BIND.ZONE}]'
               delay: '0'
               history: 30d
+              value_type: FLOAT
               units: s
               preprocessing:
-                - type: JAVASCRIPT
+                - type: JSONPATH
                   parameters:
-                    - |
-                      var d = JSON.parse(value);
-                      var view = "{#BIND.VIEW}";
-                      var name = "{#BIND.ZONE}";
-                      var now = Date.parse(d["current-time"]);
-                      var zones = d.views && d.views[view] ? d.views[view].zones : null;
-                      if (!zones || isNaN(now)) {
-                          throw "BIND zone timing data not available";
-                      }
-                      for (var i = 0; i < zones.length; i++) {
-                          if (zones[i].name === name && zones[i].refresh) {
-                              var refresh = Date.parse(zones[i].refresh);
-                              if (isNaN(refresh)) {
-                                  throw "invalid zone refresh timestamp";
-                              }
-                              return Math.floor((refresh - now) / 1000);
-                          }
-                      }
-                      throw "zone refresh timestamp not available";
+                    - '$.views["{#BIND.VIEW}"].zones["{#BIND.ZONE}"].refresh_in'
+                  error_handler: DISCARD_VALUE
               master_item:
-                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+                key: bind.zones.normalized
+              tags:
+                - tag: component
+                  value: zones
+                - tag: bind-view
+                  value: '{#BIND.VIEW}'
+                - tag: bind-zone
+                  value: '{#BIND.ZONE}'
+            - uuid: a81c3d9d119a4f23a8890a0000000006
+              name: 'BIND zone [{#BIND.VIEW}] {#BIND.ZONE}: Serial'
+              type: DEPENDENT
+              key: 'bind.zone.serial[{#BIND.VIEW},{#BIND.ZONE}]'
+              delay: '0'
+              history: 30d
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.views["{#BIND.VIEW}"].zones["{#BIND.ZONE}"].serial'
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1d
+              master_item:
+                key: bind.zones.normalized
               tags:
                 - tag: component
                   value: zones
@@ -1703,22 +2050,22 @@ zabbix_export:
                 - tag: bind-zone
                   value: '{#BIND.ZONE}'
           master_item:
-            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+            key: bind.zones.normalized
           preprocessing:
             - type: JAVASCRIPT
               parameters:
                 - |
                   var d = JSON.parse(value);
-                  var views = d.views || {};
                   var out = [];
-                  Object.keys(views).forEach(function (viewName) {
-                      var zones = views[viewName].zones || [];
-                      zones.forEach(function (zone) {
-                          if (zone && zone.name && zone.expires && zone.refresh) {
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      var zones = d.views[viewName].zones || {};
+                      Object.keys(zones).forEach(function (zoneName) {
+                          var zone = zones[zoneName];
+                          if (zone.type === "secondary" &&
+                              (zone.expires_in !== undefined || zone.refresh_in !== undefined)) {
                               out.push({
                                   "{#BIND.VIEW}": viewName,
-                                  "{#BIND.ZONE}": zone.name,
-                                  "{#BIND.ZONE.TYPE}": zone.type || "secondary"
+                                  "{#BIND.ZONE}": zoneName
                               });
                           }
                       });
@@ -1729,9 +2076,15 @@ zabbix_export:
           type: DEPENDENT
           key: bind.zones.dnssec.discovery
           delay: '0'
+          lifetime: 7d
           filter:
             evaltype: AND
             conditions:
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.MATCHES}'
+              - macro: '{#BIND.VIEW}'
+                value: '{$BIND.VIEW.NOT_MATCHES}'
+                operator: NOT_MATCHES_REGEX
               - macro: '{#BIND.ZONE}'
                 value: '{$BIND.ZONE.DNSSEC.MATCHES}'
           item_prototypes:
@@ -1743,27 +2096,10 @@ zabbix_export:
               history: 30d
               value_type: FLOAT
               preprocessing:
-                - type: JAVASCRIPT
+                - type: JSONPATH
                   parameters:
-                    - |
-                      var d = JSON.parse(value);
-                      var view = "{#BIND.VIEW}";
-                      var name = "{#BIND.ZONE}";
-                      var blockName = "{#BIND.DNSSEC.TYPE}";
-                      var counter = "{#BIND.COUNTER}";
-                      var zones = d.views && d.views[view] ? d.views[view].zones : null;
-                      if (!zones) {
-                          throw "BIND view not found";
-                      }
-                      for (var i = 0; i < zones.length; i++) {
-                          if (zones[i].name === name) {
-                              var block = zones[i][blockName];
-                              if (block && block[counter] !== undefined) {
-                                  return block[counter];
-                              }
-                          }
-                      }
-                      throw "DNSSEC zone counter not available";
+                    - '$.views["{#BIND.VIEW}"].zones["{#BIND.ZONE}"]["{#BIND.DNSSEC.TYPE}"]["{#BIND.COUNTER}"]'
+                  error_handler: DISCARD_VALUE
                 - type: CHANGE_PER_SECOND
                   parameters:
                     - ''
@@ -1771,7 +2107,7 @@ zabbix_export:
                   parameters:
                     - 30m
               master_item:
-                key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+                key: bind.zones.normalized
               tags:
                 - tag: component
                   value: dnssec
@@ -1780,27 +2116,27 @@ zabbix_export:
                 - tag: bind-zone
                   value: '{#BIND.ZONE}'
           master_item:
-            key: 'web.page.get["{$BIND.STATS.HOST}","/json/v1/zones","{$BIND.STATS.PORT}"]'
+            key: bind.zones.normalized
           preprocessing:
             - type: JAVASCRIPT
               parameters:
                 - |
                   var d = JSON.parse(value);
-                  var views = d.views || {};
                   var out = [];
                   var blocks = ["dnssec-sign", "dnssec-refresh"];
-                  Object.keys(views).forEach(function (viewName) {
-                      var zones = views[viewName].zones || [];
-                      zones.forEach(function (zone) {
+                  Object.keys(d.views || {}).forEach(function (viewName) {
+                      var zones = d.views[viewName].zones || {};
+                      Object.keys(zones).forEach(function (zoneName) {
+                          var zone = zones[zoneName] || {};
                           blocks.forEach(function (blockName) {
-                              var counters = zone ? zone[blockName] : null;
+                              var counters = zone[blockName];
                               if (!counters) {
                                   return;
                               }
                               Object.keys(counters).forEach(function (counter) {
                                   out.push({
                                       "{#BIND.VIEW}": viewName,
-                                      "{#BIND.ZONE}": zone.name,
+                                      "{#BIND.ZONE}": zoneName,
                                       "{#BIND.DNSSEC.TYPE}": blockName,
                                       "{#BIND.COUNTER}": counter
                                   });
@@ -1818,6 +2154,15 @@ zabbix_export:
         - macro: '{$BIND.DNS.TEST.ENABLED}'
           value: '0'
           description: 'Enable functional DNS alerting after choosing a valid test name for this BIND instance. Set to 1 after validation.'
+        - macro: '{$BIND.DNS.TEST.INTERVAL}'
+          value: 30s
+          description: 'Polling interval for the native UDP/TCP DNS availability and response-time checks.'
+        - macro: '{$BIND.DNS.PORT}'
+          value: '53'
+          description: 'Local DNS service port used by the TCP/UDP listener checks.'
+        - macro: '{$BIND.PROCESS.NAME}'
+          value: named
+          description: 'Process name used by proc.num[] for an independent named daemon health check.'
         - macro: '{$BIND.DNS.TEST.SERVER}'
           value: '127.0.0.1'
           description: 'DNS server address used by the native Zabbix DNS health checks.'
@@ -1857,6 +2202,18 @@ zabbix_export:
         - macro: '{$BIND.ZONE.DNSSEC.MATCHES}'
           value: '^$'
           description: 'Regex of zone names for per-zone DNSSEC counter discovery. Default matches no zones; use .* to enable all zones.'
+        - macro: '{$BIND.VIEW.MATCHES}'
+          value: '.*'
+          description: 'Regex of BIND view names eligible for view-based low-level discovery.'
+        - macro: '{$BIND.VIEW.NOT_MATCHES}'
+          value: '^_bind$'
+          description: 'Regex of BIND view names excluded from view-based low-level discovery.'
+        - macro: '{$BIND.RECURSCLIENTS.WARN}'
+          value: '0'
+          description: 'Recursive-client warning threshold. Set to a positive value to enable the saturation trigger; 0 disables it.'
+        - macro: '{$BIND.CACHE.DELETELRU.WARN}'
+          value: '0'
+          description: 'Sustained DeleteLRU rate threshold over 10 minutes. Set to a positive value to enable the trigger; 0 disables it.'
         - macro: '{$BIND.STATS.HOST}'
           value: '127.0.0.1'
           description: 'Host portion used by web.page.get[]. Keep the statistics channel on loopback whenever possible.'

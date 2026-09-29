@@ -35,7 +35,7 @@ def load_template(version, path):
     assert template["template"] == EXPECTED_NAME
     assert template["name"] == EXPECTED_NAME
     assert template["vendor"]["name"] == "Net Tech"
-    assert template["vendor"]["version"] == "1.0-2"
+    assert template["vendor"]["version"] == "1.1-0"
 
     for token in FORBIDDEN:
         assert token not in text, f"forbidden dependency/control path found: {token!r}"
@@ -58,7 +58,14 @@ def load_template(version, path):
         item
         for item in items
         if item.get("key", "").startswith(
-            ("web.page.get[", "net.dns[", "net.dns.perf[")
+            (
+                "web.page.get[",
+                "net.dns[",
+                "net.dns.perf[",
+                "proc.num[",
+                "net.tcp.listen[",
+                "net.udp.listen[",
+            )
         )
     ]
     assert passive_items, "no passive agent items found"
@@ -89,12 +96,100 @@ def load_template(version, path):
     assert macros["{$BIND.ZONE.SECONDARY.MATCHES}"] == "^$"
     assert macros["{$BIND.ZONE.DNSSEC.MATCHES}"] == "^$"
     assert macros["{$BIND.DNS.TEST.ENABLED}"] == "0"
+    assert macros["{$BIND.DNS.TEST.INTERVAL}"] == "30s"
+    assert macros["{$BIND.DNS.PORT}"] == "53"
+    assert macros["{$BIND.PROCESS.NAME}"] == "named"
     assert macros["{$BIND.DNS.TEST.SERVER}"] == "127.0.0.1"
     assert macros["{$BIND.DNS.TEST.NAME}"] == "localhost"
     assert macros["{$BIND.DNS.TEST.TYPE}"] == "A"
     assert macros["{$BIND.DNS.RESPONSE.UDP.WARN}"] == "0.1"
     assert macros["{$BIND.DNS.RESPONSE.TCP.WARN}"] == "0.1"
+    assert macros["{$BIND.VIEW.MATCHES}"] == ".*"
+    assert macros["{$BIND.VIEW.NOT_MATCHES}"] == "^_bind$"
+    assert macros["{$BIND.RECURSCLIENTS.WARN}"] == "0"
+    assert macros["{$BIND.CACHE.DELETELRU.WARN}"] == "0"
     assert "{$BIND.DNS.RESPONSE.WARN}" not in macros
+
+    # Raw HTTP payloads are preprocessing masters only and must not consume history.
+    raw_items = [item for item in items if item.get("name", "").endswith(" raw")]
+    assert raw_items, "no raw master items found"
+    assert all(str(item.get("history")) == "0" for item in raw_items), (
+        "raw master items must use history: 0"
+    )
+
+    keys = {item.get("key") for item in items}
+    assert "bind.stats.heartbeat" in keys
+    heartbeat = next(
+        item for item in items if item.get("key") == "bind.stats.heartbeat"
+    )
+    assert str(heartbeat.get("history")) != "0", (
+        "statistics heartbeat must retain history for nodata() evaluation"
+    )
+    heartbeat_triggers = heartbeat.get("triggers", [])
+    assert heartbeat_triggers, "statistics heartbeat trigger missing"
+    assert any(
+        "nodata(/ISC BIND by Zabbix agent/bind.stats.heartbeat"
+        in trigger.get("expression", "")
+        for trigger in heartbeat_triggers
+    ), "statistics nodata trigger must use the stored heartbeat item"
+
+    keys = {item.get("key") for item in items}
+    assert "bind.zones.normalized" in keys
+    assert "bind.nsstats.recursclients" in keys
+    assert "proc.num[{$BIND.PROCESS.NAME}]" in keys
+    assert "net.tcp.listen[{$BIND.DNS.PORT}]" in keys
+    assert "net.udp.listen[{$BIND.DNS.PORT}]" in keys
+
+    dns_items = [
+        item
+        for item in items
+        if item.get("key", "").startswith(("net.dns[", "net.dns.perf["))
+    ]
+    assert len(dns_items) == 4
+    assert all(item.get("delay") == "{$BIND.DNS.TEST.INTERVAL}" for item in dns_items)
+
+    zone_rule = discovery_rule(template, "bind.zones.secondary.discovery")
+    expires = prototype(zone_rule, "bind.zone.expires.in[{#BIND.VIEW},{#BIND.ZONE}]")
+    refresh = prototype(zone_rule, "bind.zone.refresh.in[{#BIND.VIEW},{#BIND.ZONE}]")
+    serial = prototype(zone_rule, "bind.zone.serial[{#BIND.VIEW},{#BIND.ZONE}]")
+    assert expires.get("value_type") == "FLOAT"
+    assert refresh.get("value_type") == "FLOAT"
+    assert expires["master_item"]["key"] == "bind.zones.normalized"
+    assert refresh["master_item"]["key"] == "bind.zones.normalized"
+    assert serial["master_item"]["key"] == "bind.zones.normalized"
+    assert "expires_in" in preprocessing_script(
+        next(item for item in items if item.get("key") == "bind.zones.normalized")
+    )
+
+    # Every LLD rule gets an explicit retention policy.
+    assert all(
+        rule.get("lifetime") == "7d" for rule in template.get("discovery_rules", [])
+    )
+
+    view_filtered_rules = {
+        "bind.zones.secondary.discovery",
+        "bind.zones.dnssec.discovery",
+        "bind.resolver.stats.discovery",
+        "bind.resolver.gauge.discovery",
+        "bind.resolver.qtypes.discovery",
+        "bind.resolver.adb.discovery",
+        "bind.resolver.cache.discovery",
+    }
+    for rule in template.get("discovery_rules", []):
+        if rule.get("key") in view_filtered_rules:
+            filter_text = str(rule.get("filter", {}))
+            assert "{$BIND.VIEW.MATCHES}" in filter_text
+            assert "{$BIND.VIEW.NOT_MATCHES}" in filter_text
+
+        for proto in rule.get("item_prototypes", []):
+            assert proto.get("tags"), (
+                f"item prototype is missing tags: {proto.get('key')}"
+            )
+            for step in proto.get("preprocessing", []):
+                if step.get("type") == "JSONPATH":
+                    assert step.get("error_handler") == "DISCARD_VALUE", (
+                        f"dynamic JSONPath must discard absent values: {proto.get('key')}"
+                    )
 
     dns_trigger_text = "\n".join(
         str(trigger)
@@ -141,6 +236,10 @@ def load_template(version, path):
     )
     for name in ("RecursClients", "TCPConnHighWater", "RecursHighwater"):
         assert name in preprocessing_script(ns_rate)
+    assert "RecursClients" not in preprocessing_script(ns_gauge), (
+        "RecursClients is a dedicated item and must not be duplicated by gauge LLD"
+    )
+    for name in ("TCPConnHighWater", "RecursHighwater"):
         assert name in preprocessing_script(ns_gauge)
 
     socket_rate = discovery_rule(template, "bind.sockstats.discovery")
@@ -189,6 +288,13 @@ def load_template(version, path):
         for rule in template.get("discovery_rules", [])
         if rule.get("key") == "bind.resolver.cache.discovery"
     )
+    cache_ratio = prototype(cache_rule, "bind.cache.hitratio[{#BIND.VIEW}]")
+    assert cache_ratio.get("value_type") == "FLOAT"
+    assert cache_ratio.get("units") == "%"
+
+    delete_lru = prototype(cache_rule, "bind.cache.deletelru[{#BIND.VIEW}]")
+    assert delete_lru.get("trigger_prototypes"), "DeleteLRU warning prototype missing"
+
     cache_graphs = {graph["name"] for graph in cache_rule.get("graph_prototypes", [])}
     assert cache_graphs == {
         "BIND cache [{#BIND.VIEW}]: Hit and miss rates",

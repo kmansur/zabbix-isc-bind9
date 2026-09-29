@@ -4,7 +4,30 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 
 ## [Não publicado]
 
-Sem alterações não publicadas.
+## [1.1.0] - 2026-09-29
+
+### Adicionado
+
+- Monitoramento independente do processo `named` e dos listeners UDP/TCP usando keys padrão do Zabbix agent.
+- Intervalo configurável para teste DNS, filtros de discovery por view, limite de clientes recursivos e limite de DeleteLRU.
+- Gauge dedicado de `RecursClients`, hit ratio do cache por view e serial SOA local para secundárias selecionadas.
+- Hardening opcional documentado com `AllowKey`/`DenyKey` para o caminho `web.page.get[]` do statistics-channel.
+- Cobertura de regressão no CI para zonas secundárias expiradas e allowlists de classificação de métricas.
+
+### Alterado
+
+- Adicionado dataset normalizado de zonas para interpretar o payload grande de `/json/v1/zones` uma única vez antes de LLD/prototypes por zona.
+- Prototypes JSONPath dinâmicos passam a descartar valores temporariamente ausentes em vez de ficar unsupported ou inventar zero.
+- Discoveries de resolver/cache/zonas usam filtros explícitos de view e todas as regras LLD usam lifetime explícito de 7 dias.
+- Itens mestres HTTP/JSON brutos deixam de armazenar histórico; dependent items derivados continuam com histórico normal.
+- A disponibilidade do statistics-channel passa a usar um heartbeat leve e armazenado derivado de `/json/v1/status`, preservando a avaliação do `nodata()` sem reter o JSON bruto.
+- Item prototypes de cache passam a usar tags consistentes de componente/view.
+
+### Corrigido
+
+- Timers de expiração e refresh de zonas secundárias passam a ser explicitamente numéricos com sinal, permitindo manter zonas expiradas supported e acionar corretamente o trigger já existente.
+- Adicionado trigger de restart baseado na redução do uptime do BIND.
+- Removida a descoberta duplicada de `RecursClients`, que agora é exposto somente como item gauge dedicado.
 
 ## [1.0.2] - 2026-09-28
 
