@@ -24,10 +24,10 @@ The template only needs read-only standard keys. Administrators who want an addi
 Example for the default listener:
 
 ```ini
-AllowKey=web.page.get[127.0.0.1,/json/v1/*,8053]
+AllowKey=web.page.get["127.0.0.1","/json/v1/*","8053"]
 DenyKey=web.page.get[*]
 ```
 
-Adapt the address and port when `{$BIND.STATS.HOST}` or `{$BIND.STATS.PORT}` differs from the defaults. Validate the exact configuration with both the classic agent and Agent 2 before deployment. The project CI tests this allow/deny model against a live BIND statistics endpoint.
+The quoted parameter form intentionally matches the literal `web.page.get[]` keys exported by the template. Adapt the address and port when `{$BIND.STATS.HOST}` or `{$BIND.STATS.PORT}` differs from the defaults. Validate the exact configuration with both the classic agent and Agent 2 before deployment. The project CI tests this allow/deny model against a live BIND statistics endpoint using the same quoted key form.
 
 This hardening is optional because existing agent deployments may already use `web.page.get[]` for unrelated templates. Do not add a blanket deny without first reviewing those dependencies.

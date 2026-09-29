@@ -11,4 +11,5 @@
 - [Segurança](security.md)
 - [Solução de problemas](troubleshooting.md)
 - [Versionamento](versioning.md)
+- [Roadmap 1.2.0](roadmap-1.2.0.md)
 - [Licença e atribuição](license-attribution.md)

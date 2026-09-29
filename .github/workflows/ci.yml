@@ -264,7 +264,7 @@ jobs:
 
           OUT=$(docker run --rm --network bind-runtime-ci \
             --entrypoint /usr/sbin/zabbix_agentd "$IMAGE" \
-            -t "web.page.get[$BIND_IP,/json/v1/status,8053]")
+            -t "web.page.get[\"$BIND_IP\",\"/json/v1/status\",\"8053\"]")
           printf '%s\n' "$OUT"
           grep -q '200 OK' <<<"$OUT"
 
@@ -282,7 +282,7 @@ jobs:
 
           OUT=$(docker run --rm --network bind-runtime-ci \
             --entrypoint /usr/sbin/zabbix_agent2 "$IMAGE" \
-            -t "web.page.get[$BIND_IP,/json/v1/status,8053]")
+            -t "web.page.get[\"$BIND_IP\",\"/json/v1/status\",\"8053\"]")
           printf '%s\n' "$OUT"
           grep -q '200 OK' <<<"$OUT"
 
@@ -309,7 +309,7 @@ jobs:
             cat > "$CONF" <<EOF
           Server=127.0.0.1
           Hostname=bind-template-ci
-          AllowKey=web.page.get[$BIND_IP,/json/v1/*,8053]
+          AllowKey=web.page.get["$BIND_IP","/json/v1/*","8053"]
           DenyKey=web.page.get[*]
           EOF
 
@@ -317,7 +317,7 @@ jobs:
               -v "$CONF:/tmp/zabbix-agent.conf:ro" \
               --entrypoint "$BIN" "$IMAGE" \
               -c /tmp/zabbix-agent.conf \
-              -t "web.page.get[$BIND_IP,/json/v1/status,8053]")
+              -t "web.page.get[\"$BIND_IP\",\"/json/v1/status\",\"8053\"]")
             printf '%s\n' "$ALLOWED"
             grep -q '200 OK' <<<"$ALLOWED"
 
@@ -325,7 +325,7 @@ jobs:
               -v "$CONF:/tmp/zabbix-agent.conf:ro" \
               --entrypoint "$BIN" "$IMAGE" \
               -c /tmp/zabbix-agent.conf \
-              -t "web.page.get[example.com,/,80]" 2>&1 || true)
+              -t 'web.page.get["example.com","/","80"]' 2>&1 || true)
             printf '%s\n' "$DENIED"
             grep -Eq 'ZBX_NOTSUPPORTED|Unsupported item key|not allowed' <<<"$DENIED"
           done

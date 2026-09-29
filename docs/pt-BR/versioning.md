@@ -5,11 +5,11 @@
 O projeto utiliza Versionamento Semântico.
 
 ```text
-VERSION:        1.1.0
-STABLE_VERSION: 1.1.0
+VERSION:        1.1.1
+STABLE_VERSION: 1.1.1
 ```
 
-A `main` contém o código mantido atual. `STABLE_VERSION` registra o baseline suportado para produção. A versão `1.1.0` é o baseline estável atual do projeto.
+A `main` contém o código mantido atual. `STABLE_VERSION` registra o baseline suportado para produção. A versão `1.1.1` é o baseline estável atual do projeto.
 
 ## Regras
 

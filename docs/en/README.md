@@ -11,4 +11,5 @@
 - [Security](security.md)
 - [Troubleshooting](troubleshooting.md)
 - [Versioning](versioning.md)
+- [Roadmap 1.2.0](roadmap-1.2.0.md)
 - [License and attribution](license-attribution.md)

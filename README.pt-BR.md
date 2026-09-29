@@ -4,7 +4,7 @@
 
 Template Zabbix com foco em segurança para monitoramento do **ISC BIND** através do canal HTTP nativo de estatísticas do BIND. O projeto é compatível com **Zabbix Agent** e **Zabbix Agent 2** e evita dependências exclusivas do Agent 2 ou scripts externos.
 
-> **Release estável:** a versão `1.1.0` é a release estável atual do projeto para produção.
+> **Release estável:** a versão `1.1.1` é a release estável atual do projeto para produção.
 
 ## Objetivos
 
@@ -47,11 +47,11 @@ A versão 1.1.0 inclui nove gráficos clássicos reutilizáveis e uma dashboard 
 ## Versionamento
 
 ```text
-VERSION:        1.1.0
-STABLE_VERSION: 1.1.0
+VERSION:        1.1.1
+STABLE_VERSION: 1.1.1
 ```
 
-`STABLE_VERSION` identifica a linha suportada para produção. A versão `1.1.0` é o baseline estável atual.
+`STABLE_VERSION` identifica a linha suportada para produção. A versão `1.1.1` é o baseline estável atual.
 
 ## Origem
 
