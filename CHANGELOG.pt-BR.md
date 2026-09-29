@@ -4,6 +4,11 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 
 ## [Não publicado]
 
+### Alterado
+
+- Melhorada a legibilidade do dashboard Overview: o card de Uptime agora usa uma fonte menor para que valores longos caibam dentro do card.
+- Os cards DNS UDP e DNS TCP agora usam dependent items dedicados somente para exibição, mostrando `Up`/`Down` sem o valor numérico bruto entre parênteses.
+
 ## [1.1.0] - 2026-09-29
 
 ### Validação
