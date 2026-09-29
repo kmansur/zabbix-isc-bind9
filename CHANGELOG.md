@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- Improved the Overview dashboard readability: the Uptime card now uses a smaller value font, Primary/Secondary zones and Memory in use were moved below the DNS status cards, and the DNS response-time graph was raised/aligned with the summary area.
+- DNS UDP and DNS TCP dashboard cards now use dedicated display-only dependent items so they show `Up`/`Down` without the raw numeric value in parentheses.
+- The Overview Problems widget now filters by `BIND:` so unrelated host problems from other templates are not shown.
+
 ## [1.1.0] - 2026-09-29
 
 ### Validation
