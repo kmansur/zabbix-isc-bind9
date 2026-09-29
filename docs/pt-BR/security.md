@@ -24,7 +24,7 @@ O template precisa apenas de keys padrão e somente leitura. Administradores que
 Exemplo para o listener padrão:
 
 ```ini
-AllowKey=web.page.get[127.0.0.1,/json/v1/*,8053]
+AllowKey=web.page.get["127.0.0.1","/json/v1/*","8053"]
 DenyKey=web.page.get[*]
 ```
 
