@@ -26,4 +26,4 @@ A sanitized public issue may be used when the problem can be reproduced without 
 
 ## Supported versions
 
-Version `1.0.2` is the current production-stable baseline and is the supported security-maintenance line.
+Version `1.1.0` is the current production-stable baseline and is the supported security-maintenance line.
