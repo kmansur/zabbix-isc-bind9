@@ -4,11 +4,18 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 
 ## [Não publicado]
 
+## [1.1.1] - 2026-09-29
+
 ### Alterado
 
 - Melhorada a legibilidade do dashboard Overview: o card de Uptime agora usa uma fonte menor, Primary/Secondary zones e Memory in use foram movidos para baixo dos cards de status DNS, e o gráfico de tempo de resposta DNS foi elevado/alinhado com a área de resumo.
 - Os cards DNS UDP e DNS TCP agora usam dependent items dedicados somente para exibição, mostrando `Up`/`Down` sem o valor numérico bruto entre parênteses.
 - O widget Problems do Overview agora filtra por `BIND:`, evitando exibir problemas do host provenientes de outros templates.
+- A documentação do hardening opcional do agent agora usa a mesma forma com parâmetros entre aspas da key `web.page.get[]` exportada pelo template.
+
+### Corrigido
+
+- O CI agora valida `AllowKey`/`DenyKey` usando exatamente a forma com aspas da key `web.page.get[]` utilizada pelo template, evitando um falso positivo de hardening testado contra uma representação sintaticamente diferente.
 
 ## [1.1.0] - 2026-09-29
 
