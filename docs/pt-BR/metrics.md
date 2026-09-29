@@ -21,7 +21,7 @@ A versão 1.1.0 separa a aquisição bruta dos endpoints das métricas cuja sem�
 
 ## Retenção dos endpoints brutos
 
-Os itens HTTP/JSON brutos são mestres somente para preprocessing e utilizam `history: 0`. Os dependent items continuam recebendo o valor atual do master, enquanto o payload bruto grande deixa de ser gravado no histórico. Isso é especialmente importante para `/json/v1/zones` em servidores com muitas zonas.
+Os itens HTTP/JSON brutos são mestres somente para preprocessing e utilizam `history: 0`. Os dependent items continuam recebendo o valor atual do master, enquanto o payload bruto grande deixa de ser gravado no histórico. Isso é especialmente importante para `/json/v1/zones` em servidores com muitas zonas. Para detecção de disponibilidade, `bind.stats.heartbeat` é um dependent item pequeno e armazenado, derivado de `/json/v1/status`, e é o alvo do trigger `nodata()` do statistics-channel.
 
 ## Modelo de retenção
 
@@ -57,7 +57,7 @@ As famílias de taxa incluem contadores cumulativos de queries/requests/response
 - ADB do resolver: `nentries`, `entriescnt`, `nnames` e `namescnt`;
 - sockets: valores de sockets ativos e clientes atualmente conectados, como `UDP4Active`, `TCP4Active` e `TCP4Clients`.
 
-As discoveries genéricas de taxa excluem esses gauges. Discoveries específicas de gauge expõem diretamente o valor atual. Isso evita valores enganosos como “RecursClients per second”.
+As discoveries genéricas de taxa excluem esses gauges. `RecursClients` é exposto somente pelo item gauge dedicado; os demais gauges genéricos são expostos pela discovery de gauges. Isso evita duplicidade de clientes recursivos e valores enganosos como “RecursClients per second”.
 
 
 ## Sinais independentes de serviço e capacidade
