@@ -4,7 +4,7 @@
 
 Template Zabbix com foco em segurança para monitoramento do **ISC BIND** através do canal HTTP nativo de estatísticas do BIND. O projeto é compatível com **Zabbix Agent** e **Zabbix Agent 2** e evita dependências exclusivas do Agent 2 ou scripts externos.
 
-> **Release estável:** a versão `1.0.2` é a release estável atual do projeto para produção.
+> **Release estável:** a versão `1.1.0` é a release estável atual do projeto para produção.
 
 ## Objetivos
 
@@ -15,9 +15,9 @@ Template Zabbix com foco em segurança para monitoramento do **ISC BIND** atrav�
 - documentação em inglês com versão equivalente em português do Brasil;
 - Zabbix 7.0 como baseline principal e Zabbix 8.0 como alvo de compatibilidade.
 
-A versão 1.0.2 monitora disponibilidade DNS UDP/TCP e tempo de resposta usando as keys nativas `net.dns` e `net.dns.perf`; os alertas funcionais ficam desabilitados por padrão até a escolha de um nome de teste válido para o host.
+A versão 1.1.0 monitora disponibilidade DNS UDP/TCP e tempo de resposta usando as keys nativas `net.dns` e `net.dns.perf`; os alertas funcionais ficam desabilitados por padrão até a escolha de um nome de teste válido para o host.
 
-A linha em desenvolvimento também adiciona checks independentes do processo `named` e dos listeners UDP/TCP, normalização escalável do dataset de zonas, serial local de secundárias selecionadas, hit ratio do cache e monitoramento dedicado de clientes recursivos.
+A versão 1.1.0 também adiciona checks independentes do processo `named` e dos listeners UDP/TCP, normalização escalável do dataset de zonas, serial local de secundárias selecionadas, hit ratio do cache e monitoramento dedicado de clientes recursivos.
 
 ## Configuração recomendada
 
@@ -42,16 +42,16 @@ statistics-channels {
 
 Agents mais antigos ficam fora da matriz mantida de testes. O template atual requer as keys padrão `web.page.get[]`, `net.dns[]` e `net.dns.perf[]`; o baseline mantido é 7.0+.
 
-A versão 1.0.2 inclui nove gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
+A versão 1.1.0 inclui nove gráficos clássicos reutilizáveis e uma dashboard nativa de três páginas. Consulte [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
 
 ## Versionamento
 
 ```text
-VERSION:        1.0.2
-STABLE_VERSION: 1.0.2
+VERSION:        1.1.0
+STABLE_VERSION: 1.1.0
 ```
 
-`STABLE_VERSION` identifica a linha suportada para produção. A versão `1.0.2` é o baseline estável atual.
+`STABLE_VERSION` identifica a linha suportada para produção. A versão `1.1.0` é o baseline estável atual.
 
 ## Origem
 
